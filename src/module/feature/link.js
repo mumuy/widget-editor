@@ -23,10 +23,10 @@ export default {
                 {'name':'text','label':'显示文字','type':'text','value':text,'placeholder':'留空时使用链接地址'}
             ],
             'submitLabel':'确定',
-            onSubmit(values){
+            onSubmit(values,dialog){
                 let url = safeURL(String(values.url || '').trim());
                 if(!url){
-                    editor.notify('请输入有效的链接地址');
+                    dialog.message('请输入有效的链接地址');
                     return false;
                 }
                 let label = String(values.text || '').trim() || url;

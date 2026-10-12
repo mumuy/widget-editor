@@ -88,13 +88,13 @@ class WidgetEditor extends HTMLElement {
             }else if(group){
                 this.toolbar.appendChild(group);
             }
+            this.locale.apply(group);
             let options = feature.options;
             if(this._dialog?.dataset.insert&&!options.some(option=>option.value===this._dialog.dataset.insert)){
                 this._dialog.dismiss();
             }
             this.updateToolbar();
         }
-        this.placeholder.textContent = this.getAttribute('placeholder')||this.t('在这里开始写作…');
         this.updatePlaceholder();
         let height = Number(this.getAttribute('height'));
         this.style.setProperty('--editor-height',(height>=160&&height<=2000?height:420)+'px');
@@ -141,17 +141,12 @@ class WidgetEditor extends HTMLElement {
         this.value = value;
     }
     addStyle(){
-        // 移除旧的 style 节点，避免重复渲染时样式叠加
-        let oldStyle = this.shadowRoot.querySelector('style[data-widget-editor]');
-        if(oldStyle){
-            oldStyle.remove();
-        }
+        this.shadowRoot.querySelector('style[data-widget-editor]')?.remove();
         if(this.shadowRoot.adoptedStyleSheets){
             this.shadowRoot.adoptedStyleSheets = [styleSheet];
         }else{
             const $style = document.createElement('style');
-            $style.rel = 'defaultSheet';
-            $style.dataset.widgetEditor = '1';   // 标记以便重复渲染时清理
+            $style.dataset.widgetEditor = '1';
             $style.textContent = [...styleSheet.cssRules].map(item=>item.cssText).join('');
             this.shadowRoot.appendChild($style);
         }
@@ -186,16 +181,19 @@ class WidgetEditor extends HTMLElement {
             </div>
             <div class="ft">
                 <span class="mode-label">可视化编辑</span>
-                <span class="notice" role="status" aria-live="polite"></span>
                 <span class="word-count">0 字</span>
                 <button type="button" class="tool tool-button fullscreen-button" data-action="fullscreen" aria-label="全屏" aria-pressed="false">${renderIcon(fullscreenIcon)}</button>
             </div>
         </div>`;
+        this.panel = this.shadowRoot.querySelector('.mod-panel');
+        this.body = this.panel.querySelector('.bd');
         this.content = this.shadowRoot.querySelector('.editor-content');
         this.placeholder = this.shadowRoot.querySelector('.editor-placeholder');
         this.sourceArea = this.shadowRoot.querySelector('.editor-source');
         this.toolbar = this.shadowRoot.querySelector('.toolbar');
         this.footer = this.shadowRoot.querySelector('.ft');
+        this.modeLabel = this.footer.querySelector('.mode-label');
+        this.wordCount = this.footer.querySelector('.word-count');
     }
     bindEvents(){
         this.features.forEach(feature=>feature.bind?.(this));
@@ -236,7 +234,6 @@ class WidgetEditor extends HTMLElement {
                     let styles = this.painter;
                     this.cancelPainter();
                     this.applyStyle(styles);
-                    this.notify('已应用格式');
                 }
             }
             this.updateToolbar();
@@ -249,14 +246,10 @@ class WidgetEditor extends HTMLElement {
             let lines = text.split(/\r\n?|\n/);
             this.insertHTML(html||(lines.length>1?lines.map(line=>'<p>'+(escapeHTML(line)||'<br>')+'</p>').join(''):escapeHTML(text)));
         });
-        this.content.addEventListener('drop',event=>{
-            event.preventDefault();
-            this.notify('请通过工具栏插入文件或粘贴文字');
-        });
+        this.content.addEventListener('drop',event=>event.preventDefault());
         this.shadowRoot.addEventListener('keydown',event=>{
             if(event.key==='Escape'&&this.painter){
                 this.cancelPainter();
-                this.notify('已取消格式刷');
             }
             if(event.target!==this.content||!(event.ctrlKey||event.metaKey)||event.altKey){
                 return;
@@ -399,7 +392,7 @@ class WidgetEditor extends HTMLElement {
             this.sourceArea.hidden = false;
             this.sourceArea.focus({preventScroll:true});
         }
-        this.locale.set(this.shadowRoot.querySelector('.mode-label'),this.source?'HTML 源代码':'可视化编辑');
+        this.locale.set(this.modeLabel,this.source?'HTML 源代码':'可视化编辑');
         this.updatePlaceholder();
         this.updateToolbar();
     }
@@ -465,21 +458,20 @@ class WidgetEditor extends HTMLElement {
         return this.locale.text(key,params);
     }
     updateLocale(){
-        this.shadowRoot.querySelector('.mod-panel').lang = this.locale.name;
-        this.placeholder.textContent = this.getAttribute('placeholder')||this.t('在这里开始写作…');
-        [this.toolbar,this.footer,this.table?.toolbar,this._dialog].forEach(root=>this.locale.apply(root));
-        this.locale.apply(this.content,false);
-        this.locale.apply(this.sourceArea,false);
+        let language = this.locale.name;
+        if(this.panel.lang!==language){
+            this.panel.lang = language;
+            [this.toolbar,this.footer,this.table?.toolbar,this._dialog].forEach(root=>this.locale.apply(root));
+            this.locale.apply(this.content,false);
+            this.locale.apply(this.sourceArea,false);
+        }
+        let placeholder = this.getAttribute('placeholder')||this.t('在这里开始写作…');
+        if(this.placeholder.textContent!==placeholder){
+            this.placeholder.textContent = placeholder;
+        }
     }
     updateCount(text=this.text){
-        this.locale.set(this.shadowRoot.querySelector('.word-count'),'{count} 字',{count:text.replace(/\s/g,'').length});
-    }
-    notify(message,params,literal=false){
-        this.locale.set(this.shadowRoot.querySelector('.notice'),message,params,'textContent',literal);
-        let notice = this._dialog?.querySelector('.dialog-notice');
-        if(notice){
-            this.locale.set(notice,message,params,'textContent',literal);
-        }
+        this.locale.set(this.wordCount,'{count} 字',{count:text.replace(/\s/g,'').length});
     }
     openDialog(options){
         return openDialog(this,options);

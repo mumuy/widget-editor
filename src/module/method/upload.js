@@ -33,7 +33,7 @@ export default function openUpload(editor,options){
         progress.hidden = !busy;
         editor.locale.set(dialog.querySelector('[type="submit"]'),busy?'上传中…':'插入'+options.name);
         if(busy){
-            editor.notify('');
+            dialog.message('');
         }
     };
     let upload = function(file){
@@ -50,7 +50,7 @@ export default function openUpload(editor,options){
             };
             let error = function(err,translate=false){
                 if(active()){
-                    editor.notify(String(err?.message||err||'上传失败，请重试'),undefined,!translate&&!!(err?.message||err));
+                    dialog.message(String(err?.message||err||'上传失败，请重试'),undefined,!translate&&!!(err?.message||err));
                     finish(false);
                 }
             };
@@ -119,7 +119,7 @@ export default function openUpload(editor,options){
             tabs.addEventListener('click',event=>{
                 let button = event.target.closest('[data-insert-tab]');
                 if(button&&!busy){
-                    editor.notify('');
+                    dialog.message('');
                     setMode(button.dataset.insertTab);
                 }
             });
@@ -137,7 +137,7 @@ export default function openUpload(editor,options){
                 }
                 if(value){
                     event.preventDefault();
-                    editor.notify('');
+                    dialog.message('');
                     setMode(value,true);
                 }
             });
@@ -156,11 +156,11 @@ export default function openUpload(editor,options){
             let source;
             if(mode==='file'){
                 if(!file||!fileType(file,options.types)){
-                    editor.notify(options.error||'请选择文件');
+                    dialog.message(options.error||'请选择文件');
                     return false;
                 }
                 if(file.size>options.size*1024*1024){
-                    editor.notify('{type}大小不能超过 {size} MB',{type:options.name,size:options.size});
+                    dialog.message('{type}大小不能超过 {size} MB',{type:options.name,size:options.size});
                     return false;
                 }
                 setBusy(true);
@@ -180,7 +180,7 @@ export default function openUpload(editor,options){
             }else{
                 source = safeURL(values.url,options.kind);
                 if(!source){
-                    editor.notify('请输入有效的{type}地址',{type:options.name});
+                    dialog.message('请输入有效的{type}地址',{type:options.name});
                     return false;
                 }
             }

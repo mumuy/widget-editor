@@ -19,7 +19,7 @@ export default function openDialog(editor,options){
         </div>
         <div class="dialog-body">
             <div class="dialog-fields"></div>
-            <p class="dialog-notice" role="status"></p>
+            <p class="dialog-notice" role="status" aria-live="polite"></p>
         </div>
         <div class="dialog-foot">
             <button type="button" class="btn dialog-cancel">取消</button>
@@ -29,6 +29,8 @@ export default function openDialog(editor,options){
     editor.locale.set(dialog.querySelector('h3'),options.title);
     let form = dialog.querySelector('form');
     let submit = dialog.querySelector('[type="submit"]');
+    let notice = dialog.querySelector('.dialog-notice');
+    dialog.message = (message,params,literal=false)=>editor.locale.set(notice,message,params,'textContent',literal);
     editor.locale.set(submit,options.submitLabel||'确定');
     let fields = options.fields || [];
     let inputs = new Map();
@@ -115,7 +117,7 @@ export default function openDialog(editor,options){
             dialog.close();
         }
         try{
-            let success = await options.onSubmit(values);
+            let success = await options.onSubmit(values,dialog);
             if(!current()){
                 finish();
                 return;
@@ -129,7 +131,7 @@ export default function openDialog(editor,options){
             }
         }catch(error){
             if(current()){
-                editor.notify('操作失败，请重试');
+                dialog.message('操作失败，请重试');
                 if(!dialog.open){
                     dialog.showModal();
                 }

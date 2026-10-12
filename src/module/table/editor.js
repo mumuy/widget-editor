@@ -26,10 +26,11 @@ export default class TableEditor {
         this.toolbar.setAttribute('role','toolbar');
         this.toolbar.setAttribute('aria-label','表格编辑');
         this.toolbar.setAttribute('popover','manual');
-        this.toolbar.innerHTML = `<div class="table-head"><span class="table-selection"></span><span class="table-help">拖动或 Shift 点击选格</span></div><div class="table-actions">${actions.map(action=>{
+        this.toolbar.innerHTML = `<div class="table-actions">${actions.map(action=>{
             return `<button type="button" data-table-action="${action[0]}" aria-label="${action[1]}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${action[2]}"/></svg>${action[1]}</button>`;
         }).join('')}</div>`;
         editor.shadowRoot.appendChild(this.toolbar);
+        editor.locale.apply(this.toolbar);
         this.onOutside = event=>{
             let path = event.composedPath();
             if(!path.includes(this.toolbar)&&!path.some(node=>this.cell(node))){
@@ -196,8 +197,6 @@ export default class TableEditor {
         }
         let {area} = selection;
         area.items.forEach(item=>item.cell.setAttribute('data-table-selected',''));
-        this.editor.locale.set(this.toolbar.querySelector('.table-selection'),'{count} 个单元格',{count:area.items.length});
-        this.editor.locale.apply(this.toolbar);
         this.toolbar.querySelector('[data-table-action="merge"]').disabled = !area.complete||area.items.length<2;
         this.toolbar.querySelector('[data-table-action="split"]').disabled = !area.items.some(item=>item.rows>1||item.columns>1);
         // 拖选结束后再显示，浮层不会挡住要选择的单元格。

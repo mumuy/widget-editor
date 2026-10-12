@@ -106,14 +106,14 @@ export default class EditorDropdown {
         let current = feature.actionMenu?null:value||feature.options[0].value;
         let option = feature.options.find(option=>option.value===current);
         button.value = current||'';
-        button.querySelector('.tool-label').textContent = feature.actionMenu?feature.label:option?option.label:feature.display?.(current)||feature.label;
+        this.editor.locale.set(button.querySelector('.tool-label'),feature.actionMenu?feature.label:option?option.label:feature.display?.(current)||feature.label);
         let icon = feature.icon&&(option?.icon||feature.icon);
         if(icon&&button._icon!==icon){
             button.querySelector('.tool-icon').outerHTML = renderIcon(icon);
             button._icon = icon;
         }
         if(feature.iconOnly){
-            button.setAttribute('aria-label',option?.label||feature.label);
+            this.editor.locale.set(button,option?.label||feature.label,{},'aria-label');
         }
         group.querySelectorAll('[data-option]').forEach(item=>{
             let selected = item.dataset.option===current;

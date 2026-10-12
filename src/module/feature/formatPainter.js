@@ -28,7 +28,6 @@ export default {
             'color':style.color,
             'text-decoration':['underline','line-through'].filter(name=>decorations.includes(name)).join(' ')||'none'
         });
-        editor.notify('已复制格式，请选中需要应用格式的文字');
     },
     active(editor){
         return !!editor.painter;

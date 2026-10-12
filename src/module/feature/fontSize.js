@@ -1,12 +1,14 @@
+const sizes = [12,14,16,18,20,24,28,32,36,48];
+
 export default {
     'name':'fontSize',
     'label':'文字大小',
     'type':'dropdown',
-    'options':[12,14,16,18,20,24,28,32,36,48].map((value)=>{
+    'options':sizes.map((value)=>{
         return {'value':String(value),'label':value+' px'};
     }),
     execute(editor,value){
-        if([12,14,16,18,20,24,28,32,36,48].includes(Number(value))){
+        if(sizes.includes(Number(value))){
             editor.applyStyle({'font-size':value+'px'});
         }
     },

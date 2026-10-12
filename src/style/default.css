@@ -94,13 +94,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     visibility: visible;
     transition: opacity .12s .3s,visibility 0s .3s;
 }
-.tool-group{
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 3px;
-}
-.tool,.tool-button,.tool-color{
+.tool{
     display: inline-flex;
     flex: 0 0 auto;
     align-items: center;
@@ -116,10 +110,10 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     border-radius: 4px;
     transition: background .15s,color .15s;
 }
-.tool:hover,.tool-button:hover,.tool-color:hover{
+.tool:hover{
     background: var(--button-background-color);
 }
-.tool.active,.tool-button.active,.tool[aria-pressed="true"],.tool-button[aria-pressed="true"]{
+.tool.active,.tool[aria-pressed="true"]{
     background: var(--button-active-background);
     color: var(--button-active-color);
 }
@@ -317,13 +311,6 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     background: var(--button-active-color);
     color: var(--panel-background-color);
 }
-.separator{
-    flex: 0 0 auto;
-    width: 1px;
-    height: 20px;
-    margin: 0 4px;
-    background: var(--panel-border-color);
-}
 .mod-panel .bd{
     flex: 1;
     position: relative;
@@ -453,10 +440,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     position: fixed;
     inset: auto;
     z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    width: 384px;
+    width: 520px;
     max-width: calc(100% - 16px);
     max-height: calc(100dvh - 16px);
     margin: 0;
@@ -466,39 +450,28 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     border: 1px solid var(--panel-border-color);
     border-radius: 5px;
     box-shadow: 0 5px 18px rgba(31,49,74,.14);
-    font-size: 12px;
+    font-size: 13px;
     overflow: auto;
-}
-.table-toolbar[hidden]{
-    display: none !important;
-}
-.table-head{
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 4px 8px;
-}
-.table-selection{
-    color: var(--button-active-color);
-    white-space: nowrap;
 }
 .table-actions{
     display: grid;
     grid-template-columns: repeat(4,minmax(0,1fr));
-    gap: 4px;
+    gap: 6px;
 }
 .table-actions button{
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 3px;
+    gap: 5px;
     min-width: 0;
-    padding: 5px 4px;
+    min-height: 40px;
+    padding: 8px 6px;
     background: transparent;
     color: var(--button-text-color);
     border: 1px solid var(--panel-border-color);
     border-radius: 3px;
     font: inherit;
+    line-height: 20px;
     white-space: nowrap;
     cursor: pointer;
 }
@@ -511,11 +484,9 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     cursor: default;
 }
 .table-actions svg{
-    width: 14px;
-    height: 14px;
-}
-.table-help{
-    color: var(--muted-text-color);
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
 }
 .editor-content blockquote{
     margin: 16px 0;
@@ -597,17 +568,6 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     min-height: 0;
     resize: none;
     overscroll-behavior: contain;
-}
-.notice{
-    min-width: 0;
-    overflow: hidden;
-    color: var(--button-active-color);
-    font-size: 12px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-.notice:empty{
-    display: none;
 }
 .editor-dialog{
     width: min(420px,calc(100vw - 32px));
@@ -836,9 +796,6 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     .toolbar{
         padding: 7px;
     }
-    .separator{
-        margin: 0 2px;
-    }
     .editor-source{
         padding: var(--editor-padding-y) var(--editor-padding-x);
     }
@@ -856,7 +813,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     }
 }
 @media (prefers-reduced-motion:reduce){
-    .tool,.tool-button,.tool-color{
+    .tool{
         transition: none;
     }
 }

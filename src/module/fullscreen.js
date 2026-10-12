@@ -6,7 +6,7 @@ let active = null;
 export default class EditorFullscreen {
     constructor(editor){
         this.editor = editor;
-        this.panel = editor.shadowRoot.querySelector('.mod-panel');
+        this.panel = editor.panel;
         this.button = editor.footer.querySelector('[data-action="fullscreen"]');
         this.state = null;
         this.button.addEventListener('pointerdown',event=>{
@@ -44,7 +44,7 @@ export default class EditorFullscreen {
             y:window.scrollY,
             height:editor.style.getPropertyValue('height'),
             priority:editor.style.getPropertyPriority('height'),
-            scroll:editor.shadowRoot.querySelector('.bd').scrollTop,
+            scroll:editor.body.scrollTop,
             styles:[document.documentElement,document.body].flatMap(element=>['overflow-x','overflow-y'].map(name=>({
                 element,name,
                 value:element.style.getPropertyValue(name),
@@ -90,7 +90,7 @@ export default class EditorFullscreen {
                 element.style.removeProperty(name);
             }
         });
-        editor.shadowRoot.querySelector('.bd').scrollTop = state.scroll;
+        editor.body.scrollTop = state.scroll;
         window.scrollTo({left:state.x,top:state.y,behavior:'instant'});
         this.state = null;
         active = null;

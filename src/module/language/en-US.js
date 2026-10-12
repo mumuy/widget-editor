@@ -69,8 +69,6 @@ export default {
     '{columns} 列 × {rows} 行':'{columns} columns × {rows} rows',
     '{columns} 列 × {rows} 行（已确认）':'{columns} columns × {rows} rows (confirmed)',
     '表格编辑':'Table editing',
-    '拖动或 Shift 点击选格':'Drag or Shift-click to select cells',
-    '{count} 个单元格':'{count} cells',
     '上方插行':'Row above',
     '下方插行':'Row below',
     '左侧插列':'Column left',
@@ -102,7 +100,6 @@ export default {
     '请输入有效的{type}地址':'Please enter a valid {type} URL',
     '上传失败，请重试':'Upload failed. Please try again.',
     '上传结果不是有效的 URL，请重试':'The upload returned an invalid URL. Please try again.',
-    '请选择表情':'Please choose an emoji',
     '选择表情':'Choose an emoji',
     '开心':'Grinning',
     '大笑':'Laughing',
@@ -172,9 +169,5 @@ export default {
     '取消':'Cancel',
     '确定':'Confirm',
     '操作失败，请重试':'The operation failed. Please try again.',
-    '请输入有效的链接地址':'Please enter a valid link URL',
-    '已应用格式':'Formatting applied',
-    '已取消格式刷':'Format painter cancelled',
-    '已复制格式，请选中需要应用格式的文字':'Formatting copied. Select the text to apply it to.',
-    '请通过工具栏插入文件或粘贴文字':'Use the toolbar to insert files, or paste text'
+    '请输入有效的链接地址':'Please enter a valid link URL'
 };
