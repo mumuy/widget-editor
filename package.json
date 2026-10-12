@@ -38,14 +38,12 @@
         "@rollup/plugin-node-resolve": "^16.0.3",
         "@rollup/plugin-terser": "^1.0.0",
         "rollup": "^4.63.1",
-        "rollup-plugin-import-css": "^4.2.1",
-        "@playwright/test": "^1.56.1"
+        "rollup-plugin-import-css": "^4.2.1"
     },
     "scripts": {
         "build": "rollup -c",
         "watch": "rollup -wc",
-        "start": "node scripts/server.mjs",
-        "test": "playwright test"
+        "start": "node scripts/server.mjs"
     },
     "homepage": "https://github.com/mumuy/widget-editor/",
     "directories": {},

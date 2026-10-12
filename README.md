@@ -12,6 +12,8 @@ npm run build
 npm start
 ```
 
+`npm ci` 安装构建依赖，编辑器运行时无需第三方库。
+
 打开 `http://localhost:3000` 查看演示页面。构建结果为 `dist/widget-editor.min.js`，组件样式包含在构建文件中。修改组件源码时，在另一个终端运行 `npm run watch`，保存后自动重新构建；演示页修改后刷新浏览器即可。
 
 构建使用与 [widget-code](https://github.com/mumuy/widget-code) 相同的 Rollup 插件顺序：`resolve → css → babel → terser`。组件 CSS 通过导入属性作为 CSSStyleSheet 打包，输出带版权头的 UMD 文件。Babel 使用 `preset-env` 与 runtime、类属性、导入属性语法及私有方法插件；为兼容插件声明的版本要求，使用 Babel 7 系列依赖。
@@ -112,7 +114,6 @@ widget-editor/
 │       └── theme/dark.css     # dark 主题
 ├── static/                    # 演示页面资源
 ├── dist/                      # 构建产物
-├── test/editor.spec.js        # 浏览器功能测试
 ├── scripts/server.mjs         # 静态开发服务器
 ├── index.html                 # 演示页面
 ├── babel.config.js            # ECMAScript 兼容配置
@@ -126,21 +127,13 @@ widget-editor/
 
 ```bash
 npm run build
-npx playwright install chromium
-npm test
 ```
 
-浏览器测试使用 Chromium，并自动启动开发服务器。若系统已有 Chromium，可设置 `CHROMIUM_PATH` 指向可执行文件，例如：
-
-```bash
-CHROMIUM_PATH=/usr/bin/chromium npm test
-```
-
-配置会自动检测 `/usr/bin/chromium`；其他位置可以显式指定。`npm ci` 安装的是构建及测试依赖，编辑器运行时仍不需要第三方库。
+构建完成后运行 `npm start`，打开演示页面，选中文字检查格式、标题、列表、链接及对齐操作；再检查格式刷、图片上传、表格插入和源码编辑，并确认导出的 HTML 与编辑内容一致。
 
 ## 浏览器与内容清理
 
-实现面向支持 Web Component、Shadow DOM、原生 dialog 及 contenteditable 的现代浏览器，可在 Chrome、Edge、Safari、Firefox 中进行验证。自动化测试覆盖 Chromium；其他浏览器仍需要实际验证，不保证各浏览器的编辑命令、光标及撤销行为完全一致。
+实现面向支持 Web Component、Shadow DOM、原生 dialog 及 contenteditable 的现代浏览器。使用 Chrome、Edge、Safari、Firefox 时，应实际验证编辑命令、光标及撤销行为。
 
 部分格式操作使用浏览器原生 `document.execCommand`。该接口已被标记为废弃，但仍用于这一简易实现；复杂文档协作、严格一致的跨浏览器编辑行为和高级表格编辑需要更完整的编辑模型。
 
