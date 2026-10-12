@@ -26,6 +26,13 @@ export default {
                 grid.className = 'emoji-grid';
                 grid.setAttribute('role','group');
                 grid.setAttribute('aria-label','选择表情');
+                let select = function(index){
+                    selected = emojis[index][0];
+                    Array.from(grid.children).forEach((button,current)=>{
+                        button.setAttribute('aria-pressed',String(current===index));
+                        button.tabIndex = current===index?0:-1;
+                    });
+                };
                 emojis.forEach(([value,label],index)=>{
                     let button = document.createElement('button');
                     button.type = 'button';
@@ -35,8 +42,7 @@ export default {
                     button.setAttribute('aria-label',label);
                     button.tabIndex = index===0?0:-1;
                     button.addEventListener('click',()=>{
-                        selected = value;
-                        dialog.querySelector('form').requestSubmit();
+                        select(index);
                     });
                     button.addEventListener('keydown',event=>{
                         let offsets = {ArrowLeft:-1,ArrowRight:1,ArrowUp:-8,ArrowDown:8};
@@ -44,14 +50,13 @@ export default {
                         if(offset){
                             event.preventDefault();
                             let next = Math.max(0,Math.min(emojis.length-1,index+offset));
-                            button.tabIndex = -1;
-                            grid.children[next].tabIndex = 0;
+                            select(next);
                             grid.children[next].focus({preventScroll:true});
-                            selected = emojis[next][0];
                         }
                     });
                     grid.appendChild(button);
                 });
+                select(0);
                 dialog.querySelector('.dialog-body').prepend(grid);
             },
             onSubmit(){

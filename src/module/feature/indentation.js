@@ -16,6 +16,7 @@ export default {
     'icon':indentIncrease,
     'type':'dropdown',
     'actionMenu':true,
+    'iconOnly':true,
     'options':[
         {'value':'increase','label':'增加缩进','icon':indentIncrease},
         {'value':'decrease','label':'减少缩进','icon':indentDecrease}

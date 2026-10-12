@@ -14,6 +14,7 @@ export default {
     'icon':icon,
     'type':'dropdown',
     'actionMenu':true,
+    'iconOnly':true,
     options(editor){
         return Array.from(new Set((editor.getAttribute('insert')||'').split(',').map(name=>name.trim().toLowerCase()))).map(name=>{
             let feature = features.find(feature=>feature.name===name);
