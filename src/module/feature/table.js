@@ -22,7 +22,7 @@ export default {
                     editor.notify('行数和列数必须是 1 到 10 之间的整数');
                     return false;
                 }
-                let html = '<table><tbody>';
+                let html = '<table>'+(values.header?'<thead>':'<tbody>');
                 for(let row=0;row<rows;row++){
                     let tag = row===0 && values.header ? 'th' : 'td';
                     html += '<tr>';
@@ -30,6 +30,9 @@ export default {
                         html += '<'+tag+'><br></'+tag+'>';
                     }
                     html += '</tr>';
+                    if(row===0&&values.header){
+                        html += '</thead><tbody>';
+                    }
                 }
                 html += '</tbody></table><p><br></p>';
                 editor.insertHTML(html);

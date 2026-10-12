@@ -1,7 +1,7 @@
 import sanitizeHTML,{escapeHTML} from './sanitize.js';
 
-const blockTags = new Set('p div h1 h2 h3 h4 h5 h6 ul ol li table tbody tr th td blockquote'.split(' '));
-const containerTags = new Set('div blockquote ul ol li table tbody tr th td'.split(' '));
+const blockTags = new Set('p div h1 h2 h3 h4 h5 h6 ul ol li table thead tbody tr th td blockquote'.split(' '));
+const containerTags = new Set('div blockquote ul ol li table thead tbody tr th td'.split(' '));
 
 export default function formatHTML(html){
     let template = document.createElement('template');

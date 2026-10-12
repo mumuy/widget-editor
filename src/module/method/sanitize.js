@@ -1,5 +1,5 @@
 // 仅保留工具栏支持的标签及编辑时需要的段落、换行；粘贴、源码及 API 共用此入口。
-const allowedTags = new Set('p div span br strong b em i h1 h2 h3 h4 h5 h6 ul ol li a img table tbody tr th td blockquote'.split(' '));
+const allowedTags = new Set('p div span br strong b em i h1 h2 h3 h4 h5 h6 ul ol li a img table thead tbody tr th td blockquote'.split(' '));
 const blockedTags = new Set('script style iframe object embed svg math form input button textarea select link meta base template'.split(' '));
 const styleRules = {
     'color':value=>/^(#[\da-f]{3,8}|rgba?\([\d\s.,%]+\)|[a-z]+)$/i.test(value),
