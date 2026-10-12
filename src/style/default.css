@@ -103,7 +103,7 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
 .tool-dropdown-button{
     gap: 6px;
     width: auto;
-    min-width: 98px;
+    min-width: 76px;
     padding: 0 7px;
     background: var(--field-background-color);
     border-color: var(--panel-border-color);

@@ -1,8 +1,5 @@
-import {fontSize as icon} from '../icon.js';
-
 export default {
     'name':'fontSize',
-    'icon':icon,
     'label':'文字大小',
     'type':'dropdown',
     'options':[12,14,16,18,20,24,28,32,48].map((value)=>{

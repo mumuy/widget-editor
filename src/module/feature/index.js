@@ -7,6 +7,7 @@ import link from './link.js';
 import image from './image.js';
 import bold from './bold.js';
 import italic from './italic.js';
+import underline from './underline.js';
 import source from './source.js';
 import alignment from './alignment.js';
 import fontSize from './fontSize.js';
@@ -15,5 +16,5 @@ import table from './table.js';
 import fontFamily from './fontFamily.js';
 import blockquote from './blockquote.js';
 
-export default [format,formatPainter,heading,fontFamily,fontSize,alignment,bold,italic,
+export default [format,formatPainter,heading,fontFamily,fontSize,alignment,bold,italic,underline,
     color,blockquote,orderedList,unorderedList,link,image,table,source];

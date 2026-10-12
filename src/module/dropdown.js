@@ -30,7 +30,7 @@ export default class EditorDropdown {
         let id = 'menu-'+feature.name;
         return `<div class="tool-dropdown" data-dropdown="${feature.name}">
             <button type="button" class="tool tool-dropdown-button${feature.iconOnly?' icon-only':''}" part="dropdown-trigger" data-action="${feature.name}" aria-label="${feature.label}" title="${feature.label}" aria-haspopup="listbox" aria-expanded="false" aria-controls="${id}">
-                ${renderIcon(feature.icon)}
+                ${feature.icon?renderIcon(feature.icon):''}
                 <span class="tool-label" ${feature.iconOnly?'hidden':''}></span>${renderIcon(arrow,true)}
             </button>
             <div class="tool-menu" part="dropdown-menu ${feature.name}-menu" id="${id}" role="listbox" aria-label="${feature.label}" popover="manual" hidden>
@@ -104,8 +104,8 @@ export default class EditorDropdown {
         let option = feature.options.find(option=>option.value===current);
         button.value = current;
         button.querySelector('.tool-label').textContent = option?option.label:feature.display?.(current)||feature.label;
-        let icon = option?.icon||feature.icon;
-        if(button._icon!==icon){
+        let icon = feature.icon&&(option?.icon||feature.icon);
+        if(icon&&button._icon!==icon){
             button.querySelector('.tool-icon').outerHTML = renderIcon(icon);
             button._icon = icon;
         }
