@@ -453,6 +453,8 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
 }
 .editor-dialog::backdrop{
     background: rgba(22,34,52,.35);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 .dialog-form{
     margin: 0;
