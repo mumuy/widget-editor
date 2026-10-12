@@ -75,7 +75,7 @@ customElements.whenDefined('widget-editor').then(function(){
 | --- | --- | --- |
 | 清除格式 | `format.js` | 清除所选文字的行内格式，保留段落结构 |
 | 格式刷 | `formatPainter.js` | 复制当前位置的字体、粗细、斜体、字号、颜色及文字装饰，再选择文字应用一次；按 Escape 取消 |
-| 标题 | `heading.js` | 正文及 H1～H6，下拉预览对应大小与粗细 |
+| 标题 | `heading.js` | 正文及 H1～H6，下拉预览对应大小与粗细；H1～H6 默认字号依次为 32、28、24、20、18、16 px，与字号选项一致 |
 | 字体 | `fontFamily.js` | 微软雅黑、宋体、黑体、楷体、仿宋、苹方、等线、华文及思源字体，选项预览对应字体 |
 | 块引用 | `blockquote.js` | 将选中段落设为引用，再次点击取消引用 |
 | 有序列表 | `orderedList.js` | 添加或取消有序列表 |
