@@ -17,15 +17,54 @@ export default class TableEditor {
         this.first = null;
         this.last = null;
         this.dragging = false;
+        this.shiftSelecting = false;
+        this.point = null;
+        this.dismissed = false;
         this.toolbar = document.createElement('div');
         this.toolbar.className = 'table-toolbar';
         this.toolbar.hidden = true;
         this.toolbar.setAttribute('role','toolbar');
         this.toolbar.setAttribute('aria-label','表格编辑');
-        this.toolbar.innerHTML = `<span class="table-selection"></span><div class="table-actions">${actions.map(action=>{
+        this.toolbar.setAttribute('popover','manual');
+        this.toolbar.innerHTML = `<div class="table-head"><span class="table-selection"></span><span class="table-help">拖动或 Shift 点击选格</span></div><div class="table-actions">${actions.map(action=>{
             return `<button type="button" data-table-action="${action[0]}" title="${action[1]}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${action[2]}"/></svg>${action[1]}</button>`;
-        }).join('')}</div><span class="table-help">拖动或 Shift 点击选格</span>`;
-        editor.shadowRoot.querySelector('.ft').before(this.toolbar);
+        }).join('')}</div>`;
+        editor.shadowRoot.appendChild(this.toolbar);
+        this.onOutside = event=>{
+            let path = event.composedPath();
+            if(!path.includes(this.toolbar)&&!path.some(node=>this.cell(node))){
+                this.dismiss();
+            }
+        };
+        this.onScroll = event=>{
+            if(!(event.target instanceof Node)||!this.toolbar.contains(event.target)){
+                this.dismiss();
+            }
+        };
+        this.onPointerUp = event=>{
+            if(!this.dragging){
+                return;
+            }
+            let cell = event.composedPath().find(node=>this.cell(node));
+            if(cell){
+                this.point = {x:event.clientX,y:event.clientY};
+            }
+            if(this.first!==this.last){
+                this.focus(this.last);
+            }
+            this.dragging = false;
+            this.paint();
+        };
+        this.onKey = event=>{
+            if(event.key==='Shift'){
+                this.shiftSelecting = event.type==='keydown';
+                if(this.shiftSelecting){
+                    this.hide();
+                }else if(this.first&&!this.dismissed){
+                    this.paint();
+                }
+            }
+        };
         this.toolbar.addEventListener('pointerdown',event=>{
             if(event.target.closest('button')){
                 editor.saveSelection();
@@ -44,12 +83,13 @@ export default class TableEditor {
             }
             let cell = this.cell(event.target);
             if(!cell){
-                this.clear();
+                this.dismiss();
                 return;
             }
             let first = event.shiftKey&&this.first?.closest('table')===cell.closest('table')?this.first:cell;
-            this.select(first,cell);
             this.dragging = !event.shiftKey;
+            this.point = {x:event.clientX,y:event.clientY};
+            this.select(first,cell);
             if(event.shiftKey){
                 event.preventDefault();
                 this.focus(cell);
@@ -66,21 +106,46 @@ export default class TableEditor {
             let cell = this.cell(event.target);
             if(cell&&cell!==this.last&&cell.closest('table')===this.first?.closest('table')){
                 event.preventDefault();
+                this.point = {x:event.clientX,y:event.clientY};
                 this.select(this.first,cell);
                 this.focus(cell);
             }
         });
-        editor.shadowRoot.addEventListener('pointerup',()=>{
-            if(this.dragging&&this.first!==this.last){
-                this.focus(this.last);
-            }
-            this.dragging = false;
-        });
         editor.content.addEventListener('keydown',event=>{
             if(event.key==='Escape'&&this.first){
-                this.clear();
+                this.dismiss();
+            }else if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Tab'].includes(event.key)){
+                this.dismissed = false;
+                this.point = null;
             }
         });
+        this.toolbar.addEventListener('keydown',event=>{
+            if(event.key==='Escape'){
+                event.preventDefault();
+                this.dismiss();
+                editor.restoreSelection();
+            }
+        });
+    }
+    connect(){
+        document.addEventListener('pointerdown',this.onOutside);
+        document.addEventListener('pointerup',this.onPointerUp);
+        document.addEventListener('keydown',this.onKey);
+        document.addEventListener('keyup',this.onKey);
+        window.addEventListener('scroll',this.onScroll,true);
+        window.addEventListener('resize',this.onScroll);
+        this.editor.shadowRoot.addEventListener('scroll',this.onScroll,true);
+    }
+    disconnect(){
+        this.dismiss();
+        this.shiftSelecting = false;
+        document.removeEventListener('pointerdown',this.onOutside);
+        document.removeEventListener('pointerup',this.onPointerUp);
+        document.removeEventListener('keydown',this.onKey);
+        document.removeEventListener('keyup',this.onKey);
+        window.removeEventListener('scroll',this.onScroll,true);
+        window.removeEventListener('resize',this.onScroll);
+        this.editor.shadowRoot.removeEventListener('scroll',this.onScroll,true);
     }
     cell(node){
         let cell = node?.closest?.('td,th');
@@ -99,12 +164,26 @@ export default class TableEditor {
         this.first = null;
         this.last = null;
         this.dragging = false;
+        this.point = null;
+        this.hide();
+    }
+    hide(){
+        if(this.toolbar.hidePopover&&this.toolbar.matches(':popover-open')){
+            this.toolbar.hidePopover();
+        }
         this.toolbar.hidden = true;
+    }
+    dismiss(){
+        this.dismissed = true;
+        this.clear();
     }
     select(first,last=first){
         let dragging = this.dragging;
+        let point = this.point;
         this.clear();
         this.dragging = dragging;
+        this.point = point;
+        this.dismissed = false;
         this.first = first;
         this.last = last;
         this.paint();
@@ -117,22 +196,47 @@ export default class TableEditor {
         }
         let {area} = selection;
         area.items.forEach(item=>item.cell.setAttribute('data-table-selected',''));
-        this.toolbar.hidden = false;
         this.toolbar.querySelector('.table-selection').textContent = area.items.length+' 个单元格';
         this.toolbar.querySelector('[data-table-action="merge"]').disabled = !area.complete||area.items.length<2;
         this.toolbar.querySelector('[data-table-action="split"]').disabled = !area.items.some(item=>item.rows>1||item.columns>1);
+        // 拖选结束后再显示，浮层不会挡住要选择的单元格。
+        if(!this.dragging&&!this.shiftSelecting){
+            this.show();
+        }
+    }
+    show(){
+        if(!this.editor.isConnected){
+            return;
+        }
+        this.toolbar.hidden = false;
+        if(this.toolbar.showPopover&&!this.toolbar.matches(':popover-open')){
+            this.toolbar.showPopover();
+        }
+        let cell = this.last.getBoundingClientRect();
+        let point = this.point||{x:cell.left,y:cell.bottom};
+        let rect = this.toolbar.getBoundingClientRect();
+        let width = document.documentElement.clientWidth;
+        let height = document.documentElement.clientHeight;
+        let left = Math.max(8,Math.min(point.x+12,width-rect.width-8));
+        let top = point.y+12;
+        if(top+rect.height>height-8){
+            top = point.y-rect.height-12;
+        }
+        this.toolbar.style.left = left+'px';
+        this.toolbar.style.top = Math.max(8,Math.min(top,height-rect.height-8))+'px';
     }
     refresh(){
         if(this.editor.source||this.first&&!this.editor.content.contains(this.first)){
             this.clear();
         }
-        if(this.editor.source){
+        if(this.editor.source||this.dismissed||this.dragging){
             return;
         }
         let cell = this.cell(this.editor.selectedElement());
         if(cell){
             let selection = this.bounds();
             if(!selection?.area?.items.some(item=>item.cell===cell)){
+                this.point = null;
                 this.select(cell);
             }else{
                 this.paint();
@@ -161,8 +265,10 @@ export default class TableEditor {
             return;
         }
         this.editor.history.record();
+        let point = this.point;
         this.editor.transaction(()=>{
             this.clear();
+            this.point = point;
             let cell;
             let row = area.top;
             let column = area.left;
