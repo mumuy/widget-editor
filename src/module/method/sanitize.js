@@ -97,7 +97,7 @@ export default function sanitizeHTML(html){
             if(tag==='td'||tag==='th'){
                 ['colspan','rowspan'].forEach(function(name){
                     let value = Number(node.getAttribute(name));
-                    if(Number.isInteger(value)&&value>1&&value<=10){
+                    if(Number.isInteger(value)&&value>1&&value<=(name==='colspan'?1000:65534)){
                         attributes[name] = value;
                     }
                 });

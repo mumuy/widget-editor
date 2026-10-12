@@ -132,6 +132,7 @@ export default function openDialog(editor,options){
     };
     editor.shadowRoot.appendChild(dialog);
     editor._dialog = dialog;
+    options.mount?.(dialog);
     dialog.showModal();
     return dialog;
 };
