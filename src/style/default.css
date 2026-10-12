@@ -14,7 +14,7 @@
     --muted-text-color: #8a95a4;
     --field-background-color: #fff;
     --table-header-background: #f3f6fa;
-    --focus-color: #86b7fe;
+    --focus-color: #8a95a4;
     --tooltip-background-color: #343b48;
     --tooltip-text-color: #fff;
     --editor-height: 420px;
@@ -29,6 +29,7 @@
 }
 button,input,select,textarea{
     font: inherit;
+    outline: none;
 }
 button,select{
     cursor: pointer;
@@ -37,9 +38,8 @@ button:disabled,input:disabled,select:disabled{
     cursor: not-allowed;
     opacity: .4;
 }
-button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{
-    outline: 2px solid var(--focus-color);
-    outline-offset: 2px;
+input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields .field input:focus,.field select:focus{
+    border-color: var(--focus-color);
 }
 .mod-panel{
     display: flex;
@@ -279,11 +279,7 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
 }
 .color-swatch[aria-pressed="true"]{
     box-shadow: inset 0 0 0 2px var(--panel-background-color);
-    outline: 1px solid var(--button-active-color);
-    outline-offset: 1px;
-}
-.color-swatch:focus-visible{
-    outline-offset: 1px;
+    border-color: var(--button-active-color);
 }
 .color-form{
     margin-top: 10px;
@@ -338,9 +334,6 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
     word-break: break-word;
     overflow-wrap: anywhere;
     outline: none;
-}
-.editor-content:focus{
-    box-shadow: inset 0 0 0 2px var(--button-active-background);
 }
 .editor-placeholder{
     position: absolute;
@@ -545,9 +538,6 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
     outline: none;
     resize: vertical;
 }
-.editor-source:focus{
-    box-shadow: inset 0 0 0 2px var(--button-active-background);
-}
 .mod-panel .ft{
     display: flex;
     align-items: center;
@@ -714,8 +704,7 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
     border-color: var(--button-active-color);
 }
 .table-grid-cell:focus-visible{
-    outline: 2px solid var(--button-active-color);
-    outline-offset: 1px;
+    border-color: var(--button-active-color);
 }
 .table-dialog .dialog-fields .field{
     display: flex;

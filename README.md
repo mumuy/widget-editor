@@ -212,6 +212,7 @@ HTML 输出中，纯文本单元格保持在一行，例如 `<td>文字</td>`；
 widget-editor{
     --panel-border-color: #dce2e9;
     --button-active-color: #2876df;
+    --focus-color: #8a95a4;
     --tooltip-background-color: #343b48;
     --tooltip-text-color: #fff;
     --editor-padding-x: 20px;
