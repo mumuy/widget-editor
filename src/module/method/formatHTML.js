@@ -1,7 +1,7 @@
 import sanitizeHTML,{escapeHTML} from './sanitize.js';
 
-const blockTags = new Set('p div h1 h2 h3 h4 h5 h6 ul ol li table thead tbody tfoot tr th td blockquote pre hr'.split(' '));
-const containerTags = new Set('div blockquote ul ol li table thead tbody tfoot tr th td'.split(' '));
+const blockTags = new Set('p div h1 h2 h3 h4 h5 h6 ul ol li table tbody tr th td blockquote'.split(' '));
+const containerTags = new Set('div blockquote ul ol li table tbody tr th td'.split(' '));
 
 export default function formatHTML(html){
     let template = document.createElement('template');
@@ -14,7 +14,7 @@ export default function formatHTML(html){
     };
     let serialize = function(node,level){
         let indent = '    '.repeat(level);
-        // 行内内容及 pre / code 不插入换行，保留文字之间原有的空白。
+        // 行内内容不插入换行，保留文字之间原有的空白。
         if(!containerTags.has(node.localName) || !blockOnly(node)){
             return indent+node.outerHTML;
         }

@@ -368,17 +368,9 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
     background: var(--toolbar-background-color);
     border-left: 3px solid var(--panel-border-color);
 }
-.editor-content pre,.editor-content code,.editor-source{
+.editor-source{
     font-family: Menlo,Monaco,Consolas,'Andale Mono','lucida console','Courier New',monospace;
     tab-size: 4;
-}
-.editor-content pre{
-    padding: 14px 16px;
-    background: var(--toolbar-background-color);
-    white-space: pre-wrap;
-    border-radius: 4px;
-}
-.editor-source{
     display: block;
     width: 100%;
     min-height: var(--editor-height);

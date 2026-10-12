@@ -347,7 +347,7 @@ class WidgetEditor extends HTMLElement {
     updatePlaceholder(){
         // 提示独立于编辑内容，空标题、列表等结构也应保留自己的布局。
         let text = this.content.textContent.replace(/[\s\u200b-\u200d\ufeff]/g,'');
-        let structure = this.content.querySelector('h1,h2,h3,h4,h5,h6,ul,ol,li,img,table,hr,blockquote,pre');
+        let structure = this.content.querySelector('h1,h2,h3,h4,h5,h6,ul,ol,li,img,table,blockquote');
         let blocks = Array.from(this.content.querySelectorAll('p,div')).filter(node=>!node.querySelector('p,div'));
         let lines = this.content.querySelectorAll('br').length;
         this.placeholder.hidden = this.source||!!text||!!structure||blocks.length>1||lines>1;
