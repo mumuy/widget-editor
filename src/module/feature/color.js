@@ -6,13 +6,13 @@ export default {
     'label':'文字颜色',
     'type':'color',
     render(){
-        // 第一行使用灰阶，彩色保持高饱和度，通过明暗及色相拉开差异。
+        // 灰阶等间隔，同列保持色相，按行降低亮度，后两行保持高饱和度。
         let colors = [
-            ['#ffffff','#eeeeee','#cccccc','#aaaaaa','#888888','#666666','#555555','#333333','#222222','#000000'],
-            ['#f87171','#fb923c','#fbbf24','#facc15','#4ade80','#2dd4bf','#38bdf8','#60a5fa','#a78bfa','#f472b6'],
-            ['#ff0000','#ff8000','#ffbf00','#ffff00','#00b050','#00bfa5','#00b8e6','#0066ff','#8800ff','#ff0080'],
-            ['#ff3838','#ff7012','#ed9b00','#d7db00','#00d94b','#00dfb2','#00c8fa','#2457ff','#a622ff','#ff1e98'],
-            ['#d00000','#d95600','#c88b00','#b0a700','#009d24','#00aa87','#008fba','#003fd1','#8200d4','#d60068']
+            ['#ffffff','#e3e3e3','#c6c6c6','#aaaaaa','#8e8e8e','#717171','#555555','#393939','#1c1c1c','#000000'],
+            ['#ff4d4d','#ffa64d','#ffd24d','#ffff4d','#4dff88','#4dffe1','#4dd2ff','#4d88ff','#b54dff','#ff4da6'],
+            ['#db1f1f','#db7d1f','#dbac1f','#dbdb1f','#1fdb5e','#1fdbbc','#1facdb','#1f5edb','#8d1fdb','#db1f7d'],
+            ['#b80000','#b85c00','#b88a00','#b8b800','#00b83d','#00b899','#008ab8','#003db8','#6b00b8','#b8005c'],
+            ['#940000','#944a00','#946f00','#949400','#009431','#00947b','#006f94','#003194','#560094','#94004a']
         ].flat();
         return `<div class="tool-dropdown" data-dropdown="color">
             <button type="button" class="tool tool-color" data-action="color" title="文字颜色" aria-label="文字颜色" aria-haspopup="dialog" aria-expanded="false" aria-controls="menu-color">${renderIcon(icon)}<span class="color-indicator" aria-hidden="true"></span></button>
