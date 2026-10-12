@@ -7,10 +7,6 @@ export const indentIncrease = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="
     <path d="M3 4h18M11 9h10M11 15h10M3 20h18M3 8l4 4-4 4"/>
 </svg>`;
 
-export const indentDecrease = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M3 4h18M11 9h10M11 15h10M3 20h18M7 8l-4 4 4 4"/>
-</svg>`;
-
 export const emoji = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="12" cy="12" r="9"/><path d="M8 14a4 4 0 0 0 8 0M8 9h.01M16 9h.01"/>
 </svg>`;

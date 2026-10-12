@@ -1,4 +1,4 @@
-import {indentIncrease,indentDecrease} from '../icon.js';
+import {indentIncrease as icon} from '../icon.js';
 
 function blocks(editor){
     let range = editor.getRange();
@@ -10,37 +10,37 @@ function blocks(editor){
     return selected.filter(block=>!selected.some(other=>other!==block&&block.contains(other)));
 }
 
+function indented(block){
+    return parseFloat(window.getComputedStyle(block).textIndent)>0;
+}
+
 export default {
     'name':'indentation',
     'label':'缩进',
-    'icon':indentIncrease,
-    'type':'dropdown',
-    'actionMenu':true,
-    'iconOnly':true,
-    'options':[
-        {'value':'increase','label':'增加缩进','icon':indentIncrease},
-        {'value':'decrease','label':'减少缩进','icon':indentDecrease}
-    ],
-    disabled(editor,value){
-        let selected = blocks(editor);
-        return value==='increase'?selected.length>0&&selected.every(block=>block.style.textIndent==='2em'):
-            !selected.some(block=>block.style.textIndent==='2em');
-    },
-    execute(editor,value){
-        if(!['increase','decrease'].includes(value)||this.disabled(editor,value)){
-            return;
-        }
+    'icon':icon,
+    'type':'button',
+    execute(editor){
         editor.transaction(()=>{
-            blocks(editor).forEach(block=>{
-                if(value==='increase'){
-                    block.style.textIndent = '2em';
-                }else{
+            let selected = blocks(editor);
+            let remove = selected.length>0&&selected.every(indented);
+            selected.forEach(block=>{
+                if(remove){
                     block.style.removeProperty('text-indent');
+                    // 对继承的缩进使用零值覆盖，只取消当前段落的缩进。
+                    if(indented(block)){
+                        block.style.textIndent = '0px';
+                    }
                     if(!block.style.length){
                         block.removeAttribute('style');
                     }
+                }else{
+                    block.style.textIndent = '2em';
                 }
             });
         });
+    },
+    active(editor){
+        let selected = blocks(editor);
+        return selected.length>0&&selected.every(indented);
     }
 };
