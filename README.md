@@ -66,7 +66,7 @@ editor.removeAttribute('insert');
 
 ### 界面语言
 
-默认使用简体中文，通过 `language` 属性选择繁体中文或英语：
+默认使用简体中文，通过 `language` 属性选择繁体中文或英语。`zh-HK` 使用香港常用的界面用语：
 
 ```html
 <widget-editor language="zh-CN"></widget-editor>
