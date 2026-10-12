@@ -70,7 +70,7 @@ class WidgetEditor extends HTMLElement {
                     previous.remove();
                 }
             }else if(group){
-                this.toolbar.querySelector('[data-action="source"]').before(group);
+                this.toolbar.appendChild(group);
             }
             let options = feature.options;
             if(this._dialog?.dataset.insert&&!options.some(option=>option.value===this._dialog.dataset.insert)){
@@ -139,8 +139,10 @@ class WidgetEditor extends HTMLElement {
         }
     }
     toolbarHTML(){
-        let controls = [{name:'undo',label:'撤销',icon:undoIcon,execute:editor=>editor.history.move(-1)},
-            {name:'redo',label:'重做',icon:redoIcon,execute:editor=>editor.history.move(1)},...features];
+        let controls = [features.find(feature=>feature.name==='source'),
+            {name:'undo',label:'撤销',icon:undoIcon,execute:editor=>editor.history.move(-1)},
+            {name:'redo',label:'重做',icon:redoIcon,execute:editor=>editor.history.move(1)},
+            ...features.filter(feature=>feature.name!=='source')];
         this.features = controls.map(feature=>typeof feature.options==='function'?{...feature,options:feature.options(this)}:feature);
         return this.features.map(function(feature){
             let attributes = `data-action="${feature.name}" title="${feature.label}" aria-label="${feature.label}"`;

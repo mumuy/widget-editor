@@ -85,7 +85,7 @@ customElements.whenDefined('widget-editor').then(function(){
 | 块引用 | `blockquote.js` | 将选中段落设为引用，再次点击取消引用 |
 | 有序列表 | `orderedList.js` | 添加或取消有序列表 |
 | 无序列表 | `unorderedList.js` | 添加或取消无序列表 |
-| 链接 | `link.js` | 插入链接；光标位于链接内时可修改地址和文字 |
+| 超链接 | `link.js` | 插入超链接；光标位于链接内时可修改地址和文字 |
 | 插入图片 | `image.js` | 通过 URL 或上传文件插入图片 |
 | 插入视频 | `video.js` | 通过 URL 或上传文件插入带播放控件的视频 |
 | 插入音频 | `audio.js` | 通过 URL 或上传文件插入带播放控件的音频 |

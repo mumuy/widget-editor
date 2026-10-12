@@ -16,4 +16,4 @@ import indentation from './indentation.js';
 import fontFamily from './fontFamily.js';
 import blockquote from './blockquote.js';
 
-export default [format,formatPainter,heading,fontFamily,fontSize,alignment,indentation,bold,italic,underline,color,blockquote,orderedList,unorderedList,link,insert,source];
+export default [source,heading,fontFamily,fontSize,alignment,indentation,bold,italic,underline,color,blockquote,orderedList,unorderedList,link,format,formatPainter,insert];

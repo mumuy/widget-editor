@@ -4,7 +4,7 @@ import {safeURL,escapeHTML} from '../method/sanitize.js';
 export default {
     'name':'link',
     'icon':icon,
-    'label':'插入链接',
+    'label':'超链接',
     'type':'button',
     execute(editor){
         let range = editor.getRange();
@@ -16,7 +16,7 @@ export default {
         let editing = !!($link && (!range || range.collapsed));
         let text = editing ? $link.textContent : (range ? range.toString() : '');
         editor.openDialog({
-            'title':editing ? '编辑链接' : '插入链接',
+            'title':editing ? '编辑超链接' : '超链接',
             'fields':[
                 {'name':'url','label':'链接地址','type':'text','value':$link ? $link.getAttribute('href') : '',
                     'required':true,'placeholder':'https://example.com'},
