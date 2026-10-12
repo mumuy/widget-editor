@@ -47,7 +47,8 @@ class WidgetEditor extends HTMLElement {
         if(!this.content){
             return;
         }
-        this.content.dataset.placeholder = this.getAttribute('placeholder')||'在这里开始写作…';
+        this.placeholder.textContent = this.getAttribute('placeholder')||'在这里开始写作…';
+        this.updatePlaceholder();
         let height = Number(this.getAttribute('height'));
         this.style.setProperty('--editor-height',(height>=160&&height<=2000?height:420)+'px');
     }
@@ -114,11 +115,13 @@ class WidgetEditor extends HTMLElement {
             <div class="toolbar hd" role="toolbar" aria-label="文本格式工具栏">${toolbar}</div>
             <div class="bd">
                 <div class="editor-content" contenteditable="true" role="textbox" aria-label="富文本内容" aria-multiline="true" spellcheck="true"></div>
+                <div class="editor-placeholder" aria-hidden="true" hidden></div>
                 <textarea class="editor-source" aria-label="HTML 源代码" spellcheck="false" hidden></textarea>
             </div>
             <div class="ft"><span class="mode-label">可视化编辑</span><span class="notice" role="status" aria-live="polite"></span><span class="word-count">0 字</span></div>
         </div>`;
         this.content = this.shadowRoot.querySelector('.editor-content');
+        this.placeholder = this.shadowRoot.querySelector('.editor-placeholder');
         this.sourceArea = this.shadowRoot.querySelector('.editor-source');
         this.toolbar = this.shadowRoot.querySelector('.toolbar');
     }
@@ -185,7 +188,7 @@ class WidgetEditor extends HTMLElement {
             }
         });
         this.sourceArea.addEventListener('input',()=>{
-            this.shadowRoot.querySelector('.word-count').textContent = this.text.length+' 字';
+            this.shadowRoot.querySelector('.word-count').textContent = this.text.replace(/\s/g,'').length+' 字';
         });
     }
     execute(name,value,event){
@@ -331,15 +334,24 @@ class WidgetEditor extends HTMLElement {
             this.sourceArea.focus({preventScroll:true});
         }
         this.shadowRoot.querySelector('.mode-label').textContent = this.source?'HTML 源代码':'可视化编辑';
+        this.updatePlaceholder();
         this.updateToolbar();
+    }
+    updatePlaceholder(){
+        // 提示独立于编辑内容，空标题、列表等结构也应保留自己的布局。
+        let text = this.content.textContent.replace(/[\s\u200b-\u200d\ufeff]/g,'');
+        let structure = this.content.querySelector('h1,h2,h3,h4,h5,h6,ul,ol,li,img,table,hr,blockquote,pre');
+        let blocks = Array.from(this.content.querySelectorAll('p,div')).filter(node=>!node.querySelector('p,div'));
+        let lines = this.content.querySelectorAll('br').length;
+        this.placeholder.hidden = this.source||!!text||!!structure||blocks.length>1||lines>1;
     }
     update(record=true,emit=true){
         this.content.querySelectorAll('a[href]').forEach(link=>{
             link.setAttribute('target','_blank');
             link.setAttribute('rel','noopener noreferrer');
         });
-        this.content.classList.toggle('is-empty',!this.content.textContent.trim()&&!this.content.querySelector('img,table,hr'));
-        this.shadowRoot.querySelector('.word-count').textContent = this.text.length+' 字';
+        this.updatePlaceholder();
+        this.shadowRoot.querySelector('.word-count').textContent = this.text.replace(/\s/g,'').length+' 字';
         if(record){
             this.history.record();
         }
