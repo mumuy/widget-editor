@@ -298,6 +298,13 @@
 .mod-tabs widget-editor{
     display: block;
 }
+.mod-tabs .insert-demo-note{
+    margin: 0;
+    padding: 0 20px 16px;
+    color: #999;
+    font-size: 12px;
+    line-height: 1.6;
+}
 .github-button{
     display: inline-flex;
     align-items: center;
@@ -324,5 +331,8 @@
 @media screen and (max-width: 640px) {
     .mod-tabs .panel{
         padding: 10px;
+    }
+    .mod-tabs .insert-demo-note{
+        padding: 0 10px 12px;
     }
 }

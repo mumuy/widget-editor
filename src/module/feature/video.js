@@ -6,7 +6,7 @@ import openUpload from '../method/upload.js';
 export default {
     'name':'video',
     'icon':icon,
-    'label':'上传视频',
+    'label':'插入视频',
     'type':'button',
     execute(editor){
         openUpload(editor,{
@@ -17,9 +17,9 @@ export default {
             'accept':'video/mp4,video/webm,video/ogg,.m4v,.ogv',
             'error':'请选择 MP4、WebM 或 Ogg 视频',
             'field':{'name':'title','label':'视频描述','type':'text','placeholder':'留空时使用文件名'},
-            html(source,file,values){
-                let title = escapeHTML(String(values.title||'').trim()||file.name);
-                return '<video src="'+source+'" title="'+title+'" controls preload="metadata" playsinline></video><p><br></p>';
+            html(source,values){
+                let title = escapeHTML(String(values.title||'').trim()||values.name);
+                return '<video src="'+escapeHTML(source)+'" title="'+title+'" controls preload="metadata" playsinline></video><p><br></p>';
             }
         });
     }

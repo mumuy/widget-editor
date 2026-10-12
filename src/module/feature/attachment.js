@@ -6,7 +6,7 @@ import openUpload from '../method/upload.js';
 export default {
     'name':'attachment',
     'icon':icon,
-    'label':'上传附件',
+    'label':'插入附件',
     'type':'button',
     bind(editor){
         editor.content.addEventListener('click',event=>{
@@ -20,6 +20,8 @@ export default {
             let download = document.createElement('a');
             download.href = href;
             download.download = fileName(link.getAttribute('download'));
+            download.target = '_blank';
+            download.rel = 'noopener noreferrer';
             download.hidden = true;
             editor.shadowRoot.appendChild(download);
             download.click();
@@ -32,10 +34,10 @@ export default {
             'kind':'attachment',
             'size':20,
             'field':{'name':'text','label':'显示文字','type':'text','placeholder':'留空时使用文件名'},
-            html(source,file,values){
-                let name = escapeHTML(fileName(file.name));
-                let text = escapeHTML(String(values.text||'').trim()||file.name);
-                return '<a href="'+source+'" download="'+name+'">'+text+'</a>';
+            html(source,values){
+                let name = escapeHTML(fileName(values.name));
+                let text = escapeHTML(String(values.text||'').trim()||values.name);
+                return '<a href="'+escapeHTML(source)+'" download="'+name+'">'+text+'</a>';
             }
         });
     }

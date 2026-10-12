@@ -47,8 +47,7 @@ class WidgetEditor extends HTMLElement {
         this.dropdown?.disconnect();
         this.table?.disconnect();
         document.removeEventListener('selectionchange',this._onSelection);
-        this._dialog?.remove();
-        this._dialog = null;
+        this._dialog?.dismiss();
     }
     attributeChangedCallback(){
         if(!this.content){
@@ -70,6 +69,7 @@ class WidgetEditor extends HTMLElement {
             this._pendingValue = String(value||'');
             return;
         }
+        this._dialog?.dismiss();
         this.content.innerHTML = sanitizeHTML(value);
         this.sourceArea.value = formatHTML(this.content.innerHTML);
         this.selection.range = null;
@@ -190,7 +190,7 @@ class WidgetEditor extends HTMLElement {
         });
         this.content.addEventListener('drop',event=>{
             event.preventDefault();
-            this.notify('请通过工具栏上传图片或粘贴文字');
+            this.notify('请通过工具栏插入文件或粘贴文字');
         });
         this.shadowRoot.addEventListener('keydown',event=>{
             if(event.key==='Escape'&&this.painter){
@@ -337,6 +337,7 @@ class WidgetEditor extends HTMLElement {
         }
     }
     toggleSource(){
+        this._dialog?.dismiss();
         this.dropdown.close();
         this.cancelPainter();
         if(this.source){

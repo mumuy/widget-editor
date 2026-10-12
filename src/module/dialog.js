@@ -6,8 +6,7 @@ export default function openDialog(editor,options){
     }
     editor.saveSelection();
     if(editor._dialog){
-        editor._dialog.close();
-        editor._dialog.remove();
+        editor._dialog.dismiss();
     }
     let dialog = document.createElement('dialog');
     dialog.className = 'editor-dialog';
@@ -77,6 +76,7 @@ export default function openDialog(editor,options){
         finished = true;
         dialog.close();
         dialog.remove();
+        options.onClose?.();
         if(editor._dialog===dialog){
             editor._dialog = null;
             if(editor.isConnected&&!editor.source){
@@ -84,11 +84,17 @@ export default function openDialog(editor,options){
             }
         }
     };
+    dialog.dismiss = finish;
     dialog.querySelector('.dialog-close').onclick = finish;
     dialog.querySelector('.dialog-cancel').onclick = finish;
     dialog.addEventListener('cancel',function(event){
         event.preventDefault();
         finish();
+    });
+    dialog.addEventListener('close',function(){
+        if(!dialog.open&&(options.keepOpen||!submitting)){
+            finish();
+        }
     });
     form.onsubmit = async function(event){
         event.preventDefault();
@@ -105,7 +111,9 @@ export default function openDialog(editor,options){
                 field.type==='checkbox' ? input.checked : input.value;
         });
         // 先解除模态层的焦点限制，编辑命令才能恢复到原来的选区。
-        dialog.close();
+        if(!options.keepOpen){
+            dialog.close();
+        }
         try{
             let success = await options.onSubmit(values);
             if(!current()){
@@ -113,14 +121,18 @@ export default function openDialog(editor,options){
                 return;
             }
             if(success===false){
-                dialog.showModal();
+                if(!dialog.open){
+                    dialog.showModal();
+                }
             }else{
                 finish();
             }
         }catch(error){
             if(current()){
                 editor.notify('操作失败，请重试');
-                dialog.showModal();
+                if(!dialog.open){
+                    dialog.showModal();
+                }
             }else{
                 finish();
             }

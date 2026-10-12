@@ -59,3 +59,13 @@ export function safeDataURL(value,kind){
 export function fileName(value){
     return String(value||'').replace(/[\u0000-\u001f\u007f/\\]/g,'').trim().slice(0,255)||'附件';
 }
+
+export function urlFileName(value,fallback){
+    try{
+        let url = new URL(value,document.baseURI);
+        let name = /^https?:$/.test(url.protocol)?url.pathname.split('/').pop():'';
+        return name?fileName(decodeURIComponent(name)):fallback;
+    }catch(error){
+        return fallback;
+    }
+}

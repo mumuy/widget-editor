@@ -6,7 +6,7 @@ import openUpload from '../method/upload.js';
 export default {
     'name':'image',
     'icon':icon,
-    'label':'上传图片',
+    'label':'插入图片',
     'type':'button',
     execute(editor){
         openUpload(editor,{
@@ -17,8 +17,8 @@ export default {
             'accept':'image/png,image/jpeg,image/gif,image/webp',
             'error':'请选择 PNG、JPEG、GIF 或 WebP 图片',
             'field':{'name':'alt','label':'图片描述','type':'text','placeholder':'图片的文字说明'},
-            html(source,file,values){
-                return '<img src="'+source+'" alt="'+escapeHTML(String(values.alt||''))+'">';
+            html(source,values){
+                return '<img src="'+escapeHTML(source)+'" alt="'+escapeHTML(String(values.alt||''))+'">';
             }
         });
     }

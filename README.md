@@ -81,10 +81,10 @@ customElements.whenDefined('widget-editor').then(function(){
 | 有序列表 | `orderedList.js` | 添加或取消有序列表 |
 | 无序列表 | `unorderedList.js` | 添加或取消无序列表 |
 | 链接 | `link.js` | 插入链接；光标位于链接内时可修改地址和文字 |
-| 图片上传 | `image.js` | 从本地选择图片并插入 |
-| 视频上传 | `video.js` | 从本地选择视频，插入带播放控件的视频 |
-| 音频上传 | `audio.js` | 从本地选择音频，插入带播放控件的音频 |
-| 附件上传 | `attachment.js` | 从本地选择文件，插入带文件名的下载链接 |
+| 插入图片 | `image.js` | 通过 URL 或上传文件插入图片 |
+| 插入视频 | `video.js` | 通过 URL 或上传文件插入带播放控件的视频 |
+| 插入音频 | `audio.js` | 通过 URL 或上传文件插入带播放控件的音频 |
+| 插入附件 | `attachment.js` | 通过 URL 或上传文件插入下载链接 |
 | 加粗 | `bold.js` | 切换加粗 |
 | 斜体 | `italic.js` | 切换斜体 |
 | 下划线 | `underline.js` | 切换下划线，支持 Ctrl / Command + U |
@@ -100,9 +100,52 @@ customElements.whenDefined('widget-editor').then(function(){
 
 表格弹窗中移动鼠标预览行列数，点击格子插入，也可使用方向键选择、回车确认。勾选「第一行作为表头」时生成 `thead`，其余行放入 `tbody`。点击编辑区内的单元格，或拖选结束后，在鼠标附近浮动显示表格工具栏；窗口边缘自动调整位置，浮层不占用编辑框空间。可在上方或下方插行、左侧或右侧插列，也可删除选中区域占据的行列。拖动或按住 Shift 点击选择连续区域；同一表头、表体或表尾内的完整矩形可合并，单元格内容按行保留，拆分时内容保留在左上角。合并后的跨行、跨列结构也支持行列增删，操作可撤销、重做。点击外部、滚动、调整窗口或按 Escape 关闭工具栏；使用方向键移动光标到单元格时，工具栏定位到该单元格附近。选格标记不会写入 HTML 输出或历史记录。
 
-上传弹窗共用图片上传的交互，可以设置描述或附件的显示文字。图片支持 PNG、JPEG、GIF、WebP，最大 5 MB；视频支持 MP4、WebM、Ogg，最大 50 MB；音频支持 MP3、WAV、Ogg、M4A、AAC、FLAC、WebM，最大 20 MB；附件支持任意文件，最大 20 MB。大小限制在各自功能模块的 `size` 中调整。
+四个插入弹窗均提供「URL」和「上传文件」标签页，默认使用 URL，支持方向键、Home、End 切换。URL 页可以填写 HTTP/HTTPS 地址或相对地址；上传文件页选择文件后点击插入，触发 `upload` 事件。描述或显示文字在两个页之间保留。文件上传前检查类型和大小：图片支持 PNG、JPEG、GIF、WebP，最大 5 MB；视频支持 MP4、WebM、Ogg，最大 50 MB；音频支持 MP3、WAV、Ogg、M4A、AAC、FLAC、WebM，最大 20 MB；附件支持任意文件，最大 20 MB。大小限制在各自功能模块的 `size` 中调整。
 
-文件通过 FileReader 转为 data URL 并存入 HTML，保存内容时也会包含文件数据。视频和音频使用原生播放控件，默认仅加载元数据，不自动播放；能否播放取决于浏览器对文件编码的支持。附件使用 `download` 保存原文件名，数据类型统一为 `application/octet-stream`。HTML 输出、源码往返和撤销重做会保留这些内容。项目未包含远程文件存储、鉴权或服务端上传接口。
+上传由调用方处理，组件保存 `onUploadComplete(url)` 返回的地址，并插入打开弹窗前的选区。上传过程中弹窗保持打开、显示进度，输入及重复提交暂时禁用；失败后显示错误并允许重试。取消、关闭、切换源码、替换内容或移除组件后，本次回调失效；重复的完成、错误回调也会忽略。
+
+`upload` 事件会冒泡并可跨越 Shadow DOM，`detail` 包含：
+
+| 字段 | 说明 |
+| --- | --- |
+| `file` | 用户选择的原始 `File` |
+| `type` | `image`、`video`、`audio` 或 `attachment` |
+| `onUploadComplete(url)` | 上传成功后传入地址，组件校验并插入内容 |
+| `onUploadError(err)` | 传入 `Error`、错误消息或包含 `message` 的对象，显示错误并允许重试 |
+| `onProgress(percent)` | 更新 0～100 的进度，超出范围会限制到边界 |
+
+例如对接自己的上传接口，假设响应 JSON 为 `{ "url": "https://example.com/uploads/file.png" }`：
+
+```javascript
+let $editor = document.querySelector('widget-editor');
+$editor.addEventListener('upload',function(event){
+    let {file,onUploadComplete,onUploadError,onProgress} = event.detail;
+    let request = new XMLHttpRequest();
+    request.open('POST','/api/upload');
+    request.responseType = 'json';
+    request.upload.onprogress = function(event){
+        if(event.lengthComputable){
+            onProgress(event.loaded/event.total*100);
+        }
+    };
+    request.onload = function(){
+        if(request.status>=200&&request.status<300&&request.response?.url){
+            onUploadComplete(request.response.url);
+        }else{
+            onUploadError(request.response?.message||'上传失败，请重试');
+        }
+    };
+    request.onerror = ()=>onUploadError('网络错误，请重试');
+    request.onabort = ()=>onUploadError('上传已取消');
+    let data = new FormData();
+    data.append('file',file);
+    request.send(data);
+});
+```
+
+演示页在组件外监听 `upload`，用 FileReader 读取本地文件并调用回调，文件不会发送到服务器。正式使用时替换为自己的上传接口；组件运行时只管理弹窗、事件和插入结果。
+
+视频和音频使用原生播放控件，默认仅加载元数据，不自动播放；能否播放取决于浏览器对文件编码的支持。附件文件页保留原文件名，URL 页从地址末尾提取文件名；显示文字可另行设置。跨域附件的下载行为和文件名由浏览器及文件服务的下载响应头决定。HTML 输出、源码往返和撤销重做会保留媒体及下载链接。
 
 字体使用系统安装的字体，未安装时按字体列表回退。字体样式会保留在输出 HTML、源码编辑和格式刷中。颜色面板提供 50 个预设色块，第一行灰阶由白到黑均匀变化，后四行每列固定色系，逐行由浅到深，后两行保持高饱和度，去除过浅及过深的彩色，也支持输入六位 HEX 色值（如 `#336699`），输入过程中保持焦点和编辑器原选区；Escape 关闭面板而不修改内容。选中的文字颜色在 `value`、`getHTML()`、源码和 `change` 事件中统一输出六位 HEX（如 `#000000`），带透明度的输入颜色会保留透明度。可通过 `::part(color-menu)` 和 `::part(color-swatch)` 调整颜色面板。
 
@@ -125,7 +168,7 @@ widget-editor/
 │   │       ├── formatHTML.js  # 安全的 HTML 源码排版
 │   │       ├── sanitize.js    # HTML、链接及图片地址清理
 │   │       ├── selection.js   # 选区处理
-│   │       └── upload.js      # 通用上传弹窗及文件读取
+│   │       └── upload.js      # URL/文件标签页、上传事件及回调
 │   └── style/
 │       └── default.css        # 组件样式
 ├── static/                    # 演示页面资源
@@ -169,7 +212,7 @@ widget-editor::part(dropdown-option-selected){
 npm run build
 ```
 
-构建完成后运行 `npm start`，打开演示页面，选中文字检查格式、标题、列表、链接及对齐操作；再检查格式刷、图片上传、表格插入和源码编辑，并通过 `value` 或 `getHTML()` 读取编辑后的 HTML。
+构建完成后运行 `npm start`，打开演示页面，选中文字检查格式、标题、列表、链接及对齐操作；再检查格式刷、四种文件的 URL 插入及上传回调、表格插入和源码编辑，并通过 `value` 或 `getHTML()` 读取编辑后的 HTML。
 
 ## 浏览器与内容清理
 
