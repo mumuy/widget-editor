@@ -1,4 +1,4 @@
-import icon from '../../image/image.svg';
+import {image as icon} from '../icon.js';
 import {escapeHTML} from '../method/sanitize.js';
 
 export default {

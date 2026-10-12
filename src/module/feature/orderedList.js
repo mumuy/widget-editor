@@ -1,4 +1,4 @@
-import icon from '../../image/orderedList.svg';
+import {orderedList as icon} from '../icon.js';
 
 export default {
     'name':'orderedList',

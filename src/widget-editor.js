@@ -4,9 +4,7 @@ import sanitizeHTML,{escapeHTML} from './module/method/sanitize.js';
 import EditorHistory from './module/history.js';
 import openDialog from './module/dialog.js';
 import EditorDropdown from './module/dropdown.js';
-import undoIcon from './image/undo.svg';
-import redoIcon from './image/redo.svg';
-import formatIcon from './image/formatHTML.svg';
+import {renderIcon,undo as undoIcon,redo as redoIcon,formatHTML as formatIcon} from './module/icon.js';
 import styleSheet from './style/default.css' with { type: 'css'};
 
 class WidgetEditor extends HTMLElement {
@@ -113,13 +111,13 @@ class WidgetEditor extends HTMLElement {
                 return EditorDropdown.render(feature);
             }
             if(feature.type==='color'){
-                return `<label class="tool-color" title="文字颜色"><img class="tool-icon" part="toolbar-icon" src="${feature.icon}" alt="" aria-hidden="true"><input type="color" class="tool" ${attributes} value="#334155"></label>`;
+                return feature.render();
             }
-            return `<button type="button" class="tool tool-button" ${attributes}><img class="tool-icon" part="toolbar-icon" src="${feature.icon}" alt="" aria-hidden="true"></button>`;
+            return `<button type="button" class="tool tool-button" ${attributes}>${renderIcon(feature.icon)}</button>`;
         }).join('');
         this.shadowRoot.innerHTML = `<div class="mod-panel">
             <div class="toolbar hd" role="toolbar" aria-label="文本格式工具栏">${toolbar}</div>
-            <div class="source-tools" hidden><span>HTML 源代码</span><button type="button" class="source-format" aria-label="格式化 HTML"><img class="tool-icon" src="${formatIcon}" alt="" aria-hidden="true"><span>格式化 HTML</span></button></div>
+            <div class="source-tools" hidden><span>HTML 源代码</span><button type="button" class="source-format" aria-label="格式化 HTML">${renderIcon(formatIcon)}<span>格式化 HTML</span></button></div>
             <div class="bd">
                 <div class="editor-content" contenteditable="true" role="textbox" aria-label="富文本内容" aria-multiline="true" spellcheck="true"></div>
                 <div class="editor-placeholder" aria-hidden="true" hidden></div>
@@ -134,6 +132,7 @@ class WidgetEditor extends HTMLElement {
         this.toolbar = this.shadowRoot.querySelector('.toolbar');
     }
     bindEvents(){
+        this.features.forEach(feature=>feature.bind?.(this));
         this.toolbar.addEventListener('pointerdown',event=>{
             let control = event.target.closest('[data-action]');
             this.saveSelection();
@@ -145,18 +144,12 @@ class WidgetEditor extends HTMLElement {
             let control = event.target.closest('button[data-action]');
             if(control&&!control.disabled){
                 let feature = this.features.find(feature=>feature.name===control.dataset.action);
-                if(feature.type==='dropdown'){
+                if(feature.type==='dropdown'||feature.type==='color'){
                     this.dropdown.toggle(control);
                 }else{
                     this.dropdown.close();
                     this.execute(control.dataset.action,null,event);
                 }
-            }
-        });
-        this.toolbar.addEventListener('change',event=>{
-            let control = event.target.closest('[data-action]');
-            if(control&&!control.disabled){
-                this.execute(control.dataset.action,control.value,event);
             }
         });
         this.sourceTools.querySelector('button').addEventListener('click',()=>{
@@ -389,10 +382,7 @@ class WidgetEditor extends HTMLElement {
             if(feature.type==='dropdown'){
                 this.dropdown.update(feature,feature.value?.(this));
             }else if(feature.type==='color'){
-                let value = feature.value?.(this);
-                if(value){
-                    control.value = value;
-                }
+                feature.update(this,feature.value(this));
             }else if(feature.active){
                 let active = feature.active(this);
                 control.classList.toggle('active',active);

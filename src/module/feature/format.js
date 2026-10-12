@@ -1,4 +1,4 @@
-import icon from '../../image/format.svg';
+import {format as icon} from '../icon.js';
 
 export default {
     'name':'format',

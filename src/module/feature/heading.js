@@ -1,4 +1,4 @@
-import icon from '../../image/heading.svg';
+import {heading as icon} from '../icon.js';
 
 export default {
     'name':'heading',

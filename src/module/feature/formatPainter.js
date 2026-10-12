@@ -1,4 +1,4 @@
-import icon from '../../image/formatPainter.svg';
+import {formatPainter as icon} from '../icon.js';
 
 export default {
     'name':'formatPainter',
@@ -16,6 +16,7 @@ export default {
         }
         let style = window.getComputedStyle($element);
         editor.setPainter({
+            'font-family':style.fontFamily,
             'font-weight':style.fontWeight,
             'font-style':style.fontStyle,
             'font-size':style.fontSize,

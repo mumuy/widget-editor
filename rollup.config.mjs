@@ -1,5 +1,4 @@
 import resolve from '@rollup/plugin-node-resolve';          // 使用node_modules包
-import image from '@rollup/plugin-image';                  // SVG图标
 import terser from '@rollup/plugin-terser';                 // 代码压缩
 import babel from '@rollup/plugin-babel';                   // ECMAScript兼容
 import css from "rollup-plugin-import-css";
@@ -24,7 +23,6 @@ const banner = `/*!
 
 const commonPlugins = [
     resolve(),
-    image({include:'**/*.svg'}),
     css(),
     babel({
         babelHelpers: 'runtime',

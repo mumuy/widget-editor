@@ -23,8 +23,9 @@ export default class EditorSelection {
     }
     restore(){
         let content = this.editor.content;
+        // focus 事件会更新选区，恢复前先保留原来的范围。
+        let range = this.range?.cloneRange();
         content.focus({preventScroll:true});
-        let range = this.range;
         if(!range||!content.contains(range.commonAncestorContainer)){
             range = document.createRange();
             range.selectNodeContents(content);

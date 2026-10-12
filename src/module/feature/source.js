@@ -1,5 +1,5 @@
 import formatHTML from '../method/formatHTML.js';
-import icon from '../../image/source.svg';
+import {source as icon} from '../icon.js';
 
 export default {
     'name':'source',

@@ -1,5 +1,5 @@
 import {escapeHTML} from './method/sanitize.js';
-import arrow from '../image/chevron.svg';
+import {chevron as arrow,renderIcon} from './icon.js';
 
 // 下拉选项使用普通节点，可在组件 CSS 或 ::part 中修改样式。
 export default class EditorDropdown {
@@ -29,12 +29,12 @@ export default class EditorDropdown {
     static render(feature){
         let id = 'menu-'+feature.name;
         return `<div class="tool-dropdown" data-dropdown="${feature.name}">
-            <button type="button" class="tool tool-dropdown-button" part="dropdown-trigger" data-action="${feature.name}" aria-label="${feature.label}" title="${feature.label}" aria-haspopup="listbox" aria-expanded="false" aria-controls="${id}">
-                <img class="tool-icon" part="toolbar-icon" src="${feature.icon}" alt="" aria-hidden="true">
-                <span class="tool-label"></span><img class="tool-arrow" src="${arrow}" alt="" aria-hidden="true">
+            <button type="button" class="tool tool-dropdown-button${feature.iconOnly?' icon-only':''}" part="dropdown-trigger" data-action="${feature.name}" aria-label="${feature.label}" title="${feature.label}" aria-haspopup="listbox" aria-expanded="false" aria-controls="${id}">
+                ${renderIcon(feature.icon)}
+                <span class="tool-label" ${feature.iconOnly?'hidden':''}></span>${renderIcon(arrow,true)}
             </button>
             <div class="tool-menu" part="dropdown-menu ${feature.name}-menu" id="${id}" role="listbox" aria-label="${feature.label}" popover="manual" hidden>
-                ${feature.options.map(option=>`<button type="button" class="tool-option" part="dropdown-option" role="option" tabindex="-1" aria-selected="false" data-option="${escapeHTML(option.value)}">${option.icon?`<img class="tool-icon" src="${option.icon}" alt="" aria-hidden="true">`:''}<span>${escapeHTML(option.label)}</span></button>`).join('')}
+                ${feature.options.map(option=>`<button type="button" class="tool-option" part="dropdown-option" role="option" tabindex="-1" aria-selected="false" data-option="${escapeHTML(option.value)}"${option.font?' style="font-family:'+escapeHTML(option.font)+'"':''}>${option.icon?renderIcon(option.icon):''}<span>${escapeHTML(option.label)}</span></button>`).join('')}
             </div>
         </div>`;
     }
@@ -104,7 +104,15 @@ export default class EditorDropdown {
         let option = feature.options.find(option=>option.value===current);
         button.value = current;
         button.querySelector('.tool-label').textContent = option?option.label:feature.display?.(current)||feature.label;
-        button.querySelector('.tool-icon').src = option?.icon||feature.icon;
+        let icon = option?.icon||feature.icon;
+        if(button._icon!==icon){
+            button.querySelector('.tool-icon').outerHTML = renderIcon(icon);
+            button._icon = icon;
+        }
+        if(feature.iconOnly){
+            button.title = option?.label||feature.label;
+            button.setAttribute('aria-label',button.title);
+        }
         group.querySelectorAll('[data-option]').forEach(item=>{
             let selected = item.dataset.option===current;
             item.setAttribute('aria-selected',String(selected));
@@ -131,6 +139,14 @@ export default class EditorDropdown {
             return;
         }
         if(!this.opened){
+            return;
+        }
+        if(this.opened.querySelector('.tool-menu').getAttribute('role')==='dialog'){
+            if(event.key==='Escape'){
+                event.preventDefault();
+                event.stopPropagation();
+                this.close(true);
+            }
             return;
         }
         if(event.key==='Escape'||event.key==='Tab'){

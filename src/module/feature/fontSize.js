@@ -1,4 +1,4 @@
-import icon from '../../image/fontSize.svg';
+import {fontSize as icon} from '../icon.js';
 
 export default {
     'name':'fontSize',

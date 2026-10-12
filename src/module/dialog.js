@@ -1,4 +1,4 @@
-import closeIcon from '../image/close.svg';
+import {close as closeIcon,renderIcon} from './icon.js';
 
 export default function openDialog(editor,options){
     if(!editor.isConnected || !editor.shadowRoot){
@@ -14,7 +14,7 @@ export default function openDialog(editor,options){
     let titleId = 'editor-dialog-title';
     dialog.setAttribute('aria-labelledby',titleId);
     dialog.innerHTML = '<form class="dialog-form"><div class="dialog-head"><h3 id="'+titleId+'"></h3>'+
-        '<button type="button" class="dialog-close" aria-label="关闭"><img class="tool-icon" src="'+closeIcon+'" alt="" aria-hidden="true"></button></div>'+
+        '<button type="button" class="dialog-close" aria-label="关闭">'+renderIcon(closeIcon)+'</button></div>'+
         '<div class="dialog-fields"></div><p class="dialog-notice" role="status"></p>'+
         '<div class="dialog-actions"><button type="button" class="btn dialog-cancel">取消</button>'+
         '<button type="submit" class="btn btn-primary"></button></div></form>';

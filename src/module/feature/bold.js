@@ -1,4 +1,4 @@
-import icon from '../../image/bold.svg';
+import {bold as icon} from '../icon.js';
 
 export default {
     'name':'bold',

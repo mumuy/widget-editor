@@ -5,6 +5,7 @@ const styleRules = {
     'color':value=>/^(#[\da-f]{3,8}|rgba?\([\d\s.,%]+\)|[a-z]+)$/i.test(value),
     'background-color':value=>/^(#[\da-f]{3,8}|rgba?\([\d\s.,%]+\)|[a-z]+)$/i.test(value),
     'font-size':value=>/^(?:[1-9]\d?|1[01]\d|120)(?:px|pt)$/.test(value),
+    'font-family':value=>value.length<=256&&value.split(',').every(name=>/^(?:[a-z\u3400-\u9fff][a-z\d\u3400-\u9fff _-]*|"[a-z\u3400-\u9fff][a-z\d\u3400-\u9fff _-]*"|'[a-z\u3400-\u9fff][a-z\d\u3400-\u9fff _-]*')$/i.test(name.trim())),
     'font-weight':value=>/^(normal|bold|[1-9]00)$/.test(value),
     'font-style':value=>/^(normal|italic|oblique)$/.test(value),
     'text-decoration':value=>/^(none|underline|line-through|underline line-through)$/.test(value),
@@ -55,6 +56,7 @@ export default function sanitizeHTML(html){
             if(tag==='font'){
                 let span = document.createElement('span');
                 span.style.color = node.getAttribute('color')||'';
+                span.style.fontFamily = node.getAttribute('face')||'';
                 span.append(...node.childNodes);
                 node.replaceWith(span);
                 node = span;

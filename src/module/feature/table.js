@@ -1,4 +1,4 @@
-import icon from '../../image/table.svg';
+import {table as icon} from '../icon.js';
 
 export default {
     'name':'table',

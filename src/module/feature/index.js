@@ -12,6 +12,8 @@ import alignment from './alignment.js';
 import fontSize from './fontSize.js';
 import color from './color.js';
 import table from './table.js';
+import fontFamily from './fontFamily.js';
+import blockquote from './blockquote.js';
 
-export default [format,formatPainter,heading,bold,italic,fontSize,color,
-    alignment,orderedList,unorderedList,link,image,table,source];
+export default [format,formatPainter,heading,bold,italic,fontFamily,fontSize,color,
+    alignment,blockquote,orderedList,unorderedList,link,image,table,source];

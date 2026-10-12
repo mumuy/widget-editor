@@ -16,7 +16,7 @@ npm start
 
 打开 `http://localhost:3000` 查看演示页面。构建结果为 `dist/widget-editor.min.js`，组件样式包含在构建文件中。修改组件源码时，在另一个终端运行 `npm run watch`，保存后自动重新构建；演示页修改后刷新浏览器即可。
 
-构建沿用 [widget-code](https://github.com/mumuy/widget-code) 的 Rollup 配置，在 `resolve → css → babel → terser` 流程中加入 image 插件处理 SVG 图标。SVG 图标通过 image 插件内嵌，组件 CSS 通过导入属性作为 CSSStyleSheet 打包，输出带版权头的 UMD 文件。Babel 使用 `preset-env` 与 runtime、类属性、导入属性语法及私有方法插件；为兼容插件声明的版本要求，使用 Babel 7 系列依赖。
+构建沿用 [widget-code](https://github.com/mumuy/widget-code) 的 Rollup 配置，使用 `resolve → css → babel → terser` 流程。SVG 图标直接声明为 JS 字符串，组件 CSS 通过导入属性作为 CSSStyleSheet 打包，输出带版权头的 UMD 文件。Babel 使用 `preset-env` 与 runtime、类属性、导入属性语法及私有方法插件；为兼容插件声明的版本要求，使用 Babel 7 系列依赖。
 
 开发服务器默认监听 `0.0.0.0:3000`，可使用 `PORT` 环境变量调整端口。
 
@@ -74,8 +74,10 @@ customElements.whenDefined('widget-editor').then(function(){
 | 功能 | 模块 | 行为 |
 | --- | --- | --- |
 | 清除格式 | `format.js` | 清除所选文字的行内格式，保留段落结构 |
-| 格式刷 | `formatPainter.js` | 复制当前位置的字体粗细、斜体、字号、颜色及文字装饰，再选择文字应用一次；按 Escape 取消 |
-| 标题 | `heading.js` | 正文及 H1～H6 |
+| 格式刷 | `formatPainter.js` | 复制当前位置的字体、粗细、斜体、字号、颜色及文字装饰，再选择文字应用一次；按 Escape 取消 |
+| 标题 | `heading.js` | 正文及 H1～H6，下拉预览对应大小与粗细 |
+| 字体 | `fontFamily.js` | 微软雅黑、宋体、黑体、楷体、仿宋、苹方、等线、华文及思源字体，选项预览对应字体 |
+| 块引用 | `blockquote.js` | 将选中段落设为引用，再次点击取消引用 |
 | 有序列表 | `orderedList.js` | 添加或取消有序列表 |
 | 无序列表 | `unorderedList.js` | 添加或取消无序列表 |
 | 链接 | `link.js` | 插入链接；光标位于链接内时可修改地址和文字 |
@@ -85,7 +87,7 @@ customElements.whenDefined('widget-editor').then(function(){
 | 源代码 | `source.js` | 查看和编辑 HTML，源码视图中提供格式化操作，返回可视编辑时清理内容 |
 | 对齐方式 | `alignment.js` | 左对齐、居中、右对齐及两端对齐 |
 | 文字大小 | `fontSize.js` | 12、14、16、18、20、24、28、32、48 px |
-| 文字颜色 | `color.js` | 使用颜色选择器设置文字颜色 |
+| 文字颜色 | `color.js` | 预设色块及自定义 HEX 色值，确认后应用到原选区 |
 | 表格 | `table.js` | 插入 1～10 行、1～10 列的表格，可将第一行设为表头 |
 
 清除格式用于移除所选文字的行内样式。点击「源代码」后，可以在源码视图中格式化 HTML：先清理内容，再用 4 个空格整理块级容器的缩进与换行，保留行内文字间的空白及 pre / code 内容。返回可视编辑时才更新编辑区域。
@@ -93,6 +95,8 @@ customElements.whenDefined('widget-editor').then(function(){
 格式刷为单次操作，再次点击按钮也可取消。源码模式中直接编辑 HTML，退出时会统一执行内容清理，再更新可视编辑区域。
 
 图片上传支持 PNG、JPEG、GIF、WebP，单张最大 5 MB。图片通过 FileReader 转为 data URL 并存入 HTML，不需要远程上传服务；保存内容时也会包含图片数据。项目未包含文件存储、鉴权或服务端接口。
+
+字体使用系统安装的字体，未安装时按字体列表回退。字体样式会保留在输出 HTML、源码编辑和格式刷中。颜色面板支持预设色块或输入六位 HEX 色值（如 `#336699`），输入过程中保持焦点和编辑器原选区；Escape 关闭面板而不修改内容。可通过 `::part(color-menu)` 和 `::part(color-swatch)` 调整颜色面板。
 
 ## 目录结构
 
@@ -105,11 +109,11 @@ widget-editor/
 │   │   ├── dialog.js          # 通用弹窗、字段与提交状态
 │   │   ├── dropdown.js        # 可样式化下拉菜单
 │   │   ├── history.js         # 内容历史
+│   │   ├── icon.js            # SVG 字符串与渲染
 │   │   └── method/
 │   │       ├── formatHTML.js  # 安全的 HTML 源码排版
 │   │       ├── sanitize.js    # HTML、链接及图片地址清理
 │   │       └── selection.js   # 选区处理
-│   ├── image/                # 独立 SVG 图标
 │   └── style/
 │       └── default.css        # 组件样式
 ├── static/                    # 演示页面资源
@@ -125,7 +129,7 @@ widget-editor/
 
 ## 下拉菜单与图标
 
-标题、文字大小和对齐方式使用普通按钮组成下拉菜单。可在 `src/style/default.css` 中修改 `.tool-dropdown-button`、`.tool-menu`、`.tool-option` 的样式，也可从页面通过 `::part` 调整：
+标题、字体、文字大小和对齐方式使用普通按钮组成下拉菜单。可在 `src/style/default.css` 中修改 `.tool-dropdown-button`、`.tool-menu`、`.tool-option` 的样式，也可从页面通过 `::part` 调整：
 
 ```css
 widget-editor::part(dropdown-trigger){
@@ -143,9 +147,9 @@ widget-editor::part(dropdown-option-selected){
 }
 ```
 
-三个菜单分别暴露 `heading-menu`、`fontSize-menu` 和 `alignment-menu`，可以单独设置样式。菜单支持方向键、Home、End、Enter 和 Escape 操作。
+四个下拉菜单分别暴露 `heading-menu`、`fontFamily-menu`、`fontSize-menu` 和 `alignment-menu`，可以单独设置样式。菜单支持方向键、Home、End、Enter 和 Escape 操作。
 
-每个功能图标对应 `src/image/` 下的 SVG 文件，例如 `bold.svg`、`image.svg`、`source.svg`。替换图标文件后执行 `npm run build` 即可；图标内嵌在组件 JS 中，使用组件时无需单独部署图标目录。工具栏图标还暴露 `toolbar-icon`，可通过 `::part(toolbar-icon)` 修改尺寸。
+所有图标直接以 SVG 字符串声明在 `src/module/icon.js` 中，例如 `bold`、`image`、`source`。修改字符串后执行 `npm run build` 即可；使用组件时无需单独部署图标目录。工具栏图标还暴露 `toolbar-icon`，可通过 `::part(toolbar-icon)` 修改尺寸。
 
 ## 验证
 
