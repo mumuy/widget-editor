@@ -13,11 +13,20 @@ export default function openDialog(editor,options){
     dialog.className = 'editor-dialog';
     let titleId = 'editor-dialog-title';
     dialog.setAttribute('aria-labelledby',titleId);
-    dialog.innerHTML = '<form class="dialog-form"><div class="dialog-head"><h3 id="'+titleId+'"></h3>'+
-        '<button type="button" class="dialog-close" aria-label="关闭">'+renderIcon(closeIcon)+'</button></div>'+
-        '<div class="dialog-fields"></div><p class="dialog-notice" role="status"></p>'+
-        '<div class="dialog-actions"><button type="button" class="btn dialog-cancel">取消</button>'+
-        '<button type="submit" class="btn btn-primary"></button></div></form>';
+    dialog.innerHTML = `<form class="dialog-form">
+        <div class="dialog-head">
+            <h3 id="${titleId}"></h3>
+            <button type="button" class="dialog-close" aria-label="关闭">${renderIcon(closeIcon)}</button>
+        </div>
+        <div class="dialog-body">
+            <div class="dialog-fields"></div>
+            <p class="dialog-notice" role="status"></p>
+        </div>
+        <div class="dialog-foot">
+            <button type="button" class="btn dialog-cancel">取消</button>
+            <button type="submit" class="btn btn-primary"></button>
+        </div>
+    </form>`;
     dialog.querySelector('h3').textContent = options.title;
     let form = dialog.querySelector('form');
     let submit = dialog.querySelector('[type="submit"]');

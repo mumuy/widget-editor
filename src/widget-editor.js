@@ -117,13 +117,19 @@ class WidgetEditor extends HTMLElement {
             return `<button type="button" class="tool tool-button" ${attributes}>${renderIcon(feature.icon)}</button>`;
         }).join('');
         this.shadowRoot.innerHTML = `<div class="mod-panel">
-            <div class="toolbar hd" role="toolbar" aria-label="文本格式工具栏">${toolbar}</div>
+            <div class="hd">
+                <div class="toolbar" role="toolbar" aria-label="文本格式工具栏">${toolbar}</div>
+            </div>
             <div class="bd">
                 <div class="editor-content" contenteditable="true" role="textbox" aria-label="富文本内容" aria-multiline="true" spellcheck="true"></div>
                 <div class="editor-placeholder" aria-hidden="true" hidden></div>
                 <textarea class="editor-source" aria-label="HTML 源代码" spellcheck="false" hidden></textarea>
             </div>
-            <div class="ft"><span class="mode-label">可视化编辑</span><span class="notice" role="status" aria-live="polite"></span><span class="word-count">0 字</span></div>
+            <div class="ft">
+                <span class="mode-label">可视化编辑</span>
+                <span class="notice" role="status" aria-live="polite"></span>
+                <span class="word-count">0 字</span>
+            </div>
         </div>`;
         this.content = this.shadowRoot.querySelector('.editor-content');
         this.placeholder = this.shadowRoot.querySelector('.editor-placeholder');
