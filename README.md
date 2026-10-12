@@ -25,13 +25,13 @@ npm start
 ```html
 <script src="./dist/widget-editor.min.js" defer></script>
 
-<widget-editor theme="light" placeholder="请输入内容…" height="420">
+<widget-editor placeholder="请输入内容…" height="420">
     <h2>开始编辑</h2>
     <p>选中文字后，可以使用工具栏调整格式。</p>
 </widget-editor>
 ```
 
-组件标签内的 HTML 作为初始内容；`placeholder` 设置空内容时的提示，`height` 设置编辑区域高度，单位为像素。`theme` 支持 `light` 与 `dark`。
+组件标签内的 HTML 作为初始内容；`placeholder` 设置空内容时的提示，`height` 设置编辑区域高度，单位为像素。
 
 ```javascript
 customElements.whenDefined('widget-editor').then(function(){
@@ -110,8 +110,7 @@ widget-editor/
 │   │       ├── sanitize.js    # HTML、链接及图片地址清理
 │   │       └── selection.js   # 选区处理
 │   └── style/
-│       ├── default.css        # 组件基础样式与默认 light 主题
-│       └── theme/dark.css     # dark 主题
+│       └── default.css        # 组件样式
 ├── static/                    # 演示页面资源
 ├── dist/                      # 构建产物
 ├── scripts/server.mjs         # 静态开发服务器

@@ -4,7 +4,6 @@
     let $links = $items.map($item=>$item.querySelector('a'));
     let $panels = Array.from($tabs.querySelectorAll('.panel'));
     let $editors = $panels.map($panel=>$panel.querySelector('widget-editor'));
-    let $theme = document.getElementById('theme-toggle');
     let _index = 0;
     let _examples = [];
 
@@ -52,14 +51,6 @@
 
     customElements.whenDefined('widget-editor').then(function(){
         _examples = $editors.map($editor=>$editor.value);
-        $theme.addEventListener('click',function(){
-            let dark = $theme.getAttribute('aria-pressed')!=='true';
-            $editors.forEach(function($editor){
-                $editor.setAttribute('theme',dark?'dark':'light');
-            });
-            $theme.setAttribute('aria-pressed',String(dark));
-            $theme.textContent = dark?'浅色模式':'深色模式';
-        });
         document.getElementById('reset-demo').addEventListener('click',function(){
             let $editor = $editors[_index];
             if($editor.source){

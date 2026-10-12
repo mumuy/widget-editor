@@ -4,7 +4,6 @@ import sanitizeHTML,{escapeHTML} from './module/method/sanitize.js';
 import EditorHistory from './module/history.js';
 import openDialog from './module/dialog.js';
 import styleSheet from './style/default.css' with { type: 'css'};
-import darkSheet from './style/theme/dark.css' with { type: 'css'};
 
 class WidgetEditor extends HTMLElement {
     constructor(){
@@ -88,12 +87,12 @@ class WidgetEditor extends HTMLElement {
             oldStyle.remove();
         }
         if(this.shadowRoot.adoptedStyleSheets){
-            this.shadowRoot.adoptedStyleSheets = [styleSheet,darkSheet];
+            this.shadowRoot.adoptedStyleSheets = [styleSheet];
         }else{
             const $style = document.createElement('style');
             $style.rel = 'defaultSheet';
             $style.dataset.widgetEditor = '1';   // 标记以便重复渲染时清理
-            $style.textContent = [...styleSheet.cssRules,...darkSheet.cssRules].map(item=>item.cssText).join('');
+            $style.textContent = [...styleSheet.cssRules].map(item=>item.cssText).join('');
             this.shadowRoot.appendChild($style);
         }
     }
