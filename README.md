@@ -96,7 +96,7 @@ customElements.whenDefined('widget-editor').then(function(){
 
 图片上传支持 PNG、JPEG、GIF、WebP，单张最大 5 MB。图片通过 FileReader 转为 data URL 并存入 HTML，不需要远程上传服务；保存内容时也会包含图片数据。项目未包含文件存储、鉴权或服务端接口。
 
-字体使用系统安装的字体，未安装时按字体列表回退。字体样式会保留在输出 HTML、源码编辑和格式刷中。颜色面板支持预设色块或输入六位 HEX 色值（如 `#336699`），输入过程中保持焦点和编辑器原选区；Escape 关闭面板而不修改内容。可通过 `::part(color-menu)` 和 `::part(color-swatch)` 调整颜色面板。
+字体使用系统安装的字体，未安装时按字体列表回退。字体样式会保留在输出 HTML、源码编辑和格式刷中。颜色面板提供 70 个预设色块，按中性色及各色系的浅深层次紧凑排列，也支持输入六位 HEX 色值（如 `#336699`），输入过程中保持焦点和编辑器原选区；Escape 关闭面板而不修改内容。可通过 `::part(color-menu)` 和 `::part(color-swatch)` 调整颜色面板。
 
 ## 目录结构
 
@@ -167,7 +167,7 @@ npm run build
 
 初始内容、粘贴、源码及 HTML API 使用统一的清理逻辑，导出的 HTML 和 `change` 事件中的 HTML 也会经过清理。组件限制可用标签、属性、行内样式及链接协议，移除脚本与事件属性。若内容需要保存并公开展示，仍应在服务端执行适合业务规则的 HTML 清理。
 
-标签白名单按工具栏能力设置：`p`、`div`、`span`、`br`，加粗及斜体的 `strong` / `b`、`em` / `i`，`h1`～`h6`，`ul`、`ol`、`li`，`a`、`img`，`table`、`thead`、`tbody`、`tr`、`th`、`td`，以及 `blockquote`。`div`、`span` 和 `br` 用于浏览器编辑及文字样式。其他普通标签（如 `pre`、`code`、`hr`、`u`、`s`、`sub`、`sup`、`font`、`tfoot`）去掉外层，保留文字及已清理的支持节点；脚本、表单、iframe 等整个节点及其内容移除。源码返回可视化时应用过滤，读取 HTML 时也使用相同规则。
+标签白名单按工具栏能力设置：`p`、`div`、`span`、`br`，加粗及斜体的 `strong` / `b`、`em` / `i`，`h1`～`h6`，`ul`、`ol`、`li`，`a`、`img`，`table`、`thead`、`tbody`、`tfoot`、`tr`、`th`、`td`，以及 `blockquote`。`div`、`span` 和 `br` 用于浏览器编辑及文字样式。其他普通标签（如 `pre`、`code`、`hr`、`u`、`s`、`sub`、`sup`、`font`）去掉外层，保留文字及已清理的支持节点；脚本、表单、iframe 等整个节点及其内容移除。源码返回可视化时应用过滤，读取 HTML 时也使用相同规则。
 
 ## License
 

@@ -76,7 +76,7 @@ export default class EditorDropdown {
         let width = menu.getBoundingClientRect().width;
         menu.style.left = Math.max(8,Math.min(rect.left,window.innerWidth-width-8))+'px';
         menu.style.top = (upwards?rect.top-menu.getBoundingClientRect().height-4:rect.bottom+4)+'px';
-        let selected = menu.querySelector('[aria-selected="true"]')||menu.querySelector('button');
+        let selected = menu.querySelector('[aria-selected="true"],[aria-pressed="true"]')||menu.querySelector('button');
         selected.focus({preventScroll:true});
         this.scrollOption(selected);
     }

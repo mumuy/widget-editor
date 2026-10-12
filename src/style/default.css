@@ -209,27 +209,49 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
     border-radius: 1px;
 }
 .color-menu{
-    width: 214px;
-    padding: 12px;
+    width: 242px;
+    padding: 10px;
+    border-radius: 6px;
+}
+.color-caption{
+    margin-bottom: 8px;
+    color: var(--muted-text-color);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
 }
 .color-swatches{
     display: grid;
-    grid-template-columns: repeat(5,1fr);
-    gap: 8px;
+    grid-template-columns: repeat(10,1fr);
+    gap: 3px;
 }
 .color-swatch{
-    height: 26px;
+    position: relative;
+    min-width: 0;
+    aspect-ratio: 1;
     padding: 0;
-    border: 1px solid var(--panel-border-color);
-    border-radius: 3px;
+    border: 1px solid rgba(17,32,58,.1);
+    border-radius: 2px;
+    transition: transform .12s,box-shadow .12s;
 }
-.color-swatch:hover,.color-swatch[aria-pressed="true"]{
-    outline: 2px solid var(--focus-color);
-    outline-offset: 2px;
+.color-swatch:hover{
+    z-index: 1;
+    transform: scale(1.12);
+    box-shadow: 0 2px 6px rgba(17,32,58,.2);
+}
+.color-swatch[aria-pressed="true"]{
+    box-shadow: inset 0 0 0 2px var(--panel-background-color);
+    outline: 1px solid var(--button-active-color);
+    outline-offset: 1px;
+}
+.color-swatch:focus-visible{
+    outline-offset: 1px;
 }
 .color-form{
-    margin-top: 12px;
+    margin-top: 10px;
+    padding-top: 10px;
     font-size: 12px;
+    border-top: 1px solid var(--panel-border-color);
 }
 .color-fields{
     display: flex;
@@ -237,7 +259,8 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
     margin-top: 6px;
 }
 .color-fields input{
-    width: 122px;
+    flex: 1;
+    width: 0;
     min-width: 0;
     padding: 5px 6px;
     color: var(--panel-text-color);
@@ -250,6 +273,10 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
     color: var(--button-active-color);
     border: 0;
     border-radius: 3px;
+}
+.color-fields button:hover{
+    background: var(--button-active-color);
+    color: var(--panel-background-color);
 }
 .separator{
     flex: 0 0 auto;
