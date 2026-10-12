@@ -1,7 +1,7 @@
 // 共用工具栏的伪元素显示提示，不创建额外节点。
 export default class EditorTooltip {
     constructor(editor){
-        this.toolbars = [editor.toolbar,editor.table?.toolbar].filter(Boolean);
+        this.toolbars = [editor.toolbar,editor.footer,editor.table?.toolbar].filter(Boolean);
         this.button = null;
         this.toolbar = null;
         this.onPointer = event=>{

@@ -9,7 +9,8 @@ import EditorHistory from './module/history.js';
 import openDialog from './module/dialog.js';
 import EditorDropdown from './module/dropdown.js';
 import EditorTooltip from './module/tooltip.js';
-import {renderIcon,undo as undoIcon,redo as redoIcon} from './module/icon.js';
+import EditorFullscreen from './module/fullscreen.js';
+import {renderIcon,undo as undoIcon,redo as redoIcon,fullscreen as fullscreenIcon} from './module/icon.js';
 import styleSheet from './style/default.css' with { type: 'css'};
 
 class WidgetEditor extends HTMLElement {
@@ -41,15 +42,18 @@ class WidgetEditor extends HTMLElement {
             this.value = this._pendingValue===null?this.innerHTML:this._pendingValue;
             this.bindEvents();
             this.tooltip = new EditorTooltip(this);
+            this.fullscreen = new EditorFullscreen(this);
             this.attributeChangedCallback();
             this.dispatchEvent(new CustomEvent('ready',{bubbles:true,composed:true}));
         }
         this.dropdown.connect();
         this.table?.connect();
         this.tooltip.connect();
+        this.fullscreen.connect();
         document.addEventListener('selectionchange',this._onSelection);
     }
     disconnectedCallback(){
+        this.fullscreen?.disconnect();
         this.dropdown?.disconnect();
         this.table?.disconnect();
         this.tooltip?.disconnect();
@@ -176,12 +180,14 @@ class WidgetEditor extends HTMLElement {
                 <span class="mode-label">可视化编辑</span>
                 <span class="notice" role="status" aria-live="polite"></span>
                 <span class="word-count">0 字</span>
+                <button type="button" class="tool tool-button fullscreen-button" data-action="fullscreen" aria-label="全屏" aria-pressed="false">${renderIcon(fullscreenIcon)}</button>
             </div>
         </div>`;
         this.content = this.shadowRoot.querySelector('.editor-content');
         this.placeholder = this.shadowRoot.querySelector('.editor-placeholder');
         this.sourceArea = this.shadowRoot.querySelector('.editor-source');
         this.toolbar = this.shadowRoot.querySelector('.toolbar');
+        this.footer = this.shadowRoot.querySelector('.ft');
     }
     bindEvents(){
         this.features.forEach(feature=>feature.bind?.(this));

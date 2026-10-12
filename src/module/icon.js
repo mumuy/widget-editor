@@ -1,4 +1,12 @@
 // SVG 直接使用字符串，统一在工具栏中渲染。
+export const fullscreen = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5"/>
+</svg>`;
+
+export const fullscreenExit = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 8h5V3M21 8h-5V3M16 21v-5h5M3 16h5v5"/>
+</svg>`;
+
 export const insert = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
     <path d="M12 4v16M4 12h16"/>
 </svg>`;
