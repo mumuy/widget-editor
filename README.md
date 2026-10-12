@@ -35,7 +35,7 @@
 | `placeholder` | 空白编辑器中的提示文字 | `在这里开始写作…` |
 | `height` | 编辑区域高度，单位为 px，有效范围为 160～2000 | `420` |
 | `insert` | 允许使用的插入功能，以英文逗号分隔 | 不启用插入功能 |
-| `language` | 界面语言：`zh-CN`、`zh-TW` 或 `en` | `zh-CN` |
+| `language` | 界面语言：`zh-CN`、`zh-HK` 或 `en-US` | `zh-CN` |
 
 `insert` 支持以下字段，字段顺序就是插入菜单中的顺序：
 
@@ -70,8 +70,8 @@ editor.removeAttribute('insert');
 
 ```html
 <widget-editor language="zh-CN"></widget-editor>
-<widget-editor language="zh-TW" insert="table,image"></widget-editor>
-<widget-editor language="en" insert="table,image"></widget-editor>
+<widget-editor language="zh-HK" insert="table,image"></widget-editor>
+<widget-editor language="en-US" insert="table,image"></widget-editor>
 ```
 
 工具栏、Tooltip、下拉选项、弹窗、上传状态、表格操作和字数统计均使用所选语言。未设置 `placeholder` 时，默认提示也随语言变化；自定义提示、编辑内容、文件名和外部传入的上传错误不会自动翻译。语言切换使用原生 JavaScript，不需要第三方插件。
@@ -79,12 +79,12 @@ editor.removeAttribute('insert');
 可以运行时切换，已编辑的内容、选区、撤销记录以及弹窗中填写的信息都会保留：
 
 ```javascript
-editor.setAttribute('language','en');
-editor.setAttribute('language','zh-TW');
+editor.setAttribute('language','en-US');
+editor.setAttribute('language','zh-HK');
 editor.removeAttribute('language'); // 恢复简体中文
 ```
 
-语言值不区分大小写，也支持 `zh-Hans`、`zh-Hant` 和 `en-US`；未知值使用简体中文。
+语言值不区分大小写，也支持 `zh-Hans`、`zh-Hant`、`zh-TW` 和 `en` 等兼容别名；繁体中文统一使用 `zh-HK`，英语统一使用 `en-US`。未知值使用简体中文。
 
 ### 读取与设置内容
 

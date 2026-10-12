@@ -1,8 +1,8 @@
-import english from './en.js';
-import traditional from './zh-TW.js';
+import english from './en-US.js';
+import traditional from './zh-HK.js';
 
-const languages = {'en':english,'zh-TW':traditional};
-const aliases = {'zh':'zh-CN','zh-cn':'zh-CN','zh-hans':'zh-CN','zh-tw':'zh-TW','zh-hant':'zh-TW','en':'en','en-us':'en','en-gb':'en'};
+const languages = {'en-US':english,'zh-HK':traditional};
+const aliases = {'zh':'zh-CN','zh-cn':'zh-CN','zh-hans':'zh-CN','zh-hk':'zh-HK','zh-tw':'zh-HK','zh-hant':'zh-HK','en':'en-US','en-us':'en-US','en-gb':'en-US'};
 
 // 简体中文原文作为词条；只更新界面文字，不重新创建控件或编辑内容。
 export default class EditorLanguage {
