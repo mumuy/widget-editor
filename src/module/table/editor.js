@@ -196,7 +196,8 @@ export default class TableEditor {
         }
         let {area} = selection;
         area.items.forEach(item=>item.cell.setAttribute('data-table-selected',''));
-        this.toolbar.querySelector('.table-selection').textContent = area.items.length+' 个单元格';
+        this.editor.locale.set(this.toolbar.querySelector('.table-selection'),'{count} 个单元格',{count:area.items.length});
+        this.editor.locale.apply(this.toolbar);
         this.toolbar.querySelector('[data-table-action="merge"]').disabled = !area.complete||area.items.length<2;
         this.toolbar.querySelector('[data-table-action="split"]').disabled = !area.items.some(item=>item.rows>1||item.columns>1);
         // 拖选结束后再显示，浮层不会挡住要选择的单元格。

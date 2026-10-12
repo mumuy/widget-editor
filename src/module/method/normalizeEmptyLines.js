@@ -1,6 +1,6 @@
 import hexColor from './color.js';
 
-const emptyTags = new Set('BR SPAN STRONG B EM I U'.split(' '));
+const emptyTags = new Set('BR SPAN STRONG B EM I U SUP SUB'.split(' '));
 const styleNames = 'color background-color font-size font-family font-weight font-style text-decoration text-align text-indent'.split(' ');
 
 export default function normalizeEmptyLines(content){

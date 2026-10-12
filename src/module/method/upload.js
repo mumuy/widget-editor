@@ -31,7 +31,7 @@ export default function openUpload(editor,options){
         dialog.querySelectorAll('input,[data-insert-tab]').forEach(input=>input.disabled=busy);
         setMode(mode);
         progress.hidden = !busy;
-        dialog.querySelector('[type="submit"]').textContent = busy?'上传中…':'插入'+options.name;
+        editor.locale.set(dialog.querySelector('[type="submit"]'),busy?'上传中…':'插入'+options.name);
         if(busy){
             editor.notify('');
         }
@@ -48,15 +48,15 @@ export default function openUpload(editor,options){
                 cancelUpload = null;
                 resolve(value);
             };
-            let error = function(err){
+            let error = function(err,translate=false){
                 if(active()){
-                    editor.notify(String(err?.message||err||'上传失败，请重试'));
+                    editor.notify(String(err?.message||err||'上传失败，请重试'),undefined,!translate&&!!(err?.message||err));
                     finish(false);
                 }
             };
             cancelUpload = ()=>finish(null);
             progress.querySelector('progress').value = 0;
-            progress.querySelector('span').textContent = '上传中 0%';
+            editor.locale.set(progress.querySelector('span'),'上传中 {percent}%',{percent:0});
             editor.dispatchEvent(new CustomEvent('upload',{
                 detail:{
                     file,
@@ -67,7 +67,7 @@ export default function openUpload(editor,options){
                         }
                         let source = typeof url==='string'?safeURL(url,options.kind):'';
                         if(!source){
-                            error('上传结果不是有效的 URL，请重试');
+                            error('上传结果不是有效的 URL，请重试',true);
                             return;
                         }
                         finish(source);
@@ -77,7 +77,7 @@ export default function openUpload(editor,options){
                         if(active()&&Number.isFinite(Number(percent))){
                             let value = Math.max(0,Math.min(100,Number(percent)));
                             progress.querySelector('progress').value = value;
-                            progress.querySelector('span').textContent = '上传中 '+Math.round(value)+'%';
+                            editor.locale.set(progress.querySelector('span'),'上传中 {percent}%',{percent:Math.round(value)});
                         }
                     }
                 },
@@ -91,7 +91,7 @@ export default function openUpload(editor,options){
         'keepOpen':true,
         'fields':[
             {'name':'url','label':options.name+'地址','type':'text','placeholder':'https://example.com/file','required':true},
-            {'name':'file','label':'选择'+options.name+'（最大 '+options.size+' MB）','type':'file',
+            {'name':'file','label':'选择{type}（最大 {size} MB）','params':{type:options.name,size:options.size},'type':'file',
                 'accept':options.accept||'','required':true},
             options.field
         ],
@@ -160,7 +160,7 @@ export default function openUpload(editor,options){
                     return false;
                 }
                 if(file.size>options.size*1024*1024){
-                    editor.notify(options.name+'大小不能超过 '+options.size+' MB');
+                    editor.notify('{type}大小不能超过 {size} MB',{type:options.name,size:options.size});
                     return false;
                 }
                 setBusy(true);
@@ -180,11 +180,11 @@ export default function openUpload(editor,options){
             }else{
                 source = safeURL(values.url,options.kind);
                 if(!source){
-                    editor.notify('请输入有效的'+options.name+'地址');
+                    editor.notify('请输入有效的{type}地址',{type:options.name});
                     return false;
                 }
             }
-            values.name = file?.name||urlFileName(source,options.name);
+            values.name = file?.name||urlFileName(source,editor.t(options.name));
             // 插入时解除模态层的焦点限制，恢复原选区。
             dialog.close();
             editor.selection.range = range;

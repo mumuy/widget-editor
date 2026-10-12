@@ -10,6 +10,7 @@ import openDialog from './module/dialog.js';
 import EditorDropdown from './module/dropdown.js';
 import EditorTooltip from './module/tooltip.js';
 import EditorFullscreen from './module/fullscreen.js';
+import EditorLanguage from './module/language/index.js';
 import {renderIcon,undo as undoIcon,redo as redoIcon,fullscreen as fullscreenIcon} from './module/icon.js';
 import styleSheet from './style/default.css' with { type: 'css'};
 
@@ -17,6 +18,7 @@ class WidgetEditor extends HTMLElement {
     constructor(){
         super();
         this.attachShadow({mode:'open'});
+        this.locale = new EditorLanguage(this);
         this.source = false;
         this.painter = null;
         this._initialized = false;
@@ -29,7 +31,7 @@ class WidgetEditor extends HTMLElement {
         };
     }
     static get observedAttributes(){
-        return ['placeholder','height','insert'];
+        return ['placeholder','height','insert','language'];
     }
     connectedCallback(){
         if(!this._initialized){
@@ -64,6 +66,11 @@ class WidgetEditor extends HTMLElement {
         if(!this.content){
             return;
         }
+        if(name==='language'){
+            this.updateLocale();
+            this.tooltip?.refresh();
+            return;
+        }
         if(name==='insert'&&this.dropdown){
             this.dropdown.close();
             let feature = this.features.find(feature=>feature.name==='insert');
@@ -87,10 +94,11 @@ class WidgetEditor extends HTMLElement {
             }
             this.updateToolbar();
         }
-        this.placeholder.textContent = this.getAttribute('placeholder')||'在这里开始写作…';
+        this.placeholder.textContent = this.getAttribute('placeholder')||this.t('在这里开始写作…');
         this.updatePlaceholder();
         let height = Number(this.getAttribute('height'));
         this.style.setProperty('--editor-height',(height>=160&&height<=2000?height:420)+'px');
+        this.updateLocale();
     }
     get value(){
         if(!this._initialized){
@@ -263,7 +271,7 @@ class WidgetEditor extends HTMLElement {
             }
         });
         this.sourceArea.addEventListener('input',()=>{
-            this.shadowRoot.querySelector('.word-count').textContent = this.text.replace(/\s/g,'').length+' 字';
+            this.updateCount();
         });
     }
     execute(name,value,event){
@@ -315,12 +323,12 @@ class WidgetEditor extends HTMLElement {
         let range = this.getRange();
         return Array.from(this.content.querySelectorAll('p,div,h1,h2,h3,h4,h5,h6,li,td,th')).filter(node=>range?.intersectsNode(node));
     }
-    command(name,value=null){
+    command(name,value=null,css=true){
         if(this.source){
             return;
         }
         this.restoreSelection();
-        document.execCommand('styleWithCSS',false,true);
+        document.execCommand('styleWithCSS',false,css);
         document.execCommand(name,false,value);
         this.saveSelection();
         this.update();
@@ -391,7 +399,7 @@ class WidgetEditor extends HTMLElement {
             this.sourceArea.hidden = false;
             this.sourceArea.focus({preventScroll:true});
         }
-        this.shadowRoot.querySelector('.mode-label').textContent = this.source?'HTML 源代码':'可视化编辑';
+        this.locale.set(this.shadowRoot.querySelector('.mode-label'),this.source?'HTML 源代码':'可视化编辑');
         this.updatePlaceholder();
         this.updateToolbar();
     }
@@ -420,7 +428,7 @@ class WidgetEditor extends HTMLElement {
             this.sourceArea.value = value;
         }
         this.updatePlaceholder();
-        this.shadowRoot.querySelector('.word-count').textContent = text.replace(/\s/g,'').length+' 字';
+        this.updateCount(text);
         if(record){
             this.history.record();
         }
@@ -450,13 +458,27 @@ class WidgetEditor extends HTMLElement {
                 control.setAttribute('aria-pressed',String(active));
             }
         });
+        this.updateLocale();
         this.tooltip?.refresh();
     }
-    notify(message){
-        this.shadowRoot.querySelector('.notice').textContent = message;
+    t(key,params){
+        return this.locale.text(key,params);
+    }
+    updateLocale(){
+        this.shadowRoot.querySelector('.mod-panel').lang = this.locale.name;
+        this.placeholder.textContent = this.getAttribute('placeholder')||this.t('在这里开始写作…');
+        [this.toolbar,this.footer,this.table?.toolbar,this._dialog].forEach(root=>this.locale.apply(root));
+        this.locale.apply(this.content,false);
+        this.locale.apply(this.sourceArea,false);
+    }
+    updateCount(text=this.text){
+        this.locale.set(this.shadowRoot.querySelector('.word-count'),'{count} 字',{count:text.replace(/\s/g,'').length});
+    }
+    notify(message,params,literal=false){
+        this.locale.set(this.shadowRoot.querySelector('.notice'),message,params,'textContent',literal);
         let notice = this._dialog?.querySelector('.dialog-notice');
         if(notice){
-            notice.textContent = message;
+            this.locale.set(notice,message,params,'textContent',literal);
         }
     }
     openDialog(options){

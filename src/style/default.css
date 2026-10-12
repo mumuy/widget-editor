@@ -153,6 +153,10 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     text-align: left;
     text-overflow: ellipsis;
 }
+.toolbar[lang="en"] [data-dropdown="fontFamily"] .tool-label{
+    flex-basis: 8em;
+    width: 8em;
+}
 [data-dropdown="heading"] [data-option="p"]{
     font-size: 14px;
     font-weight: 400;
@@ -595,8 +599,12 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     overscroll-behavior: contain;
 }
 .notice{
+    min-width: 0;
+    overflow: hidden;
     color: var(--button-active-color);
     font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .notice:empty{
     display: none;

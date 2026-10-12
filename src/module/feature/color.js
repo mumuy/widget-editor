@@ -35,6 +35,9 @@ export default {
     },
     bind(editor){
         let group = editor.toolbar.querySelector('[data-dropdown="color"]');
+        group.querySelectorAll('[data-color]').forEach(button=>{
+            editor.locale.set(button,'文字颜色 {color}',{color:button.dataset.color},'aria-label');
+        });
         let apply = value=>{
             if(editor.source){
                 return;

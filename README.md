@@ -6,11 +6,12 @@
 
 ## 支持的功能
 
-- 文字格式：加粗、斜体、下划线、字体、字号、文字颜色、清除格式和格式刷。
+- 文字格式：加粗、斜体、下划线、上标、下标、字体、字号、文字颜色、清除格式和格式刷。
 - 段落排版：正文、H1～H6 标题、对齐方式、首行缩进、块引用、有序列表和无序列表。
 - 内容插入：超链接、表格、图片、视频、音频、附件和常见 emoji。
 - 表格编辑：增加或删除行列、合并和拆分单元格。
 - 源代码查看与编辑、撤销和重做。
+- 简体中文、繁体中文和英语界面，可随时切换语言。
 
 ## 快速使用
 
@@ -34,6 +35,7 @@
 | `placeholder` | 空白编辑器中的提示文字 | `在这里开始写作…` |
 | `height` | 编辑区域高度，单位为 px，有效范围为 160～2000 | `420` |
 | `insert` | 允许使用的插入功能，以英文逗号分隔 | 不启用插入功能 |
+| `language` | 界面语言：`zh-CN`、`zh-TW` 或 `en` | `zh-CN` |
 
 `insert` 支持以下字段，字段顺序就是插入菜单中的顺序：
 
@@ -61,6 +63,28 @@ let editor = document.querySelector('#editor');
 editor.setAttribute('insert','emoji,image');
 editor.removeAttribute('insert');
 ```
+
+### 界面语言
+
+默认使用简体中文，通过 `language` 属性选择繁体中文或英语：
+
+```html
+<widget-editor language="zh-CN"></widget-editor>
+<widget-editor language="zh-TW" insert="table,image"></widget-editor>
+<widget-editor language="en" insert="table,image"></widget-editor>
+```
+
+工具栏、Tooltip、下拉选项、弹窗、上传状态、表格操作和字数统计均使用所选语言。未设置 `placeholder` 时，默认提示也随语言变化；自定义提示、编辑内容、文件名和外部传入的上传错误不会自动翻译。语言切换使用原生 JavaScript，不需要第三方插件。
+
+可以运行时切换，已编辑的内容、选区、撤销记录以及弹窗中填写的信息都会保留：
+
+```javascript
+editor.setAttribute('language','en');
+editor.setAttribute('language','zh-TW');
+editor.removeAttribute('language'); // 恢复简体中文
+```
+
+语言值不区分大小写，也支持 `zh-Hans`、`zh-Hant` 和 `en-US`；未知值使用简体中文。
 
 ### 读取与设置内容
 
@@ -180,6 +204,8 @@ customElements.whenDefined('widget-editor').then(function(){
 **全屏**：点击字数统计右侧的全屏图标，让编辑器铺满浏览器可视区域。页面停止滚动，编辑内容在组件内滚动，工具栏和底部栏保持可见；源代码模式也支持。再次点击或按 Escape 退出，恢复页面原来的滚动位置。
 
 **缩进**：点击缩进图标，为当前段落设置两个字宽的首行缩进；再次点击取消。有缩进时图标高亮。选中多个段落时，可以统一设置或取消缩进。
+
+**上标与下标**：选中文字后点击对应按钮，例如 `x²`、`H₂O`；再次点击取消，两个格式互斥。也可以先设置格式再输入文字，HTML 使用 `sup` 或 `sub` 标签。
 
 **格式刷**：在已有格式的文字处点击格式刷，再选中目标文字即可应用。每次只应用一次，再次点击格式刷或按 Escape 可取消。
 

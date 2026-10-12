@@ -1,4 +1,4 @@
-const inlineTags = new Set(['SPAN','A','STRONG','B','EM','I','U']);
+const inlineTags = new Set(['SPAN','A','STRONG','B','EM','I','U','SUP','SUB']);
 
 // 将选中文字的祖先拆开，使样式修改只影响当前文字。
 function isolate(node,ancestor){

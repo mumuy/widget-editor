@@ -100,6 +100,6 @@ export default class EditorFullscreen {
         this.button.innerHTML = renderIcon(enabled?fullscreenExit:fullscreen);
         this.button.classList.toggle('active',enabled);
         this.button.setAttribute('aria-pressed',String(enabled));
-        this.button.setAttribute('aria-label',enabled?'退出全屏':'全屏');
+        this.editor.locale.set(this.button,enabled?'退出全屏':'全屏',{},'aria-label');
     }
 }

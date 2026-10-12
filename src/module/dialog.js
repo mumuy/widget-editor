@@ -26,17 +26,17 @@ export default function openDialog(editor,options){
             <button type="submit" class="btn btn-primary"></button>
         </div>
     </form>`;
-    dialog.querySelector('h3').textContent = options.title;
+    editor.locale.set(dialog.querySelector('h3'),options.title);
     let form = dialog.querySelector('form');
     let submit = dialog.querySelector('[type="submit"]');
-    submit.textContent = options.submitLabel || '确定';
+    editor.locale.set(submit,options.submitLabel||'确定');
     let fields = options.fields || [];
     let inputs = new Map();
     fields.forEach(function(field){
         let label = document.createElement('label');
         label.className = 'field';
         let caption = document.createElement('span');
-        caption.textContent = field.label;
+        editor.locale.set(caption,field.label,field.params);
         let input = document.createElement(field.type==='select' ? 'select' : 'input');
         input.name = field.name;
         if(field.type==='select'){
@@ -145,6 +145,7 @@ export default function openDialog(editor,options){
     editor.shadowRoot.appendChild(dialog);
     editor._dialog = dialog;
     options.mount?.(dialog);
+    editor.locale.apply(dialog);
     dialog.showModal();
     return dialog;
 };

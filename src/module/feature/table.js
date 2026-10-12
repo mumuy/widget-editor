@@ -20,7 +20,7 @@ export default {
             ],
             'submitLabel':'插入表格',
             mount(dialog){
-                tablePicker(dialog,(row,column)=>{
+                tablePicker(editor,dialog,(row,column)=>{
                     rows = row;
                     columns = column;
                 });

@@ -1,4 +1,4 @@
-export default function tablePicker(dialog,onChange){
+export default function tablePicker(editor,dialog,onChange){
     dialog.classList.add('table-dialog');
     let picker = document.createElement('div');
     picker.className = 'table-picker';
@@ -12,7 +12,7 @@ export default function tablePicker(dialog,onChange){
         selectedRow = row;
         selectedColumn = column;
         onChange(row,column);
-        picker.querySelector('.table-size').textContent = column+' 列 × '+row+' 行'+(confirmed?'（已确认）':'');
+        editor.locale.set(picker.querySelector('.table-size'),confirmed?'{columns} 列 × {rows} 行（已确认）':'{columns} 列 × {rows} 行',{columns:column,rows:row});
         cells.forEach(cell=>{
             let active = Number(cell.dataset.row)<=row&&Number(cell.dataset.column)<=column;
             cell.classList.toggle('active',active);
@@ -26,7 +26,7 @@ export default function tablePicker(dialog,onChange){
             cell.className = 'table-grid-cell';
             cell.dataset.row = row;
             cell.dataset.column = column;
-            cell.setAttribute('aria-label',column+' 列 × '+row+' 行');
+            editor.locale.set(cell,'{columns} 列 × {rows} 行',{columns:column,rows:row},'aria-label');
             cell.addEventListener('pointerenter',event=>{
                 if(event.pointerType==='touch'||confirmed&&(row>selectedRow||column>selectedColumn)){
                     return;
