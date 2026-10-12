@@ -61,7 +61,7 @@ class WidgetEditor extends HTMLElement {
         if(!this._initialized){
             return this._pendingValue===null?this.innerHTML:this._pendingValue;
         }
-        return formatHTML(this.source?this.sourceArea.value:this.content.innerHTML);
+        return formatHTML(this.source?this.sourceArea.value:this.contentHTML());
     }
     set value(value){
         if(!this._initialized){
@@ -82,6 +82,14 @@ class WidgetEditor extends HTMLElement {
     }
     getHTML(){
         return this.value;
+    }
+    contentHTML(){
+        if(!this.content.querySelector('[data-table-selected]')){
+            return this.content.innerHTML;
+        }
+        let content = this.content.cloneNode(true);
+        content.querySelectorAll('[data-table-selected]').forEach(cell=>cell.removeAttribute('data-table-selected'));
+        return content.innerHTML;
     }
     setHTML(value){
         this.value = value;
@@ -383,6 +391,7 @@ class WidgetEditor extends HTMLElement {
         if(!this.history){
             return;
         }
+        this.table?.refresh();
         this.features.forEach(feature=>{
             let control = this.toolbar.querySelector('[data-action="'+feature.name+'"]');
             control.disabled = this.source&&feature.name!=='source'||feature.name==='undo'&&!this.history.canUndo||feature.name==='redo'&&!this.history.canRedo;

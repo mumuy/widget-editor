@@ -78,7 +78,7 @@ export const unorderedList = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0
 export const blockquote = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h6v7H4zM10 13c0 4-2 5-5 5M14 6h6v7h-6zM20 13c0 4-2 5-5 5"/></svg>`;
 
 export const paragraph = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M13 4v16M18 4v16M18 4H9a4 4 0 0 0 0 8h4"/>
+    <path d="M4 5h16M12 5v15M9 20h6"/>
 </svg>`;
 
 export const heading1 = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
