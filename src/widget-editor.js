@@ -3,6 +3,7 @@ import EditorSelection from './module/method/selection.js';
 import sanitizeHTML,{escapeHTML} from './module/method/sanitize.js';
 import formatHTML from './module/method/formatHTML.js';
 import applyStyle from './module/method/applyStyle.js';
+import normalizeParagraphs from './module/method/normalizeParagraphs.js';
 import EditorHistory from './module/history.js';
 import openDialog from './module/dialog.js';
 import EditorDropdown from './module/dropdown.js';
@@ -74,6 +75,7 @@ class WidgetEditor extends HTMLElement {
         this.content.innerHTML = sanitizeHTML(value);
         this.sourceArea.value = formatHTML(this.content.innerHTML);
         this.selection.range = null;
+        this.normalizeContent(false,null);
         this.cancelPainter();
         this.history.reset();
         this.update(false,false);
@@ -168,7 +170,16 @@ class WidgetEditor extends HTMLElement {
                 }
             }
         });
-        this.content.addEventListener('input',()=>this.update());
+        this.content.addEventListener('beforeinput',()=>{
+            this.normalizeContent(true);
+            document.execCommand('defaultParagraphSeparator',false,'p');
+        });
+        this.content.addEventListener('input',event=>{
+            if(!event.isComposing){
+                this.update();
+            }
+        });
+        this.content.addEventListener('compositionend',()=>this.update());
         ['pointerup','keyup','focus'].forEach(name=>this.content.addEventListener(name,()=>{
             this.saveSelection();
             if(this.painter&&name!=='focus'){
@@ -187,7 +198,8 @@ class WidgetEditor extends HTMLElement {
             this.saveSelection();
             let html = event.clipboardData.getData('text/html');
             let text = event.clipboardData.getData('text/plain');
-            this.insertHTML(html||escapeHTML(text).replace(/\r?\n/g,'<br>'));
+            let lines = text.split(/\r\n?|\n/);
+            this.insertHTML(html||(lines.length>1?lines.map(line=>'<p>'+(escapeHTML(line)||'<br>')+'</p>').join(''):escapeHTML(text)));
         });
         this.content.addEventListener('drop',event=>{
             event.preventDefault();
@@ -227,7 +239,25 @@ class WidgetEditor extends HTMLElement {
         return this.selection.save();
     }
     restoreSelection(){
-        return this.selection.restore();
+        this.normalizeContent(true,this.selection.range);
+        let range = this.selection.restore();
+        document.execCommand('defaultParagraphSeparator',false,'p');
+        return range;
+    }
+    normalizeContent(ensure=false,range=this.selection.current()||this.selection.range){
+        let current = this.selection.current();
+        if(range&&!this.content.contains(range.commonAncestorContainer)){
+            range = null;
+        }
+        let changed = normalizeParagraphs(this.content,range,ensure);
+        if(range&&changed){
+            this.selection.range = range.cloneRange();
+            if(current){
+                let selection = this.shadowRoot.getSelection?.()||window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        }
     }
     getRange(){
         return this.selection.current()||this.selection.range;
@@ -329,6 +359,9 @@ class WidgetEditor extends HTMLElement {
         this.placeholder.hidden = this.source||!!text||!!structure||blocks.length>1||lines>1;
     }
     update(record=true,emit=true){
+        if(!this.source){
+            this.normalizeContent();
+        }
         this.content.querySelectorAll('a[href]').forEach(link=>{
             if(!link.hasAttribute('download')){
                 link.setAttribute('target','_blank');

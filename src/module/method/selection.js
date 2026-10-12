@@ -28,7 +28,8 @@ export default class EditorSelection {
         content.focus({preventScroll:true});
         if(!range||!content.contains(range.commonAncestorContainer)){
             range = document.createRange();
-            range.selectNodeContents(content);
+            let last = content.lastElementChild;
+            range.selectNodeContents(last?.matches('p,h1,h2,h3,h4,h5,h6')?last:content);
             range.collapse(false);
         }
         let selection = window.getSelection();

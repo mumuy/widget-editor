@@ -70,8 +70,16 @@ export default function applyStyle(content,range,styles){
         let node = range.startContainer;
         // 连续在同一光标位置选择字体时，复用尚未输入文字的占位节点。
         if(node.nodeType!==Node.TEXT_NODE||node.data!=='\u200b'){
+            let element = node.nodeType===Node.ELEMENT_NODE?node:node.parentElement;
+            let block = element.closest('p,h1,h2,h3,h4,h5,h6,li,td,th');
+            let placeholder = block?.querySelector('br');
             node = document.createTextNode('\u200b');
-            range.insertNode(node);
+            if(block&&content.contains(block)&&!block.textContent&&placeholder&&block.querySelectorAll('br').length===1&&!block.querySelector('img,video,audio,table')){
+                // 用样式节点替换空行占位符，避免输入文字后仍残留一个换行。
+                placeholder.replaceWith(node);
+            }else{
+                range.insertNode(node);
+            }
         }
         styleText(node,styles,content);
         range.setStart(node,1);

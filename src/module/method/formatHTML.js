@@ -1,4 +1,5 @@
 import sanitizeHTML,{escapeHTML} from './sanitize.js';
+import normalizeParagraphs from './normalizeParagraphs.js';
 
 const blockTags = new Set('p div h1 h2 h3 h4 h5 h6 ul ol li video audio table thead tbody tfoot tr th td blockquote'.split(' '));
 const containerTags = new Set('div blockquote ul ol li table thead tbody tfoot tr th td'.split(' '));
@@ -6,6 +7,7 @@ const containerTags = new Set('div blockquote ul ol li table thead tbody tfoot t
 export default function formatHTML(html){
     let template = document.createElement('template');
     template.innerHTML = sanitizeHTML(html);
+    normalizeParagraphs(template.content);
     let blockOnly = function(parent){
         return parent.children.length>0 && Array.from(parent.childNodes).every(function(node){
             return node.nodeType===Node.ELEMENT_NODE ? blockTags.has(node.localName) :
