@@ -15,7 +15,7 @@ export default {
             ['#940000','#944a00','#946f00','#949400','#009431','#00947b','#006f94','#003194','#560094','#94004a']
         ].flat();
         return `<div class="tool-dropdown" data-dropdown="color">
-            <button type="button" class="tool tool-color" data-action="color" title="文字颜色" aria-label="文字颜色" aria-haspopup="dialog" aria-expanded="false" aria-controls="menu-color">${renderIcon(icon)}<span class="color-indicator" aria-hidden="true"></span></button>
+            <button type="button" class="tool tool-color" data-action="color" aria-label="文字颜色" aria-haspopup="dialog" aria-expanded="false" aria-controls="menu-color">${renderIcon(icon)}<span class="color-indicator" aria-hidden="true"></span></button>
             <div class="tool-menu color-menu" part="color-menu" id="menu-color" role="dialog" aria-label="文字颜色" popover="manual" hidden>
                 <div class="color-caption">预设颜色</div>
                 <div class="color-swatches">

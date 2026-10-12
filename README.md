@@ -175,6 +175,8 @@ customElements.whenDefined('widget-editor').then(function(){
 
 ## 编辑操作
 
+工具栏按钮在鼠标悬停或键盘聚焦时显示功能提示，表格浮动工具栏同样支持。提示不会占用编辑区域，也不会写入 HTML 内容。
+
 **缩进**：点击缩进图标，为当前段落设置两个字宽的首行缩进；再次点击取消。有缩进时图标高亮。选中多个段落时，可以统一设置或取消缩进。
 
 **格式刷**：在已有格式的文字处点击格式刷，再选中目标文字即可应用。每次只应用一次，再次点击格式刷或按 Escape 可取消。
@@ -210,6 +212,8 @@ HTML 输出中，纯文本单元格保持在一行，例如 `<td>文字</td>`；
 widget-editor{
     --panel-border-color: #dce2e9;
     --button-active-color: #2876df;
+    --tooltip-background-color: #343b48;
+    --tooltip-text-color: #fff;
     --editor-padding-x: 20px;
     --editor-padding-y: 20px;
 }

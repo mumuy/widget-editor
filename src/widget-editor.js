@@ -8,6 +8,7 @@ import normalizeTableCells from './module/method/normalizeTableCells.js';
 import EditorHistory from './module/history.js';
 import openDialog from './module/dialog.js';
 import EditorDropdown from './module/dropdown.js';
+import EditorTooltip from './module/tooltip.js';
 import {renderIcon,undo as undoIcon,redo as redoIcon} from './module/icon.js';
 import styleSheet from './style/default.css' with { type: 'css'};
 
@@ -39,16 +40,19 @@ class WidgetEditor extends HTMLElement {
             this.dropdown = new EditorDropdown(this);
             this.value = this._pendingValue===null?this.innerHTML:this._pendingValue;
             this.bindEvents();
+            this.tooltip = new EditorTooltip(this);
             this.attributeChangedCallback();
             this.dispatchEvent(new CustomEvent('ready',{bubbles:true,composed:true}));
         }
         this.dropdown.connect();
         this.table?.connect();
+        this.tooltip.connect();
         document.addEventListener('selectionchange',this._onSelection);
     }
     disconnectedCallback(){
         this.dropdown?.disconnect();
         this.table?.disconnect();
+        this.tooltip?.disconnect();
         document.removeEventListener('selectionchange',this._onSelection);
         this._dialog?.dismiss();
     }
@@ -147,7 +151,7 @@ class WidgetEditor extends HTMLElement {
             ...features.filter(feature=>feature.name!=='source')];
         this.features = controls.map(feature=>typeof feature.options==='function'?{...feature,options:feature.options(this)}:feature);
         return this.features.map(function(feature){
-            let attributes = `data-action="${feature.name}" title="${feature.label}" aria-label="${feature.label}"`;
+            let attributes = `data-action="${feature.name}" aria-label="${feature.label}"`;
             if(feature.type==='dropdown'){
                 return feature.options.length?EditorDropdown.render(feature):'';
             }
@@ -440,6 +444,7 @@ class WidgetEditor extends HTMLElement {
                 control.setAttribute('aria-pressed',String(active));
             }
         });
+        this.tooltip?.refresh();
     }
     notify(message){
         this.shadowRoot.querySelector('.notice').textContent = message;

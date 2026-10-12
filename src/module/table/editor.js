@@ -27,7 +27,7 @@ export default class TableEditor {
         this.toolbar.setAttribute('aria-label','表格编辑');
         this.toolbar.setAttribute('popover','manual');
         this.toolbar.innerHTML = `<div class="table-head"><span class="table-selection"></span><span class="table-help">拖动或 Shift 点击选格</span></div><div class="table-actions">${actions.map(action=>{
-            return `<button type="button" data-table-action="${action[0]}" title="${action[1]}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${action[2]}"/></svg>${action[1]}</button>`;
+            return `<button type="button" data-table-action="${action[0]}" aria-label="${action[1]}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${action[2]}"/></svg>${action[1]}</button>`;
         }).join('')}</div>`;
         editor.shadowRoot.appendChild(this.toolbar);
         this.onOutside = event=>{
