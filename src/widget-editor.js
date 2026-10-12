@@ -4,6 +4,7 @@ import sanitizeHTML,{escapeHTML} from './module/method/sanitize.js';
 import formatHTML from './module/method/formatHTML.js';
 import applyStyle from './module/method/applyStyle.js';
 import normalizeParagraphs from './module/method/normalizeParagraphs.js';
+import normalizeTableCells from './module/method/normalizeTableCells.js';
 import EditorHistory from './module/history.js';
 import openDialog from './module/dialog.js';
 import EditorDropdown from './module/dropdown.js';
@@ -96,6 +97,7 @@ class WidgetEditor extends HTMLElement {
         }
         this._dialog?.dismiss();
         this.content.innerHTML = sanitizeHTML(value);
+        normalizeTableCells(this.content,true);
         this.sourceArea.value = formatHTML(this.content.innerHTML);
         this.selection.range = null;
         this.normalizeContent(false,null);
@@ -364,6 +366,7 @@ class WidgetEditor extends HTMLElement {
         if(this.source){
             let value = sanitizeHTML(this.sourceArea.value);
             this.content.innerHTML = value;
+            normalizeTableCells(this.content,true);
             this.selection.range = null;
             this.source = false;
             this.content.hidden = false;

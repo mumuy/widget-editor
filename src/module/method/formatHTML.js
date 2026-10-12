@@ -1,6 +1,7 @@
 import sanitizeHTML,{escapeHTML} from './sanitize.js';
 import normalizeParagraphs from './normalizeParagraphs.js';
 import normalizeEmptyLines from './normalizeEmptyLines.js';
+import normalizeTableCells from './normalizeTableCells.js';
 
 const blockTags = new Set('p div br h1 h2 h3 h4 h5 h6 ul ol li video audio table thead tbody tfoot tr th td blockquote'.split(' '));
 const containerTags = new Set('div blockquote ul ol li table thead tbody tfoot tr th td'.split(' '));
@@ -11,6 +12,7 @@ export default function formatHTML(html){
     normalizeParagraphs(template.content);
     // 空行直接输出 br；编辑时的段落占位不写入 HTML。
     normalizeEmptyLines(template.content);
+    normalizeTableCells(template.content);
     let blockOnly = function(parent){
         return parent.children.length>0 && Array.from(parent.childNodes).every(function(node){
             return node.nodeType===Node.ELEMENT_NODE ? blockTags.has(node.localName) :
