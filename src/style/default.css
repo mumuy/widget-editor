@@ -386,7 +386,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
 }
 .editor-content a{
     color: var(--button-active-color);
-    text-decoration: underline;
+    text-decoration: none;
     text-underline-offset: 3px;
 }
 .editor-content img{
