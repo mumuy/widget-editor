@@ -214,11 +214,10 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
     border-radius: 6px;
 }
 .color-caption{
-    margin-bottom: 8px;
-    color: var(--muted-text-color);
-    font-size: 12px;
+    margin-bottom: 5px;
+    font-size: 14px;
     font-weight: 600;
-    line-height: 16px;
+    line-height: 20px;
 }
 .color-swatches{
     display: grid;
