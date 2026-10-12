@@ -39,10 +39,6 @@ export const format = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 2
     <path d="m16 3 5 5a2 2 0 0 1 0 3l-9 9H7l-4-4a2 2 0 0 1 0-3l10-10a2 2 0 0 1 3 0ZM8 8l9 9M12 20h9"/>
 </svg>`;
 
-export const formatHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M9 4H5v16h4M15 4h4v16h-4M9 9h6M9 15h6"/>
-</svg>`;
-
 export const formatPainter = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
     <rect x="3" y="3" width="14" height="6" rx="1"/><path d="M17 6h3v7h-9v3"/><rect x="9" y="16" width="4" height="6" rx="1"/>
 </svg>`;

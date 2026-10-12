@@ -194,32 +194,6 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
     background: var(--button-active-background);
     color: var(--button-active-color);
 }
-.source-tools{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    min-height: 38px;
-    padding: 6px 12px;
-    background: var(--toolbar-background-color);
-    color: var(--muted-text-color);
-    font-size: 12px;
-    border-bottom: 1px solid var(--panel-border-color);
-}
-.source-format{
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 3px 8px;
-    background: var(--field-background-color);
-    color: var(--button-text-color);
-    border: 1px solid var(--panel-border-color);
-    border-radius: 4px;
-    font-size: 12px;
-}
-.source-format:hover{
-    background: var(--button-background-color);
-}
 .tool-color{
     width: 34px;
     cursor: pointer;

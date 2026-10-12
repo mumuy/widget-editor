@@ -1,4 +1,4 @@
-import sanitizeHTML from './sanitize.js';
+import sanitizeHTML,{escapeHTML} from './sanitize.js';
 
 const blockTags = new Set('p div h1 h2 h3 h4 h5 h6 ul ol li table thead tbody tfoot tr th td blockquote pre hr'.split(' '));
 const containerTags = new Set('div blockquote ul ol li table thead tbody tfoot tr th td'.split(' '));
@@ -25,10 +25,25 @@ export default function formatHTML(html){
         });
         return indent+opening+'\n'+children.join('\n')+'\n'+indent+closing;
     };
-    if(!blockOnly(template.content)){
+    if(!Array.from(template.content.children).some(node=>blockTags.has(node.localName))){
         return template.innerHTML;
     }
-    return Array.from(template.content.children).map(function(node){
-        return serialize(node,0);
-    }).join('\n');
+    let lines = [];
+    let inline = '';
+    let flush = function(){
+        if(inline&&!/^[ \t\r\n\f]*$/.test(inline)){
+            lines.push(inline);
+        }
+        inline = '';
+    };
+    Array.from(template.content.childNodes).forEach(function(node){
+        if(node.nodeType===Node.ELEMENT_NODE&&blockTags.has(node.localName)){
+            flush();
+            lines.push(serialize(node,0));
+        }else{
+            inline += node.nodeType===Node.ELEMENT_NODE?node.outerHTML:escapeHTML(node.textContent);
+        }
+    });
+    flush();
+    return lines.join('\n');
 }

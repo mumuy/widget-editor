@@ -1,10 +1,11 @@
 import features from './module/feature/index.js';
 import EditorSelection from './module/method/selection.js';
 import sanitizeHTML,{escapeHTML} from './module/method/sanitize.js';
+import formatHTML from './module/method/formatHTML.js';
 import EditorHistory from './module/history.js';
 import openDialog from './module/dialog.js';
 import EditorDropdown from './module/dropdown.js';
-import {renderIcon,undo as undoIcon,redo as redoIcon,formatHTML as formatIcon} from './module/icon.js';
+import {renderIcon,undo as undoIcon,redo as redoIcon} from './module/icon.js';
 import styleSheet from './style/default.css' with { type: 'css'};
 
 class WidgetEditor extends HTMLElement {
@@ -60,7 +61,7 @@ class WidgetEditor extends HTMLElement {
         if(!this._initialized){
             return this._pendingValue===null?this.innerHTML:this._pendingValue;
         }
-        return sanitizeHTML(this.source?this.sourceArea.value:this.content.innerHTML);
+        return formatHTML(this.source?this.sourceArea.value:this.content.innerHTML);
     }
     set value(value){
         if(!this._initialized){
@@ -68,7 +69,7 @@ class WidgetEditor extends HTMLElement {
             return;
         }
         this.content.innerHTML = sanitizeHTML(value);
-        this.sourceArea.value = this.content.innerHTML;
+        this.sourceArea.value = formatHTML(this.content.innerHTML);
         this.selection.range = null;
         this.cancelPainter();
         this.history.reset();
@@ -117,7 +118,6 @@ class WidgetEditor extends HTMLElement {
         }).join('');
         this.shadowRoot.innerHTML = `<div class="mod-panel">
             <div class="toolbar hd" role="toolbar" aria-label="文本格式工具栏">${toolbar}</div>
-            <div class="source-tools" hidden><span>HTML 源代码</span><button type="button" class="source-format" aria-label="格式化 HTML">${renderIcon(formatIcon)}<span>格式化 HTML</span></button></div>
             <div class="bd">
                 <div class="editor-content" contenteditable="true" role="textbox" aria-label="富文本内容" aria-multiline="true" spellcheck="true"></div>
                 <div class="editor-placeholder" aria-hidden="true" hidden></div>
@@ -128,7 +128,6 @@ class WidgetEditor extends HTMLElement {
         this.content = this.shadowRoot.querySelector('.editor-content');
         this.placeholder = this.shadowRoot.querySelector('.editor-placeholder');
         this.sourceArea = this.shadowRoot.querySelector('.editor-source');
-        this.sourceTools = this.shadowRoot.querySelector('.source-tools');
         this.toolbar = this.shadowRoot.querySelector('.toolbar');
     }
     bindEvents(){
@@ -151,9 +150,6 @@ class WidgetEditor extends HTMLElement {
                     this.execute(control.dataset.action,null,event);
                 }
             }
-        });
-        this.sourceTools.querySelector('button').addEventListener('click',()=>{
-            this.features.find(feature=>feature.name==='source').format(this);
         });
         this.content.addEventListener('input',()=>this.update());
         ['pointerup','keyup','focus'].forEach(name=>this.content.addEventListener(name,()=>{
@@ -344,7 +340,6 @@ class WidgetEditor extends HTMLElement {
             this.sourceArea.hidden = false;
             this.sourceArea.focus({preventScroll:true});
         }
-        this.sourceTools.hidden = !this.source;
         this.shadowRoot.querySelector('.mode-label').textContent = this.source?'HTML 源代码':'可视化编辑';
         this.updatePlaceholder();
         this.updateToolbar();
@@ -362,14 +357,20 @@ class WidgetEditor extends HTMLElement {
             link.setAttribute('target','_blank');
             link.setAttribute('rel','noopener noreferrer');
         });
+        // 自动排版输出及源码，保留编辑节点和当前选区。
+        let value = this.value;
+        let text = this.text;
+        if(!this.source){
+            this.sourceArea.value = value;
+        }
         this.updatePlaceholder();
-        this.shadowRoot.querySelector('.word-count').textContent = this.text.replace(/\s/g,'').length+' 字';
+        this.shadowRoot.querySelector('.word-count').textContent = text.replace(/\s/g,'').length+' 字';
         if(record){
             this.history.record();
         }
         this.updateToolbar();
         if(emit){
-            this.dispatchEvent(new CustomEvent('change',{detail:{value:this.value,text:this.text},bubbles:true,composed:true}));
+            this.dispatchEvent(new CustomEvent('change',{detail:{value,text},bubbles:true,composed:true}));
         }
     }
     updateToolbar(){
