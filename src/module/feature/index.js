@@ -7,6 +7,7 @@ import link from './link.js';
 import bold from './bold.js';
 import italic from './italic.js';
 import underline from './underline.js';
+import strikethrough from './strikethrough.js';
 import superscript from './superscript.js';
 import subscript from './subscript.js';
 import source from './source.js';
@@ -18,4 +19,4 @@ import indentation from './indentation.js';
 import fontFamily from './fontFamily.js';
 import blockquote from './blockquote.js';
 
-export default [source,heading,fontFamily,fontSize,alignment,indentation,bold,italic,underline,superscript,subscript,color,blockquote,orderedList,unorderedList,link,format,formatPainter,insert];
+export default [source,heading,fontFamily,fontSize,alignment,indentation,bold,italic,underline,strikethrough,superscript,subscript,color,blockquote,orderedList,unorderedList,link,format,formatPainter,insert];

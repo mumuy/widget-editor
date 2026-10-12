@@ -141,6 +141,10 @@ export const underline = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
     <path d="M6 4v8a6 6 0 0 0 12 0V4M4 21h16"/>
 </svg>`;
 
+export const strikethrough = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 5a8 8 0 0 0-5-2c-3 0-5 1.5-5 4 0 4 9 3 9 8 0 2.5-2 4-5 4a9 9 0 0 1-6-2M3 12h18"/>
+</svg>`;
+
 export const superscript = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
     <path d="m3 9 9 12M12 9 3 21M16 5a2.5 2.5 0 0 1 5 0c0 2-5 3-5 6h5"/>
 </svg>`;

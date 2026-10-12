@@ -2,7 +2,7 @@ import hexColor from './color.js';
 import {safeDataURL,fileName} from './file.js';
 
 // 仅保留工具栏支持的标签及编辑时需要的段落、换行；粘贴、源码及 API 共用此入口。
-const allowedTags = new Set('p div span br strong b em i u sup sub h1 h2 h3 h4 h5 h6 ul ol li a img video audio table thead tbody tfoot tr th td blockquote'.split(' '));
+const allowedTags = new Set('p div span br strong b em i u s strike sup sub h1 h2 h3 h4 h5 h6 ul ol li a img video audio table thead tbody tfoot tr th td blockquote'.split(' '));
 const blockedTags = new Set('script style iframe object embed svg math form input button textarea select link meta base template'.split(' '));
 const styleRules = {
     'color':value=>/^(#[\da-f]{3,8}|rgba?\([\d\s.,%]+\)|[a-z]+)$/i.test(value),
@@ -11,7 +11,7 @@ const styleRules = {
     'font-family':value=>value.length<=256&&value.split(',').every(name=>/^(?:[a-z\u3400-\u9fff][a-z\d\u3400-\u9fff _-]*|"[a-z\u3400-\u9fff][a-z\d\u3400-\u9fff _-]*"|'[a-z\u3400-\u9fff][a-z\d\u3400-\u9fff _-]*')$/i.test(name.trim())),
     'font-weight':value=>/^(normal|bold|[1-9]00)$/.test(value),
     'font-style':value=>/^(normal|italic|oblique)$/.test(value),
-    'text-decoration':value=>/^(none|underline|line-through|underline line-through)$/.test(value),
+    'text-decoration':value=>/^(none|underline|line-through|underline line-through|line-through underline)$/.test(value),
     'text-align':value=>/^(left|center|right|justify)$/.test(value),
     'text-indent':value=>['0px','2em'].includes(value)
 };
@@ -52,6 +52,17 @@ export default function sanitizeHTML(html){
                 return;
             }
             let tag = node.localName;
+            if(tag==='del'){
+                // del 作为删除线导入，统一成可以取消格式的 s 标签。
+                let element = document.createElement('s');
+                if(node.hasAttribute('style')){
+                    element.setAttribute('style',node.getAttribute('style'));
+                }
+                element.append(...node.childNodes);
+                node.replaceWith(element);
+                node = element;
+                tag = 's';
+            }
             if(blockedTags.has(tag)){
                 node.remove();
                 return;

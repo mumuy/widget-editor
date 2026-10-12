@@ -1,4 +1,4 @@
-const emptyTags = new Set('BR SPAN STRONG B EM I U'.split(' '));
+const emptyTags = new Set('BR SPAN STRONG B EM I U S STRIKE DEL SUP SUB'.split(' '));
 
 export default function normalizeTableCells(content,editing=false){
     content.querySelectorAll('td,th').forEach(cell=>{

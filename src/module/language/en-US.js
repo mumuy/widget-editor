@@ -34,6 +34,7 @@ export default {
     '加粗':'Bold',
     '斜体':'Italic',
     '下划线':'Underline',
+    '删除线':'Strikethrough',
     '上标':'Superscript',
     '下标':'Subscript',
     '文字颜色':'Text color',
