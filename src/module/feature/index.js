@@ -19,5 +19,4 @@ import table from './table.js';
 import fontFamily from './fontFamily.js';
 import blockquote from './blockquote.js';
 
-export default [format,formatPainter,heading,fontFamily,fontSize,alignment,bold,italic,underline,
-    color,blockquote,orderedList,unorderedList,link,image,video,audio,attachment,table,source];
+export default [format,formatPainter,heading,fontFamily,fontSize,alignment,bold,italic,underline,color,blockquote,orderedList,unorderedList,link,table,image,audio,video,attachment,source];
