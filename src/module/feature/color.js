@@ -6,13 +6,13 @@ export default {
     'label':'文字颜色',
     'type':'color',
     render(){
-        // 第一行使用灰阶，其余同一色系通过明暗及饱和度拉开差异。
+        // 第一行使用灰阶，彩色保持高饱和度，通过明暗及色相拉开差异。
         let colors = [
             ['#ffffff','#eeeeee','#cccccc','#aaaaaa','#888888','#666666','#555555','#333333','#222222','#000000'],
             ['#f87171','#fb923c','#fbbf24','#facc15','#4ade80','#2dd4bf','#38bdf8','#60a5fa','#a78bfa','#f472b6'],
             ['#ff0000','#ff8000','#ffbf00','#ffff00','#00b050','#00bfa5','#00b8e6','#0066ff','#8800ff','#ff0080'],
-            ['#bf7373','#b88a5f','#b69b53','#a6a34f','#699970','#5f9b90','#5f91a8','#687fac','#9270a6','#b46c8e'],
-            ['#aa1111','#a83f00','#a87700','#878700','#007a33','#007a66','#006a88','#1746a0','#662099','#a31859']
+            ['#ff3838','#ff7012','#ed9b00','#d7db00','#00d94b','#00dfb2','#00c8fa','#2457ff','#a622ff','#ff1e98'],
+            ['#d00000','#d95600','#c88b00','#b0a700','#009d24','#00aa87','#008fba','#003fd1','#8200d4','#d60068']
         ].flat();
         return `<div class="tool-dropdown" data-dropdown="color">
             <button type="button" class="tool tool-color" data-action="color" title="文字颜色" aria-label="文字颜色" aria-haspopup="dialog" aria-expanded="false" aria-controls="menu-color">${renderIcon(icon)}<span class="color-indicator" aria-hidden="true"></span></button>
