@@ -493,6 +493,9 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
     background: var(--toolbar-background-color);
     border-left: 3px solid var(--panel-border-color);
 }
+.editor-content blockquote p:last-child{
+    margin-bottom: 0;
+}
 .editor-source{
     font-family: Menlo,Monaco,Consolas,'Andale Mono','lucida console','Courier New',monospace;
     tab-size: 4;
