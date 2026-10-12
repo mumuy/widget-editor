@@ -84,6 +84,7 @@ customElements.whenDefined('widget-editor').then(function(){
 | 图片上传 | `image.js` | 从本地选择图片并插入 |
 | 加粗 | `bold.js` | 切换加粗 |
 | 斜体 | `italic.js` | 切换斜体 |
+| 下划线 | `underline.js` | 切换下划线，支持 Ctrl / Command + U |
 | 源代码 | `source.js` | 查看和编辑自动排版的 HTML，返回可视编辑时清理内容 |
 | 对齐方式 | `alignment.js` | 左对齐、居中、右对齐及两端对齐 |
 | 文字大小 | `fontSize.js` | 12、14、16、18、20、24、28、32、48 px |
@@ -130,7 +131,7 @@ widget-editor/
 
 ## 下拉菜单与图标
 
-标题、字体、文字大小和对齐方式使用普通按钮组成下拉菜单。可在 `src/style/default.css` 中修改 `.tool-dropdown-button`、`.tool-menu`、`.tool-option` 的样式，也可从页面通过 `::part` 调整：
+标题、字体、文字大小和对齐方式使用普通按钮组成下拉菜单。标题、字体和字号的工具栏按钮仅显示文字与下拉箭头，标题菜单的正文和 H1～H6 选项分别显示对应 SVG 图标。可在 `src/style/default.css` 中修改 `.tool-dropdown-button`、`.tool-menu`、`.tool-option` 的样式，也可从页面通过 `::part` 调整：
 
 ```css
 widget-editor::part(dropdown-trigger){
@@ -168,7 +169,7 @@ npm run build
 
 初始内容、粘贴、源码及 HTML API 使用统一的清理逻辑，导出的 HTML 和 `change` 事件中的 HTML 也会经过清理。组件限制可用标签、属性、行内样式及链接协议，移除脚本与事件属性。若内容需要保存并公开展示，仍应在服务端执行适合业务规则的 HTML 清理。
 
-标签白名单按工具栏能力设置：`p`、`div`、`span`、`br`，加粗及斜体的 `strong` / `b`、`em` / `i`，`h1`～`h6`，`ul`、`ol`、`li`，`a`、`img`，`table`、`thead`、`tbody`、`tfoot`、`tr`、`th`、`td`，以及 `blockquote`。`div`、`span` 和 `br` 用于浏览器编辑及文字样式。其他普通标签（如 `pre`、`code`、`hr`、`u`、`s`、`sub`、`sup`、`font`）去掉外层，保留文字及已清理的支持节点；脚本、表单、iframe 等整个节点及其内容移除。源码返回可视化时应用过滤，读取 HTML 时也使用相同规则。
+标签白名单按工具栏能力设置：`p`、`div`、`span`、`br`，加粗及斜体的 `strong` / `b`、`em` / `i`，下划线的 `u`，`h1`～`h6`，`ul`、`ol`、`li`，`a`、`img`，`table`、`thead`、`tbody`、`tfoot`、`tr`、`th`、`td`，以及 `blockquote`。`div`、`span` 和 `br` 用于浏览器编辑及文字样式。其他普通标签（如 `pre`、`code`、`hr`、`s`、`sub`、`sup`、`font`）去掉外层，保留文字及已清理的支持节点；脚本、表单、iframe 等整个节点及其内容移除。源码返回可视化时应用过滤，读取 HTML 时也使用相同规则。
 
 ## License
 

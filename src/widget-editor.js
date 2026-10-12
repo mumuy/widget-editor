@@ -194,9 +194,9 @@ class WidgetEditor extends HTMLElement {
             if(key==='z'||key==='y'){
                 event.preventDefault();
                 this.history.move(key==='y'||event.shiftKey?1:-1);
-            }else if(key==='b'||key==='i'){
+            }else if(['b','i','u'].includes(key)){
                 event.preventDefault();
-                this.execute(key==='b'?'bold':'italic');
+                this.execute({'b':'bold','i':'italic','u':'underline'}[key]);
             }
         });
         this.sourceArea.addEventListener('input',()=>{

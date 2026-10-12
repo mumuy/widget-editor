@@ -1,5 +1,3 @@
-import {fontFamily as icon} from '../icon.js';
-
 const options = [
     {'value':'default','label':'默认字体','font':'Arial, Helvetica, "Microsoft Yahei", sans-serif'},
     {'value':'yahei','label':'微软雅黑','font':'"Microsoft Yahei", "PingFang SC", sans-serif'},
@@ -18,7 +16,6 @@ const options = [
 
 export default {
     'name':'fontFamily',
-    'icon':icon,
     'label':'字体',
     'type':'dropdown',
     'options':options,

@@ -28,11 +28,7 @@ export const close = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24
 </svg>`;
 
 export const color = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-    <path d="m5 17 6-13h2l6 13M8 12h8M3 21h18"/>
-</svg>`;
-
-export const fontSize = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M3 5h12M9 5v15m7-7h6m-3 0v7"/>
+    <path d="m5 19 6-15h2l6 15M8 13h8"/>
 </svg>`;
 
 export const format = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -41,10 +37,6 @@ export const format = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 2
 
 export const formatPainter = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
     <rect x="3" y="3" width="14" height="6" rx="1"/><path d="M17 6h3v7h-9v3"/><rect x="9" y="16" width="4" height="6" rx="1"/>
-</svg>`;
-
-export const heading = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M5 4v16M19 4v16M5 12h14"/>
 </svg>`;
 
 export const image = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -83,9 +75,39 @@ export const unorderedList = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0
     <path d="M10 5h11M10 12h11M10 19h11"/><circle cx="4" cy="5" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="19" r="1"/>
 </svg>`;
 
-export const fontFamily = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h12M9 3v2M6 5c0 6 4 9 8 11M12 5c0 6-4 9-9 12M14 21l4-10 4 10M16 17h4"/></svg>`;
-
 export const blockquote = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h6v7H4zM10 13c0 4-2 5-5 5M14 6h6v7h-6zM20 13c0 4-2 5-5 5"/></svg>`;
+
+export const paragraph = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M13 4v16M18 4v16M18 4H9a4 4 0 0 0 0 8h4"/>
+</svg>`;
+
+export const heading1 = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 4v16M12 4v16M3 12h9m4 2 2-2v8m-2 0h4"/>
+</svg>`;
+
+export const heading2 = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 4v16M12 4v16M3 12h9M16 14a2 2 0 0 1 4 0c0 2-4 3-4 6h4"/>
+</svg>`;
+
+export const heading3 = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 4v16M12 4v16M3 12h9M16 12h2a2 2 0 0 1 0 4h-1m1 0a2 2 0 0 1 0 4h-2"/>
+</svg>`;
+
+export const heading4 = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 4v16M12 4v16M3 12h9M19 20v-8l-4 6h6"/>
+</svg>`;
+
+export const heading5 = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 4v16M12 4v16M3 12h9M20 12h-4v4h2a2 2 0 0 1 0 4h-2"/>
+</svg>`;
+
+export const heading6 = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 4v16M12 4v16M3 12h9M20 12h-2a2 2 0 0 0-2 2v4a2 2 0 1 0 2-2h-2"/>
+</svg>`;
+
+export const underline = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 4v8a6 6 0 0 0 12 0V4M4 21h16"/>
+</svg>`;
 
 export function renderIcon(icon,arrow=false){
     return icon.replace('<svg ','<svg class="'+(arrow?'tool-arrow':'tool-icon')+'"'+(arrow?'':' part="toolbar-icon"')+' aria-hidden="true" focusable="false" ');
