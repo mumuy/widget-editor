@@ -1,0 +1,126 @@
+export default function openDialog(editor,options){
+    if(!editor.isConnected || !editor.shadowRoot){
+        return;
+    }
+    editor.saveSelection();
+    if(editor._dialog){
+        editor._dialog.close();
+        editor._dialog.remove();
+    }
+    let dialog = document.createElement('dialog');
+    dialog.className = 'editor-dialog';
+    let titleId = 'editor-dialog-title';
+    dialog.setAttribute('aria-labelledby',titleId);
+    dialog.innerHTML = '<form class="dialog-form"><div class="dialog-head"><h3 id="'+titleId+'"></h3>'+
+        '<button type="button" class="dialog-close" aria-label="关闭">×</button></div>'+
+        '<div class="dialog-fields"></div><p class="dialog-notice" role="status"></p>'+
+        '<div class="dialog-actions"><button type="button" class="btn dialog-cancel">取消</button>'+
+        '<button type="submit" class="btn btn-primary"></button></div></form>';
+    dialog.querySelector('h3').textContent = options.title;
+    let form = dialog.querySelector('form');
+    let submit = dialog.querySelector('[type="submit"]');
+    submit.textContent = options.submitLabel || '确定';
+    let fields = options.fields || [];
+    let inputs = new Map();
+    fields.forEach(function(field){
+        let label = document.createElement('label');
+        label.className = 'field';
+        let caption = document.createElement('span');
+        caption.textContent = field.label;
+        let input = document.createElement(field.type==='select' ? 'select' : 'input');
+        input.name = field.name;
+        if(field.type==='select'){
+            field.options.forEach(function(option){
+                let item = document.createElement('option');
+                item.value = option.value;
+                item.textContent = option.label;
+                input.appendChild(item);
+            });
+        }else{
+            input.type = field.type || 'text';
+        }
+        ['min','max','placeholder','accept'].forEach(function(name){
+            if(field[name]!==undefined){
+                input.setAttribute(name,field[name]);
+            }
+        });
+        input.required = !!field.required;
+        if(field.type==='checkbox'){
+            input.checked = !!field.value;
+        }else if(field.type!=='file'){
+            input.value = field.value ?? '';
+        }
+        inputs.set(field.name,input);
+        label.append(caption,input);
+        dialog.querySelector('.dialog-fields').appendChild(label);
+    });
+    let submitting = false;
+    let finished = false;
+    let current = function(){
+        return !finished && editor.isConnected && dialog.isConnected && editor._dialog===dialog;
+    };
+    let finish = function(){
+        if(finished){
+            return;
+        }
+        finished = true;
+        dialog.close();
+        dialog.remove();
+        if(editor._dialog===dialog){
+            editor._dialog = null;
+            if(editor.isConnected){
+                editor.restoreSelection();
+            }
+        }
+    };
+    dialog.querySelector('.dialog-close').onclick = finish;
+    dialog.querySelector('.dialog-cancel').onclick = finish;
+    dialog.addEventListener('cancel',function(event){
+        event.preventDefault();
+        finish();
+    });
+    form.onsubmit = async function(event){
+        event.preventDefault();
+        if(submitting || !current() || !form.reportValidity()){
+            return;
+        }
+        submitting = true;
+        submit.disabled = true;
+        form.setAttribute('aria-busy','true');
+        let values = {};
+        fields.forEach(function(field){
+            let input = inputs.get(field.name);
+            values[field.name] = field.type==='file' ? input.files[0] :
+                field.type==='checkbox' ? input.checked : input.value;
+        });
+        // 先解除模态层的焦点限制，编辑命令才能恢复到原来的选区。
+        dialog.close();
+        try{
+            let success = await options.onSubmit(values);
+            if(!current()){
+                finish();
+                return;
+            }
+            if(success===false){
+                dialog.showModal();
+            }else{
+                finish();
+            }
+        }catch(error){
+            if(current()){
+                editor.notify('操作失败，请重试');
+                dialog.showModal();
+            }else{
+                finish();
+            }
+        }finally{
+            submitting = false;
+            submit.disabled = false;
+            form.removeAttribute('aria-busy');
+        }
+    };
+    editor.shadowRoot.appendChild(dialog);
+    editor._dialog = dialog;
+    dialog.showModal();
+    return dialog;
+};

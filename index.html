@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+        <meta name="description" content="一个轻量、模块清晰的富文本编辑器组件，支持文字格式、格式刷、图片、链接和表格。"/>
+        <meta name="theme-color" content="#2095f2"/>
+        <title>富文本编辑器组件 · Widget Editor</title>
+        <link rel="stylesheet" href="static/style/index.css"/>
+    </head>
+    <body>
+        <div class="wrapper">
+            <header>
+                <div class="mod-head">
+                    <div class="inner">
+                        <a class="logo" href="#" aria-label="路人甲组件首页">
+                            <span class="logo-mark" aria-hidden="true">甲</span>
+                            <span>路人甲<small>组件实验室</small></span>
+                        </a>
+                        <nav aria-label="页面导航">
+                            <a class="active" href="#demo">演示</a>
+                            <a href="#features">功能</a>
+                            <a href="#usage">使用</a>
+                            <a href="#about">关于</a>
+                        </nav>
+                        <a class="github-link" href="https://github.com/mumuy/widget-editor" target="_blank" rel="noopener noreferrer" title="在 GitHub 查看项目">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 .8a11.3 11.3 0 0 0-3.57 22.02c.57.1.78-.25.78-.55v-2.11c-3.18.69-3.85-1.35-3.85-1.35-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.69.08-.69 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.33.95.1-.74.4-1.24.72-1.53-2.54-.29-5.21-1.27-5.21-5.66 0-1.25.45-2.27 1.18-3.07-.12-.29-.51-1.45.11-3.02 0 0 .97-.31 3.12 1.17a10.9 10.9 0 0 1 5.69 0c2.16-1.48 3.12-1.17 3.12-1.17.62 1.57.23 2.73.11 3.02.73.8 1.18 1.82 1.18 3.07 0 4.4-2.67 5.36-5.22 5.65.41.36.77 1.06.77 2.14v3.09c0 .3.21.66.79.55A11.3 11.3 0 0 0 12 .8Z"/></svg>
+                            <span>GitHub</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="mod-bg" aria-hidden="true">
+                    <svg class="waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 24 150 28" preserveAspectRatio="none">
+                        <defs><path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s58 18 88 18 58-18 88-18 58 18 88 18v44h-352z"/></defs>
+                        <g class="parallax">
+                            <use href="#gentle-wave" x="48" y="0" fill="rgba(255,255,255,.35)"/>
+                            <use href="#gentle-wave" x="48" y="3" fill="rgba(255,255,255,.5)"/>
+                            <use href="#gentle-wave" x="48" y="5" fill="rgba(255,255,255,.25)"/>
+                            <use href="#gentle-wave" x="48" y="7" fill="#fff"/>
+                        </g>
+                    </svg>
+                </div>
+            </header>
+            <main class="container">
+                <div class="inner">
+                    <section class="mod-poster" aria-labelledby="page-title">
+                        <div class="bd">
+                            <div class="eyebrow">WIDGET EDITOR</div>
+                            <h1 id="page-title">简易富文本编辑器<span class="tag">开源组件</span></h1>
+                            <p>一个标签，写下你的想法。让文字有层次，让表达更丰富。</p>
+                            <div class="buttons">
+                                <a class="btn btn-blue" href="#demo"><span aria-hidden="true">✎</span> 开始编辑</a>
+                                <a class="btn btn-light" href="#usage"><span aria-hidden="true">&lt;/&gt;</span> 使用说明</a>
+                            </div>
+                            <div class="poster-note"><span class="status-dot" aria-hidden="true"></span>原生 Web Component<span class="note-separator">·</span>无运行时依赖<span class="note-separator">·</span>模块独立</div>
+                        </div>
+                    </section>
+                    <section class="mod-tabs" id="demo" aria-label="富文本编辑器演示">
+                        <div class="hd">
+                            <div class="nav" role="tablist" aria-label="示例内容">
+                                <button id="tab-article" class="active" type="button" role="tab" aria-selected="true" aria-controls="editor-panel" data-example="article">文章示例</button>
+                                <button id="tab-announcement" type="button" role="tab" aria-selected="false" aria-controls="editor-panel" tabindex="-1" data-example="announcement">公告示例</button>
+                                <button id="tab-blank" type="button" role="tab" aria-selected="false" aria-controls="editor-panel" tabindex="-1" data-example="blank">空白文档</button>
+                            </div>
+                            <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false"><span aria-hidden="true">◐</span><span>深色模式</span></button>
+                        </div>
+                        <div class="bd" id="editor-panel" role="tabpanel" aria-labelledby="tab-article">
+                            <widget-editor id="editor" theme="light" height="420" placeholder="从这里开始，写下你的想法……" aria-label="富文本编辑器"></widget-editor>
+                            <noscript><p class="no-script">请启用 JavaScript 以使用富文本编辑器。</p></noscript>
+                        </div>
+                        <div class="demo-operation">
+                            <p id="demo-status" role="status" aria-live="polite"><span class="status-dot" aria-hidden="true"></span>编辑器正在加载……</p>
+                            <div class="buttons">
+                                <button class="text-button" id="reset-demo" type="button">重置示例</button>
+                                <button class="export-button" id="export-html" type="button"><svg aria-hidden="true" viewBox="0 0 20 20" width="16" height="16"><path d="M10 2v10m-4-4 4 4 4-4M3 12v5h14v-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>导出 HTML</button>
+                            </div>
+                        </div>
+                    </section>
+                    <p class="demo-tip">选中文字后使用工具栏设置样式；点击「源码」可查看并编辑 HTML。图片保存在文档中，无需上传到服务器。</p>
+                    <section class="module mod-features" id="features" aria-labelledby="features-title">
+                        <div class="hd"><span class="section-kicker">为日常书写而设计</span><h2 id="features-title">简单上手，丰富表达</h2></div>
+                        <div class="bd feature-grid">
+                            <article class="feature-item"><span class="feature-icon" aria-hidden="true">Aa</span><h3>文字与段落</h3><p>加粗、斜体、文字大小与颜色，支持 H1 至 H6 标题和段落对齐。</p></article>
+                            <article class="feature-item"><span class="feature-icon" aria-hidden="true">▤</span><h3>结构化内容</h3><p>有序列表、无序列表与表格，让文章、清单和数据井井有条。</p></article>
+                            <article class="feature-item"><span class="feature-icon" aria-hidden="true">↗</span><h3>链接与图片</h3><p>插入网页链接、上传本地图片，在文字之间增添更多信息。</p></article>
+                            <article class="feature-item"><span class="feature-icon" aria-hidden="true">⌘</span><h3>格式与源码</h3><p>格式刷复用样式；清除格式、整理 HTML，源码自由编辑。</p></article>
+                        </div>
+                    </section>
+                    <section class="module mod-usage" id="usage" aria-labelledby="usage-title">
+                        <div class="hd"><span class="section-kicker">轻量接入</span><h2 id="usage-title">一个标签，即可使用</h2></div>
+                        <div class="usage-grid">
+                            <div class="code-panel"><div class="code-title"><span class="code-dots" aria-hidden="true"><i></i><i></i><i></i></span><span>index.html</span></div><pre><code>&lt;script src="dist/widget-editor.min.js"&gt;&lt;/script&gt;
+
+&lt;widget-editor
+    theme="light"
+    height="420"
+    placeholder="写下你的想法……"&gt;
+&lt;/widget-editor&gt;</code></pre></div>
+                            <div class="usage-notes"><h3>用熟悉的方式操作内容</h3><p>通过 <code>value</code> 属性读取和设置 HTML；监听 <code>change</code> 事件获取最新内容。</p><pre><code>const editor = document.querySelector('widget-editor');
+editor.value = '&lt;h2&gt;你好，世界&lt;/h2&gt;';
+editor.addEventListener('change', function(event){
+    console.log(event.detail.value);
+});</code></pre><p class="usage-footnote">支持 <code>theme="light / dark"</code> 与 <code>height</code> 属性。完整用法见项目 README。</p></div>
+                        </div>
+                    </section>
+                    <section class="module mod-article" id="about" aria-labelledby="about-title">
+                        <div class="hd"><h2 id="about-title">关于富文本编辑器组件</h2></div>
+                        <div class="bd"><p>好的编辑体验，让注意力回到内容本身。这个组件提供常用的文字排版工具，既适合写一篇文章，也适合编辑公告、产品说明和日常笔记。</p><p>项目沿用 <a href="https://github.com/mumuy/widget-code" target="_blank" rel="noopener noreferrer">widget-code</a> 的目录组织和代码风格：组件入口位于 <code>src/widget-editor.js</code>，各项功能独立放在 <code>src/module/</code>，样式与主题放在 <code>src/style/</code>，构建产物放在 <code>dist/</code>。结构清晰，便于阅读与扩展。</p></div>
+                    </section>
+                </div>
+                <section class="module mod-copy" aria-labelledby="source-title">
+                    <div class="inner">
+                        <div class="hd"><h2 id="source-title">组件开源</h2></div>
+                        <div class="bd"><p>组件基于 <a href="https://github.com/mumuy/widget-editor/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT 许可协议</a> 开源。欢迎阅读代码、提交建议，一起让编辑体验变得更好。</p><div class="buttons"><a class="repo-button" href="https://github.com/mumuy/widget-editor" target="_blank" rel="noopener noreferrer">☆ Star 项目</a><a class="repo-button" href="https://github.com/mumuy/widget-editor/issues" target="_blank" rel="noopener noreferrer">反馈问题</a><a class="repo-button" href="https://github.com/mumuy/widget-editor/archive/refs/heads/main.zip" target="_blank" rel="noopener noreferrer">下载源码</a></div><code>&lt;script src="dist/widget-editor.min.js"&gt;&lt;/script&gt;</code></div>
+                    </div>
+                </section>
+            </main>
+            <footer><div class="mod-foot"><div class="inner"><p>Copyright &copy; 2026 <a href="https://github.com/mumuy" target="_blank" rel="noopener noreferrer">路人甲</a></p><span>用简单的组件，完成精彩的表达。</span><a class="gotop" href="#" aria-label="回到顶部">↑</a></div></div></footer>
+        </div>
+        <script src="dist/widget-editor.min.js"></script>
+        <script src="static/script/index.js"></script>
+    </body>
+</html>

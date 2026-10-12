@@ -1,0 +1,35 @@
+{
+    "name": "widget-editor",
+    "version": "1.0.0",
+    "description": "基于 Web Component 的模块化富文本编辑器",
+    "license": "MIT",
+    "keywords": [
+        "富文本编辑器",
+        "Web Component",
+        "格式刷"
+    ],
+    "main": "./dist/widget-editor.min.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/mumuy/widget-editor.git"
+    },
+    "engines": {
+        "node": ">=20",
+        "npm": ">=8"
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "rollup -c",
+        "watch": "rollup -wc",
+        "start": "node scripts/server.mjs",
+        "test": "playwright test"
+    },
+    "devDependencies": {
+        "@playwright/test": "^1.56.1",
+        "@rollup/plugin-terser": "^0.4.4",
+        "rollup": "^4.52.5",
+        "rollup-plugin-import-css": "^4.0.2"
+    }
+}
