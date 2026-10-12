@@ -338,6 +338,27 @@ test('keyboard shortcuts, paste sanitizing and change events work independently 
     await expect(page.locator('#second-editor .editor-content')).toHaveText('第二个编辑器');
 });
 
+test('stylesheet fallback supports both themes without accumulating style elements',async({page})=>{
+    await page.addInitScript(()=>{
+        Object.defineProperty(ShadowRoot.prototype,'adoptedStyleSheets',{
+            configurable:true,
+            get(){return undefined;}
+        });
+    });
+    const editor = await editorOn(page);
+    const fallback = editor.locator('style[data-widget-editor]');
+    const panel = editor.locator('.mod-panel');
+    await expect(fallback).toHaveCount(1);
+    await expect(panel).toHaveCSS('background-color','rgb(255, 255, 255)');
+    await editor.evaluate(element=>{
+        element.setAttribute('theme','dark');
+        element.addStyle();
+        element.addStyle();
+    });
+    await expect(fallback).toHaveCount(1);
+    await expect(panel).toHaveCSS('background-color','rgb(35, 42, 52)');
+});
+
 test('demo renders without browser errors and fits a mobile viewport',async({page})=>{
     const errors = [];
     page.on('pageerror',error=>errors.push(error.message));

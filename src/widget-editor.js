@@ -3,8 +3,8 @@ import EditorSelection from './module/method/selection.js';
 import sanitizeHTML,{escapeHTML} from './module/method/sanitize.js';
 import EditorHistory from './module/history.js';
 import openDialog from './module/dialog.js';
-import styleSheet from './style/default.css';
-import darkSheet from './style/theme/dark.css';
+import styleSheet from './style/default.css' with { type: 'css'};
+import darkSheet from './style/theme/dark.css' with { type: 'css'};
 
 class WidgetEditor extends HTMLElement {
     constructor(){
@@ -27,6 +27,7 @@ class WidgetEditor extends HTMLElement {
     connectedCallback(){
         if(!this._initialized){
             this.render();
+            this.addStyle();
             this._initialized = true;
             this.selection = new EditorSelection(this);
             this.history = new EditorHistory(this);
@@ -79,6 +80,22 @@ class WidgetEditor extends HTMLElement {
     setHTML(value){
         this.value = value;
     }
+    addStyle(){
+        // 移除旧的 style 节点，避免重复渲染时样式叠加
+        let oldStyle = this.shadowRoot.querySelector('style[data-widget-editor]');
+        if(oldStyle){
+            oldStyle.remove();
+        }
+        if(this.shadowRoot.adoptedStyleSheets){
+            this.shadowRoot.adoptedStyleSheets = [styleSheet,darkSheet];
+        }else{
+            const $style = document.createElement('style');
+            $style.rel = 'defaultSheet';
+            $style.dataset.widgetEditor = '1';   // 标记以便重复渲染时清理
+            $style.textContent = [...styleSheet.cssRules,...darkSheet.cssRules].map(item=>item.cssText).join('');
+            this.shadowRoot.appendChild($style);
+        }
+    }
     render(){
         let controls = [{name:'undo',label:'撤销',icon:'↶',execute:editor=>editor.history.move(-1)},
             {name:'redo',label:'重做',icon:'↷',execute:editor=>editor.history.move(1)},...features];
@@ -93,15 +110,14 @@ class WidgetEditor extends HTMLElement {
             }
             return `<button type="button" class="tool tool-button" ${attributes}>${escapeHTML(feature.icon)}</button>`;
         }).join('');
-        this.shadowRoot.innerHTML = `<style>${styleSheet}\n${darkSheet}</style>
-            <div class="mod-panel">
-                <div class="toolbar hd" role="toolbar" aria-label="文本格式工具栏">${toolbar}</div>
-                <div class="bd">
-                    <div class="editor-content" contenteditable="true" role="textbox" aria-label="富文本内容" aria-multiline="true" spellcheck="true"></div>
-                    <textarea class="editor-source" aria-label="HTML 源代码" spellcheck="false" hidden></textarea>
-                </div>
-                <div class="ft"><span class="mode-label">可视化编辑</span><span class="notice" role="status" aria-live="polite"></span><span class="word-count">0 字</span></div>
-            </div>`;
+        this.shadowRoot.innerHTML = `<div class="mod-panel">
+            <div class="toolbar hd" role="toolbar" aria-label="文本格式工具栏">${toolbar}</div>
+            <div class="bd">
+                <div class="editor-content" contenteditable="true" role="textbox" aria-label="富文本内容" aria-multiline="true" spellcheck="true"></div>
+                <textarea class="editor-source" aria-label="HTML 源代码" spellcheck="false" hidden></textarea>
+            </div>
+            <div class="ft"><span class="mode-label">可视化编辑</span><span class="notice" role="status" aria-live="polite"></span><span class="word-count">0 字</span></div>
+        </div>`;
         this.content = this.shadowRoot.querySelector('.editor-content');
         this.sourceArea = this.shadowRoot.querySelector('.editor-source');
         this.toolbar = this.shadowRoot.querySelector('.toolbar');
@@ -366,4 +382,3 @@ class WidgetEditor extends HTMLElement {
 if(!customElements.get('widget-editor')){
     customElements.define('widget-editor',WidgetEditor);
 }
-export default WidgetEditor;

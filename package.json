@@ -1,35 +1,53 @@
 {
     "name": "widget-editor",
     "version": "1.0.0",
-    "description": "基于 Web Component 的模块化富文本编辑器",
+    "description": "Rich text editor component",
+    "author": "HaoLe Zheng",
     "license": "MIT",
     "keywords": [
         "富文本编辑器",
-        "Web Component",
-        "格式刷"
+        "文字格式化",
+        "格式刷",
+        "Web Component"
     ],
     "main": "./dist/widget-editor.min.js",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/mumuy/widget-editor.git"
     },
+    "bugs": {
+        "url": "https://github.com/mumuy/widget-editor/issues"
+    },
     "engines": {
         "node": ">=20",
+        "yarn": "please-use-npm",
         "npm": ">=8"
     },
     "files": [
         "dist"
     ],
+    "devDependencies": {
+        "@babel/core": "^7.29.7",
+        "@babel/plugin-syntax-import-attributes": "^7.29.7",
+        "@babel/plugin-transform-class-properties": "^7.29.7",
+        "@babel/plugin-transform-runtime": "^7.29.7",
+        "@babel/plugin-transform-private-methods": "^7.29.7",
+        "@babel/preset-env": "^7.29.7",
+        "@babel/runtime": "^7.29.7",
+        "@rollup/plugin-babel": "^7.1.0",
+        "@rollup/plugin-node-resolve": "^16.0.3",
+        "@rollup/plugin-terser": "^1.0.0",
+        "rollup": "^4.63.1",
+        "rollup-plugin-import-css": "^4.2.1",
+        "@playwright/test": "^1.56.1"
+    },
     "scripts": {
         "build": "rollup -c",
         "watch": "rollup -wc",
         "start": "node scripts/server.mjs",
         "test": "playwright test"
     },
-    "devDependencies": {
-        "@playwright/test": "^1.56.1",
-        "@rollup/plugin-terser": "^0.4.4",
-        "rollup": "^4.52.5",
-        "rollup-plugin-import-css": "^4.0.2"
-    }
+    "homepage": "https://github.com/mumuy/widget-editor/",
+    "directories": {},
+    "dependencies": {}
 }

@@ -1,6 +1,6 @@
-# Widget Editor
+# 基于Web component的富文本编辑器组件
 
-基于 Web Component 的简易富文本编辑器，使用原生 JavaScript 实现。目录划分、组件入口、Rollup 构建方式及演示页面参考 [mumuy/widget-code](https://github.com/mumuy/widget-code)，代码采用 4 个空格缩进、单引号及分号。15 个工具栏功能各自位于独立模块，组件运行时无需第三方依赖。
+基于 Web Component 的简易富文本编辑器。支持文字格式化、格式刷、标题、列表、链接、图片及表格，15 个工具栏功能各自位于独立模块，组件运行时无需第三方依赖。
 
 ## 本地开发
 
@@ -13,6 +13,8 @@ npm start
 ```
 
 打开 `http://localhost:3000` 查看演示页面。构建结果为 `dist/widget-editor.min.js`，组件样式包含在构建文件中。修改组件源码时，在另一个终端运行 `npm run watch`，保存后自动重新构建；演示页修改后刷新浏览器即可。
+
+构建使用与 [widget-code](https://github.com/mumuy/widget-code) 相同的 Rollup 插件顺序：`resolve → css → babel → terser`。组件 CSS 通过导入属性作为 CSSStyleSheet 打包，输出带版权头的 UMD 文件。Babel 使用 `preset-env` 与 runtime、类属性、导入属性语法及私有方法插件；为兼容插件声明的版本要求，使用 Babel 7 系列依赖。
 
 开发服务器默认监听 `0.0.0.0:3000`，可使用 `PORT` 环境变量调整端口。
 
@@ -113,7 +115,8 @@ widget-editor/
 ├── test/editor.spec.js        # 浏览器功能测试
 ├── scripts/server.mjs         # 静态开发服务器
 ├── index.html                 # 演示页面
-├── rollup.config.mjs
+├── babel.config.js            # ECMAScript 兼容配置
+├── rollup.config.mjs           # Rollup 构建配置
 └── package.json
 ```
 

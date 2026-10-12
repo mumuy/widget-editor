@@ -1,4 +1,12 @@
-node_modules/
+.project
+.settings
+
+node_modules/*
+
+/node_modules
+
+pnpm-lock.yaml
+
 playwright-report/
 test-results/
 .DS_Store
