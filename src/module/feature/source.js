@@ -5,6 +5,13 @@ export default {
     'icon':icon,
     'label':'源代码',
     'type':'button',
+    bind(editor){
+        editor.sourceButton.addEventListener('pointerdown',event=>{
+            editor.saveSelection();
+            event.preventDefault();
+        });
+        editor.sourceButton.addEventListener('click',()=>editor.execute('source'));
+    },
     execute(editor){
         editor.toggleSource();
     },

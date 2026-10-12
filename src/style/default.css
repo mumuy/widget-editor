@@ -533,7 +533,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     margin-left: auto;
     white-space: nowrap;
 }
-.fullscreen-button{
+.fullscreen-button,.source-button{
     width: 24px;
     height: 24px;
 }

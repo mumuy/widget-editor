@@ -11,7 +11,7 @@ import EditorDropdown from './module/dropdown.js';
 import EditorTooltip from './module/tooltip.js';
 import EditorFullscreen from './module/fullscreen.js';
 import EditorLanguage from './module/language/index.js';
-import {renderIcon,undo as undoIcon,redo as redoIcon,fullscreen as fullscreenIcon} from './module/icon.js';
+import {renderIcon,undo as undoIcon,redo as redoIcon,fullscreen as fullscreenIcon,source as sourceIcon} from './module/icon.js';
 import styleSheet from './style/default.css' with { type: 'css'};
 
 class WidgetEditor extends HTMLElement {
@@ -157,7 +157,7 @@ class WidgetEditor extends HTMLElement {
             {name:'redo',label:'重做',icon:redoIcon,execute:editor=>editor.history.move(1)},
             ...features.filter(feature=>feature.name!=='source')];
         this.features = controls.map(feature=>typeof feature.options==='function'?{...feature,options:feature.options(this)}:feature);
-        return this.features.map(function(feature){
+        return this.features.filter(feature=>feature.name!=='source').map(function(feature){
             let attributes = `data-action="${feature.name}" aria-label="${feature.label}"`;
             if(feature.type==='dropdown'){
                 return feature.options.length?EditorDropdown.render(feature):'';
@@ -180,6 +180,7 @@ class WidgetEditor extends HTMLElement {
                 <textarea class="editor-source" aria-label="HTML 源代码" spellcheck="false" hidden></textarea>
             </div>
             <div class="ft">
+                <button type="button" class="tool tool-button source-button" data-action="source" aria-label="源代码" aria-pressed="false">${renderIcon(sourceIcon)}</button>
                 <span class="mode-label">可视化编辑</span>
                 <span class="word-count">0 字</span>
                 <button type="button" class="tool tool-button fullscreen-button" data-action="fullscreen" aria-label="全屏" aria-pressed="false">${renderIcon(fullscreenIcon)}</button>
@@ -192,6 +193,7 @@ class WidgetEditor extends HTMLElement {
         this.sourceArea = this.shadowRoot.querySelector('.editor-source');
         this.toolbar = this.shadowRoot.querySelector('.toolbar');
         this.footer = this.shadowRoot.querySelector('.ft');
+        this.sourceButton = this.footer.querySelector('[data-action="source"]');
         this.modeLabel = this.footer.querySelector('.mode-label');
         this.wordCount = this.footer.querySelector('.word-count');
     }
@@ -436,7 +438,7 @@ class WidgetEditor extends HTMLElement {
         }
         this.table?.refresh();
         this.features.forEach(feature=>{
-            let control = this.toolbar.querySelector('[data-action="'+feature.name+'"]');
+            let control = feature.name==='source'?this.sourceButton:this.toolbar.querySelector('[data-action="'+feature.name+'"]');
             if(!control){
                 return;
             }
