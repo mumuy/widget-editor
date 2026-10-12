@@ -2,6 +2,7 @@ import features from './module/feature/index.js';
 import EditorSelection from './module/method/selection.js';
 import sanitizeHTML,{escapeHTML} from './module/method/sanitize.js';
 import formatHTML from './module/method/formatHTML.js';
+import applyStyle from './module/method/applyStyle.js';
 import EditorHistory from './module/history.js';
 import openDialog from './module/dialog.js';
 import EditorDropdown from './module/dropdown.js';
@@ -275,49 +276,7 @@ class WidgetEditor extends HTMLElement {
     }
     applyStyle(styles){
         this.transaction(()=>{
-            let range = this.getRange();
-            let apply = element=>Object.keys(styles).forEach(name=>element.style.setProperty(name,styles[name]));
-            if(range.collapsed){
-                let span = document.createElement('span');
-                span.textContent = '\u200b';
-                apply(span);
-                range.insertNode(span);
-                range.setStart(span.firstChild,1);
-                range.collapse(true);
-            }else{
-                // 分别包裹文本节点，保留原有标题、列表、链接及跨段结构。
-                let walker = document.createTreeWalker(this.content,NodeFilter.SHOW_TEXT);
-                let nodes = [];
-                while(walker.nextNode()){
-                    let node = walker.currentNode;
-                    if(range.intersectsNode(node)){
-                        let start = node===range.startContainer?range.startOffset:0;
-                        let end = node===range.endContainer?range.endOffset:node.length;
-                        if(end>start){
-                            nodes.push({node,start,end});
-                        }
-                    }
-                }
-                let spans = nodes.map(function(item){
-                    let node = item.node;
-                    if(item.end<node.length){
-                        node.splitText(item.end);
-                    }
-                    if(item.start>0){
-                        node = node.splitText(item.start);
-                    }
-                    let span = document.createElement('span');
-                    apply(span);
-                    node.replaceWith(span);
-                    span.appendChild(node);
-                    return span;
-                });
-                if(spans.length){
-                    range.setStart(spans[0].firstChild,0);
-                    let last = spans[spans.length-1].firstChild;
-                    range.setEnd(last,last.length);
-                }
-            }
+            let range = applyStyle(this.content,this.getRange(),styles);
             let selection = window.getSelection();
             selection.removeAllRanges();
             selection.addRange(range);
