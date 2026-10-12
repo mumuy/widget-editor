@@ -36,7 +36,7 @@ export const fontSize = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24
 </svg>`;
 
 export const format = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M4 5h11M9.5 5v13M6 18h7m3-7 5 5m0-5-5 5"/>
+    <path d="m16 3 5 5a2 2 0 0 1 0 3l-9 9H7l-4-4a2 2 0 0 1 0-3l10-10a2 2 0 0 1 3 0ZM8 8l9 9M12 20h9"/>
 </svg>`;
 
 export const formatHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">

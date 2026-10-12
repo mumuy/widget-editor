@@ -113,24 +113,31 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
 .tool-dropdown-button.icon-only{
     min-width: 42px;
 }
+[data-dropdown="fontFamily"] .tool-label{
+    flex: 0 0 4em;
+    width: 4em;
+    overflow: hidden;
+    text-align: left;
+    text-overflow: ellipsis;
+}
 [data-dropdown="heading"] [data-option="p"]{
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 400;
 }
 [data-dropdown="heading"] [data-option="h1"]{
-    font-size: 28px;
-    font-weight: 700;
-}
-[data-dropdown="heading"] [data-option="h2"]{
-    font-size: 24px;
-    font-weight: 700;
-}
-[data-dropdown="heading"] [data-option="h3"]{
     font-size: 20px;
     font-weight: 700;
 }
-[data-dropdown="heading"] [data-option="h4"]{
+[data-dropdown="heading"] [data-option="h2"]{
+    font-size: 19px;
+    font-weight: 700;
+}
+[data-dropdown="heading"] [data-option="h3"]{
     font-size: 18px;
+    font-weight: 700;
+}
+[data-dropdown="heading"] [data-option="h4"]{
+    font-size: 17px;
     font-weight: 600;
 }
 [data-dropdown="heading"] [data-option="h5"]{
@@ -138,7 +145,7 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
     font-weight: 600;
 }
 [data-dropdown="heading"] [data-option="h6"]{
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
 }
 .tool-arrow{
