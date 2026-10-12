@@ -389,6 +389,19 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     text-decoration: none;
     text-underline-offset: 3px;
 }
+.editor-content a[href]:not([download]){
+    position: relative;
+}
+.editor-content a[href]:not([download])::after{
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: -3px;
+    left: 0;
+    border-bottom: 1px dashed currentColor;
+    opacity: .35;
+    pointer-events: none;
+}
 .editor-content img{
     max-width: 100%;
     height: auto;
