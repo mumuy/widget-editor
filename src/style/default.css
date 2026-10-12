@@ -371,6 +371,26 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
     vertical-align: middle;
     border-radius: 4px;
 }
+.editor-content video,.editor-content audio{
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin: 16px 0;
+}
+.editor-content video{
+    height: auto;
+    max-height: var(--editor-height);
+    border-radius: 4px;
+}
+.editor-content a[download]{
+    display: inline-block;
+    max-width: 100%;
+    padding: 4px 10px;
+    background: var(--button-background-color);
+    border: 1px solid var(--panel-border-color);
+    border-radius: 4px;
+    text-decoration: none;
+}
 .editor-content table{
     width: 100%;
     margin: 16px 0;

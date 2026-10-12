@@ -79,7 +79,7 @@ export default function openDialog(editor,options){
         dialog.remove();
         if(editor._dialog===dialog){
             editor._dialog = null;
-            if(editor.isConnected){
+            if(editor.isConnected&&!editor.source){
                 editor.restoreSelection();
             }
         }

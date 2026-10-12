@@ -5,6 +5,9 @@ import orderedList from './orderedList.js';
 import unorderedList from './unorderedList.js';
 import link from './link.js';
 import image from './image.js';
+import video from './video.js';
+import audio from './audio.js';
+import attachment from './attachment.js';
 import bold from './bold.js';
 import italic from './italic.js';
 import underline from './underline.js';
@@ -17,4 +20,4 @@ import fontFamily from './fontFamily.js';
 import blockquote from './blockquote.js';
 
 export default [format,formatPainter,heading,fontFamily,fontSize,alignment,bold,italic,underline,
-    color,blockquote,orderedList,unorderedList,link,image,table,source];
+    color,blockquote,orderedList,unorderedList,link,image,video,audio,attachment,table,source];

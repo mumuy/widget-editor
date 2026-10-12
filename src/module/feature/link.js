@@ -9,7 +9,7 @@ export default {
     execute(editor){
         let range = editor.getRange();
         let $element = editor.selectedElement();
-        let $link = $element ? $element.closest('a') : null;
+        let $link = $element ? $element.closest('a:not([download])') : null;
         if($link && !editor.content.contains($link)){
             $link = null;
         }
@@ -48,6 +48,6 @@ export default {
     },
     active(editor){
         let $element = editor.selectedElement();
-        return !!($element && $element.closest('a'));
+        return !!($element && $element.closest('a:not([download])'));
     }
 };

@@ -163,7 +163,7 @@ export function mergeCells(model,bounds){
     }
     let first = bounds.items[0];
     // 按行保留内容，空单元格不产生多余换行。
-    let contents = bounds.items.filter(item=>item.cell.textContent.trim()||item.cell.querySelector('img,table'));
+    let contents = bounds.items.filter(item=>item.cell.textContent.trim()||item.cell.querySelector('img,video,audio,table'));
     if(contents.length){
         let fragment = document.createDocumentFragment();
         contents.forEach((item,index)=>{

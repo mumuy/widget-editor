@@ -1,6 +1,6 @@
 # 基于Web component的富文本编辑器组件
 
-基于 Web Component 的简易富文本编辑器。支持文字格式化、格式刷、标题、列表、链接、图片及表格，各项编辑功能位于独立模块，组件运行时无需第三方依赖。
+基于 Web Component 的简易富文本编辑器。支持文字格式化、格式刷、标题、列表、链接、图片、视频、音频、附件及表格，各项编辑功能位于独立模块，组件运行时无需第三方依赖。
 
 ## 本地开发
 
@@ -82,6 +82,9 @@ customElements.whenDefined('widget-editor').then(function(){
 | 无序列表 | `unorderedList.js` | 添加或取消无序列表 |
 | 链接 | `link.js` | 插入链接；光标位于链接内时可修改地址和文字 |
 | 图片上传 | `image.js` | 从本地选择图片并插入 |
+| 视频上传 | `video.js` | 从本地选择视频，插入带播放控件的视频 |
+| 音频上传 | `audio.js` | 从本地选择音频，插入带播放控件的音频 |
+| 附件上传 | `attachment.js` | 从本地选择文件，插入带文件名的下载链接 |
 | 加粗 | `bold.js` | 切换加粗 |
 | 斜体 | `italic.js` | 切换斜体 |
 | 下划线 | `underline.js` | 切换下划线，支持 Ctrl / Command + U |
@@ -97,7 +100,9 @@ customElements.whenDefined('widget-editor').then(function(){
 
 表格弹窗中移动鼠标预览行列数，点击格子插入，也可使用方向键选择、回车确认。勾选「第一行作为表头」时生成 `thead`，其余行放入 `tbody`。点击编辑区内的单元格，或拖选结束后，在鼠标附近浮动显示表格工具栏；窗口边缘自动调整位置，浮层不占用编辑框空间。可在上方或下方插行、左侧或右侧插列，也可删除选中区域占据的行列。拖动或按住 Shift 点击选择连续区域；同一表头、表体或表尾内的完整矩形可合并，单元格内容按行保留，拆分时内容保留在左上角。合并后的跨行、跨列结构也支持行列增删，操作可撤销、重做。点击外部、滚动、调整窗口或按 Escape 关闭工具栏；使用方向键移动光标到单元格时，工具栏定位到该单元格附近。选格标记不会写入 HTML 输出或历史记录。
 
-图片上传支持 PNG、JPEG、GIF、WebP，单张最大 5 MB。图片通过 FileReader 转为 data URL 并存入 HTML，不需要远程上传服务；保存内容时也会包含图片数据。项目未包含文件存储、鉴权或服务端接口。
+上传弹窗共用图片上传的交互，可以设置描述或附件的显示文字。图片支持 PNG、JPEG、GIF、WebP，最大 5 MB；视频支持 MP4、WebM、Ogg，最大 50 MB；音频支持 MP3、WAV、Ogg、M4A、AAC、FLAC、WebM，最大 20 MB；附件支持任意文件，最大 20 MB。大小限制在各自功能模块的 `size` 中调整。
+
+文件通过 FileReader 转为 data URL 并存入 HTML，保存内容时也会包含文件数据。视频和音频使用原生播放控件，默认仅加载元数据，不自动播放；能否播放取决于浏览器对文件编码的支持。附件使用 `download` 保存原文件名，数据类型统一为 `application/octet-stream`。HTML 输出、源码往返和撤销重做会保留这些内容。项目未包含远程文件存储、鉴权或服务端上传接口。
 
 字体使用系统安装的字体，未安装时按字体列表回退。字体样式会保留在输出 HTML、源码编辑和格式刷中。颜色面板提供 50 个预设色块，第一行灰阶由白到黑均匀变化，后四行每列固定色系，逐行由浅到深，后两行保持高饱和度，去除过浅及过深的彩色，也支持输入六位 HEX 色值（如 `#336699`），输入过程中保持焦点和编辑器原选区；Escape 关闭面板而不修改内容。选中的文字颜色在 `value`、`getHTML()`、源码和 `change` 事件中统一输出六位 HEX（如 `#000000`），带透明度的输入颜色会保留透明度。可通过 `::part(color-menu)` 和 `::part(color-swatch)` 调整颜色面板。
 
@@ -116,9 +121,11 @@ widget-editor/
 │   │   ├── table/             # 表格选格、单元格交互与行列模型
 │   │   └── method/
 │   │       ├── color.js       # RGB 转 HEX
+│   │       ├── file.js        # 文件类型、文件名及 data URL 验证
 │   │       ├── formatHTML.js  # 安全的 HTML 源码排版
 │   │       ├── sanitize.js    # HTML、链接及图片地址清理
-│   │       └── selection.js   # 选区处理
+│   │       ├── selection.js   # 选区处理
+│   │       └── upload.js      # 通用上传弹窗及文件读取
 │   └── style/
 │       └── default.css        # 组件样式
 ├── static/                    # 演示页面资源
@@ -172,7 +179,7 @@ npm run build
 
 初始内容、粘贴、源码及 HTML API 使用统一的清理逻辑，导出的 HTML 和 `change` 事件中的 HTML 也会经过清理。组件限制可用标签、属性、行内样式及链接协议，移除脚本与事件属性。若内容需要保存并公开展示，仍应在服务端执行适合业务规则的 HTML 清理。
 
-标签白名单按工具栏能力设置：`p`、`div`、`span`、`br`，加粗及斜体的 `strong` / `b`、`em` / `i`，下划线的 `u`，`h1`～`h6`，`ul`、`ol`、`li`，`a`、`img`，`table`、`thead`、`tbody`、`tfoot`、`tr`、`th`、`td`，以及 `blockquote`。`div`、`span` 和 `br` 用于浏览器编辑及文字样式。其他普通标签（如 `pre`、`code`、`hr`、`s`、`sub`、`sup`、`font`）去掉外层，保留文字及已清理的支持节点；脚本、表单、iframe 等整个节点及其内容移除。源码返回可视化时应用过滤，读取 HTML 时也使用相同规则。
+标签白名单按工具栏能力设置：`p`、`div`、`span`、`br`，加粗及斜体的 `strong` / `b`、`em` / `i`，下划线的 `u`，`h1`～`h6`，`ul`、`ol`、`li`，`a`、`img`、`video`、`audio`，`table`、`thead`、`tbody`、`tfoot`、`tr`、`th`、`td`，以及 `blockquote`。媒体保留匹配类型的 data URL 或 HTTP/HTTPS 地址、描述及播放控件；下载链接保留文件名和二进制 data URL。`div`、`span` 和 `br` 用于浏览器编辑及文字样式。其他普通标签（如 `pre`、`code`、`hr`、`s`、`sub`、`sup`、`font`）去掉外层，保留文字及已清理的支持节点；脚本、表单、iframe 等整个节点及其内容移除。源码返回可视化时应用过滤，读取 HTML 时也使用相同规则。
 
 ## License
 
