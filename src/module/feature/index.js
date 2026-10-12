@@ -12,7 +12,6 @@ import alignment from './alignment.js';
 import fontSize from './fontSize.js';
 import color from './color.js';
 import table from './table.js';
-import formatHTML from './formatHTML.js';
 
 export default [format,formatPainter,heading,bold,italic,fontSize,color,
-    alignment,orderedList,unorderedList,link,image,table,formatHTML,source];
+    alignment,orderedList,unorderedList,link,image,table,source];

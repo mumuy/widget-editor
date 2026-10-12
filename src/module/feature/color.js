@@ -1,5 +1,8 @@
+import icon from '../../image/color.svg';
+
 export default {
     'name':'color',
+    'icon':icon,
     'label':'文字颜色',
     'type':'color',
     execute(editor,value){

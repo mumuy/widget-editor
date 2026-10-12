@@ -1,7 +1,9 @@
+import icon from '../../image/table.svg';
+
 export default {
     'name':'table',
+    'icon':icon,
     'label':'插入表格',
-    'icon':'▦',
     'type':'button',
     execute(editor){
         editor.openDialog({

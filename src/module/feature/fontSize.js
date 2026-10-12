@@ -1,7 +1,10 @@
+import icon from '../../image/fontSize.svg';
+
 export default {
     'name':'fontSize',
+    'icon':icon,
     'label':'文字大小',
-    'type':'select',
+    'type':'dropdown',
     'options':[12,14,16,18,20,24,28,32,48].map((value)=>{
         return {'value':String(value),'label':value+' px'};
     }),
@@ -13,5 +16,8 @@ export default {
     value(editor){
         let $element = editor.selectedElement();
         return $element ? String(parseFloat(window.getComputedStyle($element).fontSize)) : '16';
+    },
+    display(value){
+        return value+' px';
     }
 };

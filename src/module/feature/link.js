@@ -1,9 +1,10 @@
+import icon from '../../image/link.svg';
 import {safeURL,escapeHTML} from '../method/sanitize.js';
 
 export default {
     'name':'link',
+    'icon':icon,
     'label':'插入链接',
-    'icon':'↗',
     'type':'button',
     execute(editor){
         let range = editor.getRange();

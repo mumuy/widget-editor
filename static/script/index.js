@@ -3,12 +3,8 @@
     let $items = Array.from($tabs.querySelectorAll('.nav li'));
     let $links = $items.map($item=>$item.querySelector('a'));
     let $panels = Array.from($tabs.querySelectorAll('.panel'));
-    let $editors = $panels.map($panel=>$panel.querySelector('widget-editor'));
-    let _index = 0;
-    let _examples = [];
 
     function selectTab(index){
-        _index = index;
         $items.forEach(function($item,i){
             let active = i===index;
             $item.classList.toggle('active',active);
@@ -49,36 +45,4 @@
         window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
     });
 
-    customElements.whenDefined('widget-editor').then(function(){
-        _examples = $editors.map($editor=>$editor.value);
-        document.getElementById('reset-demo').addEventListener('click',function(){
-            let $editor = $editors[_index];
-            if($editor.source){
-                $editor.toggleSource();
-            }
-            $editor.value = _examples[_index];
-            $editor.notify('已重置为当前示例内容');
-        });
-        document.getElementById('export-html').addEventListener('click',function(){
-            let $editor = $editors[_index];
-            let html = '<!DOCTYPE html>\n<html lang="zh-CN">\n'+
-                '    <head>\n        <meta charset="utf-8"/>\n'+
-                '        <meta name="viewport" content="width=device-width,initial-scale=1.0"/>\n'+
-                '        <title>我的文档</title>\n'+
-                '        <style>body{max-width:900px;margin:40px auto;padding:0 24px;font:16px/1.8 sans-serif;color:#333;}img{max-width:100%;height:auto;}table{border-collapse:collapse;width:100%;}td,th{padding:8px 12px;border:1px solid #ddd;}a{color:#2095f2;}pre{white-space:pre-wrap;}</style>\n'+
-                '    </head>\n    <body>\n'+$editor.value+'\n    </body>\n</html>\n';
-            let blob = new Blob([html],{type:'text/html;charset=utf-8'});
-            let url = URL.createObjectURL(blob);
-            let $link = document.createElement('a');
-            $link.href = url;
-            $link.download = 'widget-editor-document.html';
-            document.body.appendChild($link);
-            $link.click();
-            $link.remove();
-            window.setTimeout(function(){
-                URL.revokeObjectURL(url);
-            },1000);
-            $editor.notify('HTML 文档已导出');
-        });
-    });
 })();

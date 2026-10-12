@@ -1,6 +1,6 @@
 # 基于Web component的富文本编辑器组件
 
-基于 Web Component 的简易富文本编辑器。支持文字格式化、格式刷、标题、列表、链接、图片及表格，15 个工具栏功能各自位于独立模块，组件运行时无需第三方依赖。
+基于 Web Component 的简易富文本编辑器。支持文字格式化、格式刷、标题、列表、链接、图片及表格，各项编辑功能位于独立模块，组件运行时无需第三方依赖。
 
 ## 本地开发
 
@@ -16,7 +16,7 @@ npm start
 
 打开 `http://localhost:3000` 查看演示页面。构建结果为 `dist/widget-editor.min.js`，组件样式包含在构建文件中。修改组件源码时，在另一个终端运行 `npm run watch`，保存后自动重新构建；演示页修改后刷新浏览器即可。
 
-构建使用与 [widget-code](https://github.com/mumuy/widget-code) 相同的 Rollup 插件顺序：`resolve → css → babel → terser`。组件 CSS 通过导入属性作为 CSSStyleSheet 打包，输出带版权头的 UMD 文件。Babel 使用 `preset-env` 与 runtime、类属性、导入属性语法及私有方法插件；为兼容插件声明的版本要求，使用 Babel 7 系列依赖。
+构建沿用 [widget-code](https://github.com/mumuy/widget-code) 的 Rollup 配置，在 `resolve → css → babel → terser` 流程中加入 image 插件处理 SVG 图标。SVG 图标通过 image 插件内嵌，组件 CSS 通过导入属性作为 CSSStyleSheet 打包，输出带版权头的 UMD 文件。Babel 使用 `preset-env` 与 runtime、类属性、导入属性语法及私有方法插件；为兼容插件声明的版本要求，使用 Babel 7 系列依赖。
 
 开发服务器默认监听 `0.0.0.0:3000`，可使用 `PORT` 环境变量调整端口。
 
@@ -82,14 +82,13 @@ customElements.whenDefined('widget-editor').then(function(){
 | 图片上传 | `image.js` | 从本地选择图片并插入 |
 | 加粗 | `bold.js` | 切换加粗 |
 | 斜体 | `italic.js` | 切换斜体 |
-| 源代码 | `source.js` | 查看和编辑 HTML，返回可视编辑时清理内容 |
+| 源代码 | `source.js` | 查看和编辑 HTML，源码视图中提供格式化操作，返回可视编辑时清理内容 |
 | 对齐方式 | `alignment.js` | 左对齐、居中、右对齐及两端对齐 |
 | 文字大小 | `fontSize.js` | 12、14、16、18、20、24、28、32、48 px |
 | 文字颜色 | `color.js` | 使用颜色选择器设置文字颜色 |
 | 表格 | `table.js` | 插入 1～10 行、1～10 列的表格，可将第一行设为表头 |
-| 格式化 HTML | `formatHTML.js` | 进入源码模式，用 4 个空格整理块级容器的缩进及换行 |
 
-清除格式用于移除所选文字的行内样式；格式化 HTML 用于整理源码结构。格式化会进入并保持源码模式，先清理 HTML，再为只包含块级元素的容器加入缩进与换行，保留行内文字间的空白及 pre / code 内容。直接修改源码后，返回可视编辑时才更新编辑区域。
+清除格式用于移除所选文字的行内样式。点击「源代码」后，可以在源码视图中格式化 HTML：先清理内容，再用 4 个空格整理块级容器的缩进与换行，保留行内文字间的空白及 pre / code 内容。返回可视编辑时才更新编辑区域。
 
 格式刷为单次操作，再次点击按钮也可取消。源码模式中直接编辑 HTML，退出时会统一执行内容清理，再更新可视编辑区域。
 
@@ -104,11 +103,13 @@ widget-editor/
 │   ├── module/
 │   │   ├── feature/           # 独立功能模块及统一注册列表
 │   │   ├── dialog.js          # 通用弹窗、字段与提交状态
+│   │   ├── dropdown.js        # 可样式化下拉菜单
 │   │   ├── history.js         # 内容历史
 │   │   └── method/
 │   │       ├── formatHTML.js  # 安全的 HTML 源码排版
 │   │       ├── sanitize.js    # HTML、链接及图片地址清理
 │   │       └── selection.js   # 选区处理
+│   ├── image/                # 独立 SVG 图标
 │   └── style/
 │       └── default.css        # 组件样式
 ├── static/                    # 演示页面资源
@@ -122,13 +123,37 @@ widget-editor/
 
 新增功能时在 `src/module/feature/` 中创建模块，并在 `index.js` 中注册。模块声明名称、标签、控件类型及执行函数，通过编辑器统一的选区与操作接口处理内容，避免将多个功能堆积在组件入口中。
 
+## 下拉菜单与图标
+
+标题、文字大小和对齐方式使用普通按钮组成下拉菜单。可在 `src/style/default.css` 中修改 `.tool-dropdown-button`、`.tool-menu`、`.tool-option` 的样式，也可从页面通过 `::part` 调整：
+
+```css
+widget-editor::part(dropdown-trigger){
+    border-radius: 6px;
+}
+widget-editor::part(dropdown-menu){
+    background: #fffdf5;
+}
+widget-editor::part(dropdown-option){
+    font-size: 14px;
+    padding: 8px 12px;
+}
+widget-editor::part(dropdown-option-selected){
+    background: #e9f1fe;
+}
+```
+
+三个菜单分别暴露 `heading-menu`、`fontSize-menu` 和 `alignment-menu`，可以单独设置样式。菜单支持方向键、Home、End、Enter 和 Escape 操作。
+
+每个功能图标对应 `src/image/` 下的 SVG 文件，例如 `bold.svg`、`image.svg`、`source.svg`。替换图标文件后执行 `npm run build` 即可；图标内嵌在组件 JS 中，使用组件时无需单独部署图标目录。工具栏图标还暴露 `toolbar-icon`，可通过 `::part(toolbar-icon)` 修改尺寸。
+
 ## 验证
 
 ```bash
 npm run build
 ```
 
-构建完成后运行 `npm start`，打开演示页面，选中文字检查格式、标题、列表、链接及对齐操作；再检查格式刷、图片上传、表格插入和源码编辑，并确认导出的 HTML 与编辑内容一致。
+构建完成后运行 `npm start`，打开演示页面，选中文字检查格式、标题、列表、链接及对齐操作；再检查格式刷、图片上传、表格插入和源码编辑，并通过 `value` 或 `getHTML()` 读取编辑后的 HTML。
 
 ## 浏览器与内容清理
 

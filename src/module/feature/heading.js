@@ -1,7 +1,10 @@
+import icon from '../../image/heading.svg';
+
 export default {
     'name':'heading',
+    'icon':icon,
     'label':'标题',
-    'type':'select',
+    'type':'dropdown',
     'options':[
         {'value':'p','label':'正文'},
         {'value':'h1','label':'标题 1'},

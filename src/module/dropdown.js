@@ -1,0 +1,170 @@
+import {escapeHTML} from './method/sanitize.js';
+import arrow from '../image/chevron.svg';
+
+// 下拉选项使用普通节点，可在组件 CSS 或 ::part 中修改样式。
+export default class EditorDropdown {
+    constructor(editor){
+        this.editor = editor;
+        this.opened = null;
+        this.onOutside = event=>{
+            if(this.opened&&!event.composedPath().includes(this.opened)){
+                this.close();
+            }
+        };
+        this.onScroll = event=>{
+            if(this.opened&&(!(event.target instanceof Node)||!this.opened.contains(event.target))){
+                this.close();
+            }
+        };
+        this.onKey = event=>this.keydown(event);
+        this.onClick = event=>{
+            let option = event.target.closest('[data-option]');
+            if(option){
+                let name = option.closest('.tool-dropdown').dataset.dropdown;
+                this.close();
+                this.editor.execute(name,option.dataset.option,event);
+            }
+        };
+    }
+    static render(feature){
+        let id = 'menu-'+feature.name;
+        return `<div class="tool-dropdown" data-dropdown="${feature.name}">
+            <button type="button" class="tool tool-dropdown-button" part="dropdown-trigger" data-action="${feature.name}" aria-label="${feature.label}" title="${feature.label}" aria-haspopup="listbox" aria-expanded="false" aria-controls="${id}">
+                <img class="tool-icon" part="toolbar-icon" src="${feature.icon}" alt="" aria-hidden="true">
+                <span class="tool-label"></span><img class="tool-arrow" src="${arrow}" alt="" aria-hidden="true">
+            </button>
+            <div class="tool-menu" part="dropdown-menu ${feature.name}-menu" id="${id}" role="listbox" aria-label="${feature.label}" popover="manual" hidden>
+                ${feature.options.map(option=>`<button type="button" class="tool-option" part="dropdown-option" role="option" tabindex="-1" aria-selected="false" data-option="${escapeHTML(option.value)}">${option.icon?`<img class="tool-icon" src="${option.icon}" alt="" aria-hidden="true">`:''}<span>${escapeHTML(option.label)}</span></button>`).join('')}
+            </div>
+        </div>`;
+    }
+    connect(){
+        document.addEventListener('pointerdown',this.onOutside);
+        window.addEventListener('resize',this.onScroll);
+        window.addEventListener('scroll',this.onScroll,true);
+        this.editor.toolbar.addEventListener('keydown',this.onKey);
+        this.editor.toolbar.addEventListener('click',this.onClick);
+    }
+    disconnect(){
+        this.close();
+        document.removeEventListener('pointerdown',this.onOutside);
+        window.removeEventListener('resize',this.onScroll);
+        window.removeEventListener('scroll',this.onScroll,true);
+        this.editor.toolbar.removeEventListener('keydown',this.onKey);
+        this.editor.toolbar.removeEventListener('click',this.onClick);
+    }
+    toggle(button){
+        let group = button.closest('.tool-dropdown');
+        if(this.opened===group){
+            this.close();
+            return;
+        }
+        this.close();
+        this.editor.saveSelection();
+        this.opened = group;
+        let menu = group.querySelector('.tool-menu');
+        menu.hidden = false;
+        if(menu.showPopover){
+            menu.showPopover();
+        }
+        button.setAttribute('aria-expanded','true');
+        let rect = button.getBoundingClientRect();
+        let below = window.innerHeight-rect.bottom-8;
+        let above = rect.top-8;
+        let upwards = below<Math.min(menu.scrollHeight,240)&&above>below;
+        menu.style.maxHeight = Math.max(40,Math.min(280,upwards?above:below))+'px';
+        let width = menu.getBoundingClientRect().width;
+        menu.style.left = Math.max(8,Math.min(rect.left,window.innerWidth-width-8))+'px';
+        menu.style.top = (upwards?rect.top-menu.getBoundingClientRect().height-4:rect.bottom+4)+'px';
+        let selected = menu.querySelector('[aria-selected="true"]')||menu.querySelector('button');
+        selected.focus({preventScroll:true});
+        this.scrollOption(selected);
+    }
+    close(focus=false){
+        if(!this.opened){
+            return;
+        }
+        let group = this.opened;
+        let menu = group.querySelector('.tool-menu');
+        if(menu.hidePopover&&menu.matches(':popover-open')){
+            menu.hidePopover();
+        }
+        menu.hidden = true;
+        let button = group.querySelector('[data-action]');
+        button.setAttribute('aria-expanded','false');
+        this.opened = null;
+        if(focus){
+            button.focus({preventScroll:true});
+        }
+    }
+    update(feature,value){
+        let group = this.editor.toolbar.querySelector('[data-dropdown="'+feature.name+'"]');
+        let button = group.querySelector('[data-action]');
+        let current = value||feature.options[0].value;
+        let option = feature.options.find(option=>option.value===current);
+        button.value = current;
+        button.querySelector('.tool-label').textContent = option?option.label:feature.display?.(current)||feature.label;
+        button.querySelector('.tool-icon').src = option?.icon||feature.icon;
+        group.querySelectorAll('[data-option]').forEach(item=>{
+            let selected = item.dataset.option===current;
+            item.setAttribute('aria-selected',String(selected));
+            item.setAttribute('part','dropdown-option'+(selected?' dropdown-option-selected':''));
+        });
+    }
+    scrollOption(option){
+        let menu = option.closest('.tool-menu');
+        let top = option.offsetTop;
+        let bottom = top+option.offsetHeight;
+        if(top<menu.scrollTop){
+            menu.scrollTop = top;
+        }else if(bottom>menu.scrollTop+menu.clientHeight){
+            menu.scrollTop = bottom-menu.clientHeight;
+        }
+    }
+    keydown(event){
+        let button = event.target.closest('.tool-dropdown-button');
+        if(button&&['ArrowDown','ArrowUp'].includes(event.key)&&!button.disabled){
+            event.preventDefault();
+            if(!this.opened){
+                this.toggle(button);
+            }
+            return;
+        }
+        if(!this.opened){
+            return;
+        }
+        if(event.key==='Escape'||event.key==='Tab'){
+            this.close(true);
+            if(event.key==='Escape'){
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            return;
+        }
+        if(event.key==='Enter'||event.key===' '){
+            let option = event.target.closest('[data-option]');
+            if(option){
+                event.preventDefault();
+                option.click();
+            }
+            return;
+        }
+        let options = Array.from(this.opened.querySelectorAll('[data-option]'));
+        let index = options.indexOf(this.editor.shadowRoot.activeElement);
+        let next;
+        if(event.key==='ArrowDown'){
+            next = (index+1)%options.length;
+        }else if(event.key==='ArrowUp'){
+            next = (index-1+options.length)%options.length;
+        }else if(event.key==='Home'){
+            next = 0;
+        }else if(event.key==='End'){
+            next = options.length-1;
+        }
+        if(next!==undefined){
+            event.preventDefault();
+            options[next].focus({preventScroll:true});
+            this.scrollOption(options[next]);
+        }
+    }
+}

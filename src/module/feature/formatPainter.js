@@ -1,7 +1,9 @@
+import icon from '../../image/formatPainter.svg';
+
 export default {
     'name':'formatPainter',
+    'icon':icon,
     'label':'格式刷',
-    'icon':'刷',
     'type':'button',
     execute(editor){
         if(editor.painter){

@@ -1,7 +1,9 @@
+import icon from '../../image/orderedList.svg';
+
 export default {
     'name':'orderedList',
+    'icon':icon,
     'label':'有序列表',
-    'icon':'1.',
     'type':'button',
     execute(editor){
         editor.command('insertOrderedList');

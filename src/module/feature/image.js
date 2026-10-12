@@ -1,9 +1,10 @@
+import icon from '../../image/image.svg';
 import {escapeHTML} from '../method/sanitize.js';
 
 export default {
     'name':'image',
+    'icon':icon,
     'label':'上传图片',
-    'icon':'▧',
     'type':'button',
     execute(editor){
         let dialog = editor.openDialog({

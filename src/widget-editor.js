@@ -3,6 +3,10 @@ import EditorSelection from './module/method/selection.js';
 import sanitizeHTML,{escapeHTML} from './module/method/sanitize.js';
 import EditorHistory from './module/history.js';
 import openDialog from './module/dialog.js';
+import EditorDropdown from './module/dropdown.js';
+import undoIcon from './image/undo.svg';
+import redoIcon from './image/redo.svg';
+import formatIcon from './image/formatHTML.svg';
 import styleSheet from './style/default.css' with { type: 'css'};
 
 class WidgetEditor extends HTMLElement {
@@ -30,14 +34,17 @@ class WidgetEditor extends HTMLElement {
             this._initialized = true;
             this.selection = new EditorSelection(this);
             this.history = new EditorHistory(this);
+            this.dropdown = new EditorDropdown(this);
             this.value = this._pendingValue===null?this.innerHTML:this._pendingValue;
             this.bindEvents();
             this.attributeChangedCallback();
             this.dispatchEvent(new CustomEvent('ready',{bubbles:true,composed:true}));
         }
+        this.dropdown.connect();
         document.addEventListener('selectionchange',this._onSelection);
     }
     disconnectedCallback(){
+        this.dropdown?.disconnect();
         document.removeEventListener('selectionchange',this._onSelection);
         this._dialog?.remove();
         this._dialog = null;
@@ -97,21 +104,22 @@ class WidgetEditor extends HTMLElement {
         }
     }
     render(){
-        let controls = [{name:'undo',label:'撤销',icon:'↶',execute:editor=>editor.history.move(-1)},
-            {name:'redo',label:'重做',icon:'↷',execute:editor=>editor.history.move(1)},...features];
+        let controls = [{name:'undo',label:'撤销',icon:undoIcon,execute:editor=>editor.history.move(-1)},
+            {name:'redo',label:'重做',icon:redoIcon,execute:editor=>editor.history.move(1)},...features];
         this.features = controls;
         let toolbar = controls.map(function(feature){
             let attributes = `data-action="${feature.name}" title="${feature.label}" aria-label="${feature.label}"`;
-            if(feature.type==='select'){
-                return `<select class="tool tool-select" ${attributes}>${feature.options.map(option=>`<option value="${option.value}">${option.label}</option>`).join('')}</select>`;
+            if(feature.type==='dropdown'){
+                return EditorDropdown.render(feature);
             }
             if(feature.type==='color'){
-                return `<label class="tool-color" title="文字颜色"><span aria-hidden="true">A</span><input type="color" class="tool" ${attributes} value="#334155"></label>`;
+                return `<label class="tool-color" title="文字颜色"><img class="tool-icon" part="toolbar-icon" src="${feature.icon}" alt="" aria-hidden="true"><input type="color" class="tool" ${attributes} value="#334155"></label>`;
             }
-            return `<button type="button" class="tool tool-button" ${attributes}>${escapeHTML(feature.icon)}</button>`;
+            return `<button type="button" class="tool tool-button" ${attributes}><img class="tool-icon" part="toolbar-icon" src="${feature.icon}" alt="" aria-hidden="true"></button>`;
         }).join('');
         this.shadowRoot.innerHTML = `<div class="mod-panel">
             <div class="toolbar hd" role="toolbar" aria-label="文本格式工具栏">${toolbar}</div>
+            <div class="source-tools" hidden><span>HTML 源代码</span><button type="button" class="source-format" aria-label="格式化 HTML"><img class="tool-icon" src="${formatIcon}" alt="" aria-hidden="true"><span>格式化 HTML</span></button></div>
             <div class="bd">
                 <div class="editor-content" contenteditable="true" role="textbox" aria-label="富文本内容" aria-multiline="true" spellcheck="true"></div>
                 <div class="editor-placeholder" aria-hidden="true" hidden></div>
@@ -122,6 +130,7 @@ class WidgetEditor extends HTMLElement {
         this.content = this.shadowRoot.querySelector('.editor-content');
         this.placeholder = this.shadowRoot.querySelector('.editor-placeholder');
         this.sourceArea = this.shadowRoot.querySelector('.editor-source');
+        this.sourceTools = this.shadowRoot.querySelector('.source-tools');
         this.toolbar = this.shadowRoot.querySelector('.toolbar');
     }
     bindEvents(){
@@ -135,7 +144,13 @@ class WidgetEditor extends HTMLElement {
         this.toolbar.addEventListener('click',event=>{
             let control = event.target.closest('button[data-action]');
             if(control&&!control.disabled){
-                this.execute(control.dataset.action,null,event);
+                let feature = this.features.find(feature=>feature.name===control.dataset.action);
+                if(feature.type==='dropdown'){
+                    this.dropdown.toggle(control);
+                }else{
+                    this.dropdown.close();
+                    this.execute(control.dataset.action,null,event);
+                }
             }
         });
         this.toolbar.addEventListener('change',event=>{
@@ -143,6 +158,9 @@ class WidgetEditor extends HTMLElement {
             if(control&&!control.disabled){
                 this.execute(control.dataset.action,control.value,event);
             }
+        });
+        this.sourceTools.querySelector('button').addEventListener('click',()=>{
+            this.features.find(feature=>feature.name==='source').format(this);
         });
         this.content.addEventListener('input',()=>this.update());
         ['pointerup','keyup','focus'].forEach(name=>this.content.addEventListener(name,()=>{
@@ -192,7 +210,7 @@ class WidgetEditor extends HTMLElement {
     }
     execute(name,value,event){
         let feature = this.features.find(feature=>feature.name===name);
-        if(!feature||this.source&&name!=='source'&&!feature.allowSource){
+        if(!feature||this.source&&name!=='source'){
             return;
         }
         this.saveSelection();
@@ -314,6 +332,7 @@ class WidgetEditor extends HTMLElement {
         }
     }
     toggleSource(){
+        this.dropdown.close();
         this.cancelPainter();
         if(this.source){
             let value = sanitizeHTML(this.sourceArea.value);
@@ -332,6 +351,7 @@ class WidgetEditor extends HTMLElement {
             this.sourceArea.hidden = false;
             this.sourceArea.focus({preventScroll:true});
         }
+        this.sourceTools.hidden = !this.source;
         this.shadowRoot.querySelector('.mode-label').textContent = this.source?'HTML 源代码':'可视化编辑';
         this.updatePlaceholder();
         this.updateToolbar();
@@ -365,10 +385,12 @@ class WidgetEditor extends HTMLElement {
         }
         this.features.forEach(feature=>{
             let control = this.toolbar.querySelector('[data-action="'+feature.name+'"]');
-            control.disabled = this.source&&feature.name!=='source'&&!feature.allowSource||feature.name==='undo'&&!this.history.canUndo||feature.name==='redo'&&!this.history.canRedo;
-            if(feature.type==='select'||feature.type==='color'){
+            control.disabled = this.source&&feature.name!=='source'||feature.name==='undo'&&!this.history.canUndo||feature.name==='redo'&&!this.history.canRedo;
+            if(feature.type==='dropdown'){
+                this.dropdown.update(feature,feature.value?.(this));
+            }else if(feature.type==='color'){
                 let value = feature.value?.(this);
-                if(value&&(feature.type==='color'||feature.options.some(option=>option.value===value))){
+                if(value){
                     control.value = value;
                 }
             }else if(feature.active){

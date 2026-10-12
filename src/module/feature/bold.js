@@ -1,7 +1,9 @@
+import icon from '../../image/bold.svg';
+
 export default {
     'name':'bold',
+    'icon':icon,
     'label':'加粗',
-    'icon':'B',
     'type':'button',
     execute(editor){
         editor.command('bold');

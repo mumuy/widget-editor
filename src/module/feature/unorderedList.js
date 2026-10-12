@@ -1,7 +1,9 @@
+import icon from '../../image/unorderedList.svg';
+
 export default {
     'name':'unorderedList',
+    'icon':icon,
     'label':'无序列表',
-    'icon':'•',
     'type':'button',
     execute(editor){
         editor.command('insertUnorderedList');
