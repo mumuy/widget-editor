@@ -1,3 +1,5 @@
+import hexColor from './color.js';
+
 // 仅保留工具栏支持的标签及编辑时需要的段落、换行；粘贴、源码及 API 共用此入口。
 const allowedTags = new Set('p div span br strong b em i h1 h2 h3 h4 h5 h6 ul ol li a img table thead tbody tfoot tr th td blockquote'.split(' '));
 const blockedTags = new Set('script style iframe object embed svg math form input button textarea select link meta base template'.split(' '));
@@ -62,7 +64,7 @@ export default function sanitizeHTML(html){
             Object.keys(styleRules).forEach(function(name){
                 let value = node.style.getPropertyValue(name).trim();
                 if(value&&styleRules[name](value)){
-                    styles[name] = value;
+                    styles[name] = name==='color'||name==='background-color'?hexColor(value):value;
                 }
             });
             let attributes = {};
@@ -102,7 +104,10 @@ export default function sanitizeHTML(html){
             }
             Array.from(node.attributes).forEach(attribute=>node.removeAttribute(attribute.name));
             Object.keys(attributes).forEach(name=>node.setAttribute(name,attributes[name]));
-            Object.keys(styles).forEach(name=>node.style.setProperty(name,styles[name]));
+            if(Object.keys(styles).length){
+                // 直接写入已清理的属性，避免 CSSOM 再将 HEX 改写成 RGB。
+                node.setAttribute('style',Object.keys(styles).map(name=>name+': '+styles[name]+';').join(' '));
+            }
         });
     };
     clean(template.content);

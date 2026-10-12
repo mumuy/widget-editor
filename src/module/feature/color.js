@@ -6,13 +6,13 @@ export default {
     'label':'文字颜色',
     'type':'color',
     render(){
-        // 第一行使用灰阶，其余每列保持同一色系，只保留中间色调。
+        // 第一行使用灰阶，其余同一色系通过明暗及饱和度拉开差异。
         let colors = [
             ['#ffffff','#eeeeee','#cccccc','#aaaaaa','#888888','#666666','#555555','#333333','#222222','#000000'],
             ['#f87171','#fb923c','#fbbf24','#facc15','#4ade80','#2dd4bf','#38bdf8','#60a5fa','#a78bfa','#f472b6'],
-            ['#ef4444','#f97316','#f59e0b','#eab308','#22c55e','#14b8a6','#0ea5e9','#3b82f6','#8b5cf6','#ec4899'],
-            ['#dc2626','#ea580c','#d97706','#ca8a04','#16a34a','#0d9488','#0284c7','#2563eb','#7c3aed','#db2777'],
-            ['#b91c1c','#c2410c','#b45309','#a16207','#15803d','#0f766e','#0369a1','#1d4ed8','#6d28d9','#be185d']
+            ['#ff0000','#ff8000','#ffbf00','#ffff00','#00b050','#00bfa5','#00b8e6','#0066ff','#8800ff','#ff0080'],
+            ['#bf7373','#b88a5f','#b69b53','#a6a34f','#699970','#5f9b90','#5f91a8','#687fac','#9270a6','#b46c8e'],
+            ['#aa1111','#a83f00','#a87700','#878700','#007a33','#007a66','#006a88','#1746a0','#662099','#a31859']
         ].flat();
         return `<div class="tool-dropdown" data-dropdown="color">
             <button type="button" class="tool tool-color" data-action="color" title="文字颜色" aria-label="文字颜色" aria-haspopup="dialog" aria-expanded="false" aria-controls="menu-color">${renderIcon(icon)}<span class="color-indicator" aria-hidden="true"></span></button>
@@ -33,6 +33,9 @@ export default {
             editor.execute('color',value);
         };
         group.addEventListener('click',event=>{
+            if(event.target.closest('[data-action="color"]')){
+                this.update(editor,this.value(editor));
+            }
             let swatch = event.target.closest('[data-color]');
             if(swatch){
                 apply(swatch.dataset.color);
