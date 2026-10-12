@@ -47,6 +47,7 @@ export default {
     '无序列表':'Unordered list',
     '超链接':'Hyperlink',
     '编辑超链接':'Edit hyperlink',
+    '取消超链接':'Remove link',
     '链接地址':'Link URL',
     '显示文字':'Display text',
     '留空时使用链接地址':'Leave blank to use the URL',

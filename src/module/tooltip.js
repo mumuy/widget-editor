@@ -1,11 +1,11 @@
 // 共用工具栏的伪元素显示提示，不创建额外节点。
 export default class EditorTooltip {
     constructor(editor){
-        this.toolbars = [editor.toolbar,editor.footer,editor.table?.toolbar].filter(Boolean);
+        this.toolbars = [editor.toolbar,editor.footer,editor.table?.toolbar,editor.links.toolbar].filter(Boolean);
         this.button = null;
         this.toolbar = null;
         this.onPointer = event=>{
-            let button = event.target.closest?.('button[data-action],button[data-table-action]');
+            let button = event.target.closest?.('button[data-action],button[data-table-action],button[data-link-action]');
             if(event.pointerType==='touch'||!button){
                 this.hide();
             }else{
@@ -13,7 +13,7 @@ export default class EditorTooltip {
             }
         };
         this.onFocus = event=>{
-            let button = event.target.closest?.('button[data-action],button[data-table-action]');
+            let button = event.target.closest?.('button[data-action],button[data-table-action],button[data-link-action]');
             if(button?.matches(':focus-visible')){
                 this.show(button);
             }else{

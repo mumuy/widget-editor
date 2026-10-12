@@ -83,6 +83,10 @@ export const link = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
     <path d="m9 15 6-6m-7 3-2 2a4 4 0 0 0 6 6l2-2m2-6 2-2a4 4 0 0 0-6-6l-2 2"/>
 </svg>`;
 
+export const unlink = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m3 3 18 18M8 12l-2 2a4 4 0 0 0 6 6l2-2M16 12l2-2a4 4 0 0 0-6-6l-2 2M3 10H1M10 3V1M21 14h2M14 21v2"/>
+</svg>`;
+
 export const orderedList = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
     <path d="M10 5h11M10 12h11M10 19h11M3 3h1v4M2.5 7h3M2 10h3v2l-3 2h3M2 17h3v4H2m0-2h3"/>
 </svg>`;

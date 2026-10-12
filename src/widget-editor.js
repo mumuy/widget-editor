@@ -27,6 +27,8 @@ class WidgetEditor extends HTMLElement {
             if(this.selection?.current()){
                 this.saveSelection();
                 this.updateToolbar();
+            }else{
+                this.links?.refresh();
             }
         };
     }
@@ -50,6 +52,7 @@ class WidgetEditor extends HTMLElement {
         }
         this.dropdown.connect();
         this.table?.connect();
+        this.links.connect();
         this.tooltip.connect();
         this.fullscreen.connect();
         document.addEventListener('selectionchange',this._onSelection);
@@ -58,6 +61,7 @@ class WidgetEditor extends HTMLElement {
         this.fullscreen?.disconnect();
         this.dropdown?.disconnect();
         this.table?.disconnect();
+        this.links?.disconnect();
         this.tooltip?.disconnect();
         document.removeEventListener('selectionchange',this._onSelection);
         this._dialog?.dismiss();
@@ -68,6 +72,7 @@ class WidgetEditor extends HTMLElement {
         }
         if(name==='language'){
             this.updateLocale();
+            this.links?.refresh();
             this.tooltip?.refresh();
             return;
         }
@@ -223,7 +228,7 @@ class WidgetEditor extends HTMLElement {
             document.execCommand('defaultParagraphSeparator',false,'p');
         });
         this.content.addEventListener('input',event=>{
-            if(!event.isComposing){
+            if(!event.isComposing&&!this._transaction){
                 this.update();
             }
         });
@@ -337,7 +342,13 @@ class WidgetEditor extends HTMLElement {
     }
     transaction(callback){
         this.restoreSelection();
-        callback();
+        // 原生命令可能触发 input，事务结束时统一保存和更新。
+        this._transaction = true;
+        try{
+            callback();
+        }finally{
+            this._transaction = false;
+        }
         this.saveSelection();
         this.update();
     }
@@ -437,6 +448,7 @@ class WidgetEditor extends HTMLElement {
             return;
         }
         this.table?.refresh();
+        this.links?.refresh();
         this.features.forEach(feature=>{
             let control = feature.name==='source'?this.sourceButton:this.toolbar.querySelector('[data-action="'+feature.name+'"]');
             if(!control){
@@ -463,7 +475,7 @@ class WidgetEditor extends HTMLElement {
         let language = this.locale.name;
         if(this.panel.lang!==language){
             this.panel.lang = language;
-            [this.toolbar,this.footer,this.table?.toolbar,this._dialog].forEach(root=>this.locale.apply(root));
+            [this.toolbar,this.footer,this.table?.toolbar,this.links?.toolbar,this._dialog].forEach(root=>this.locale.apply(root));
             this.locale.apply(this.content,false);
             this.locale.apply(this.sourceArea,false);
         }

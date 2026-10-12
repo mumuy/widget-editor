@@ -1,11 +1,15 @@
 import {link as icon} from '../icon.js';
 import {safeURL,escapeHTML} from '../method/sanitize.js';
+import EditorLink from '../link.js';
 
 export default {
     'name':'link',
     'icon':icon,
     'label':'超链接',
     'type':'button',
+    bind(editor){
+        editor.links = new EditorLink(editor);
+    },
     execute(editor){
         let range = editor.getRange();
         let $element = editor.selectedElement();

@@ -15,7 +15,7 @@ export default class EditorFullscreen {
         });
         this.button.addEventListener('click',()=>this.state?this.close():this.open());
         this.onKey = event=>{
-            if(event.key==='Escape'&&this.state&&!editor._dialog?.open&&!editor.dropdown.opened&&editor.table?.toolbar.hidden!==false&&!editor.painter){
+            if(event.key==='Escape'&&this.state&&!editor._dialog?.open&&!editor.dropdown.opened&&editor.table?.toolbar.hidden!==false&&editor.links.toolbar.hidden&&!editor.painter){
                 event.preventDefault();
                 event.stopPropagation();
                 this.close();
@@ -38,6 +38,7 @@ export default class EditorFullscreen {
         editor.saveSelection();
         editor.dropdown.close();
         editor.table?.dismiss();
+        editor.links.dismiss();
         editor.tooltip.hide();
         this.state = {
             x:window.scrollX,
@@ -69,6 +70,7 @@ export default class EditorFullscreen {
         let editor = this.editor;
         editor.dropdown.close();
         editor.table?.dismiss();
+        editor.links.dismiss();
         editor.tooltip?.hide();
         editor._dialog?.dismiss();
         if(this.panel.hasAttribute('popover')){
