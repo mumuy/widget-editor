@@ -25,13 +25,15 @@ npm start
 ```html
 <script src="./dist/widget-editor.min.js" defer></script>
 
-<widget-editor placeholder="请输入内容…" height="420">
+<widget-editor insert="table,image,video,attachment,audio,emoji" placeholder="请输入内容…" height="420">
     <h2>开始编辑</h2>
     <p>选中文字后，可以使用工具栏调整格式。</p>
 </widget-editor>
 ```
 
 组件标签内的 HTML 作为初始内容；`placeholder` 设置空内容时的提示，`height` 设置编辑区域高度，单位为像素。
+
+插入功能默认关闭。设置 `insert="table,image"` 后，工具栏显示「+ 插入」，菜单依次提供表格、图片。可用字段为 `table`、`image`、`video`、`attachment`、`audio`、`emoji`，按属性中的顺序排列；重复字段只显示一次，未知字段忽略。空属性或移除属性会隐藏插入菜单，也可在运行时通过 `setAttribute('insert','emoji,image')` 调整。该属性控制插入操作，已存在的内容仍可显示和编辑。
 
 ```javascript
 customElements.whenDefined('widget-editor').then(function(){
@@ -77,6 +79,9 @@ customElements.whenDefined('widget-editor').then(function(){
 | 格式刷 | `formatPainter.js` | 复制当前位置的字体、粗细、斜体、字号、颜色及文字装饰，再选择文字应用一次；按 Escape 取消 |
 | 标题 | `heading.js` | 正文及 H1～H6，下拉预览对应大小与粗细；H1～H6 默认字号依次为 32、28、24、20、18、16 px，与字号选项一致 |
 | 字体 | `fontFamily.js` | 微软雅黑、宋体、黑体、楷体、仿宋、苹方、等线、华文及思源字体，选项预览对应字体 |
+| 文本缩进 | `indentation.js` | 首行缩进两个字宽；只能增加一次，已缩进时仅可减少，未缩进时仅可增加 |
+| 插入菜单 | `insert.js` | 按 `insert` 属性启用和排列各项插入功能，工具栏统一显示加号 SVG 与「插入」 |
+| 插入表情 | `emoji.js` | 选择常见 emoji 插入到原来的光标或选区，支持键盘选择 |
 | 块引用 | `blockquote.js` | 将选中段落设为引用，再次点击取消引用 |
 | 有序列表 | `orderedList.js` | 添加或取消有序列表 |
 | 无序列表 | `unorderedList.js` | 添加或取消无序列表 |
@@ -180,11 +185,11 @@ widget-editor/
 └── package.json
 ```
 
-新增功能时在 `src/module/feature/` 中创建模块，并在 `index.js` 中注册。模块声明名称、标签、控件类型及执行函数，通过编辑器统一的选区与操作接口处理内容，避免将多个功能堆积在组件入口中。
+新增功能时在 `src/module/feature/` 中创建模块；格式功能在 `index.js` 注册，插入功能在 `insert.js` 注册并通过 `insert` 属性启用。模块声明名称、标签、控件类型及执行函数，通过编辑器统一的选区与操作接口处理内容，避免将多个功能堆积在组件入口中。
 
 ## 下拉菜单与图标
 
-标题、字体、文字大小和对齐方式使用普通按钮组成下拉菜单。标题、字体和字号的工具栏按钮仅显示文字与下拉箭头，标题菜单的正文和 H1～H6 选项分别显示对应 SVG 图标。可在 `src/style/default.css` 中修改 `.tool-dropdown-button`、`.tool-menu`、`.tool-option` 的样式，也可从页面通过 `::part` 调整：
+标题、字体、文字大小、对齐方式、缩进和插入功能使用普通按钮组成下拉菜单。标题、字体和字号的工具栏按钮仅显示文字与下拉箭头，标题菜单的正文和 H1～H6 选项分别显示对应 SVG 图标。缩进菜单根据当前段落禁用不可用操作，选择后保持「缩进」标签；插入菜单保持加号 SVG 和「插入」标签。可在 `src/style/default.css` 中修改 `.tool-dropdown-button`、`.tool-menu`、`.tool-option` 的样式，也可从页面通过 `::part` 调整：
 
 ```css
 widget-editor::part(dropdown-trigger){

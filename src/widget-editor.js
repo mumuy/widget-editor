@@ -26,7 +26,7 @@ class WidgetEditor extends HTMLElement {
         };
     }
     static get observedAttributes(){
-        return ['placeholder','height'];
+        return ['placeholder','height','insert'];
     }
     connectedCallback(){
         if(!this._initialized){
@@ -51,9 +51,32 @@ class WidgetEditor extends HTMLElement {
         document.removeEventListener('selectionchange',this._onSelection);
         this._dialog?.dismiss();
     }
-    attributeChangedCallback(){
+    attributeChangedCallback(name){
         if(!this.content){
             return;
+        }
+        if(name==='insert'&&this.dropdown){
+            this.dropdown.close();
+            let feature = this.features.find(feature=>feature.name==='insert');
+            feature.options = features.find(feature=>feature.name==='insert').options(this);
+            let template = document.createElement('template');
+            template.innerHTML = feature.options.length?EditorDropdown.render(feature):'';
+            let group = template.content.firstElementChild;
+            let previous = this.toolbar.querySelector('[data-dropdown="insert"]');
+            if(previous){
+                if(group){
+                    previous.replaceWith(group);
+                }else{
+                    previous.remove();
+                }
+            }else if(group){
+                this.toolbar.querySelector('[data-action="source"]').before(group);
+            }
+            let options = feature.options;
+            if(this._dialog?.dataset.insert&&!options.some(option=>option.value===this._dialog.dataset.insert)){
+                this._dialog.dismiss();
+            }
+            this.updateToolbar();
         }
         this.placeholder.textContent = this.getAttribute('placeholder')||'在这里开始写作…';
         this.updatePlaceholder();
@@ -115,20 +138,23 @@ class WidgetEditor extends HTMLElement {
             this.shadowRoot.appendChild($style);
         }
     }
-    render(){
+    toolbarHTML(){
         let controls = [{name:'undo',label:'撤销',icon:undoIcon,execute:editor=>editor.history.move(-1)},
             {name:'redo',label:'重做',icon:redoIcon,execute:editor=>editor.history.move(1)},...features];
-        this.features = controls;
-        let toolbar = controls.map(function(feature){
+        this.features = controls.map(feature=>typeof feature.options==='function'?{...feature,options:feature.options(this)}:feature);
+        return this.features.map(function(feature){
             let attributes = `data-action="${feature.name}" title="${feature.label}" aria-label="${feature.label}"`;
             if(feature.type==='dropdown'){
-                return EditorDropdown.render(feature);
+                return feature.options.length?EditorDropdown.render(feature):'';
             }
             if(feature.type==='color'){
                 return feature.render();
             }
             return `<button type="button" class="tool tool-button" ${attributes}>${renderIcon(feature.icon)}</button>`;
         }).join('');
+    }
+    render(){
+        let toolbar = this.toolbarHTML();
         this.shadowRoot.innerHTML = `<div class="mod-panel">
             <div class="hd">
                 <div class="toolbar" role="toolbar" aria-label="文本格式工具栏">${toolbar}</div>
@@ -227,12 +253,16 @@ class WidgetEditor extends HTMLElement {
         });
     }
     execute(name,value,event){
-        let feature = this.features.find(feature=>feature.name===name);
+        let insertion = this.features.find(feature=>feature.name==='insert').options.find(option=>option.value===name);
+        let feature = this.features.find(feature=>feature.name===name)||insertion?.feature;
         if(!feature||this.source&&name!=='source'){
             return;
         }
         this.saveSelection();
         feature.execute(this,value,event);
+        if(insertion&&this._dialog){
+            this._dialog.dataset.insert = name;
+        }
         this.updateToolbar();
     }
     saveSelection(){
@@ -391,6 +421,9 @@ class WidgetEditor extends HTMLElement {
         this.table?.refresh();
         this.features.forEach(feature=>{
             let control = this.toolbar.querySelector('[data-action="'+feature.name+'"]');
+            if(!control){
+                return;
+            }
             control.disabled = this.source&&feature.name!=='source'||feature.name==='undo'&&!this.history.canUndo||feature.name==='redo'&&!this.history.canRedo;
             if(feature.type==='dropdown'){
                 this.dropdown.update(feature,feature.value?.(this));

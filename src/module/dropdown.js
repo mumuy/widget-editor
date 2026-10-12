@@ -19,7 +19,7 @@ export default class EditorDropdown {
         this.onKey = event=>this.keydown(event);
         this.onClick = event=>{
             let option = event.target.closest('[data-option]');
-            if(option){
+            if(option&&!option.disabled){
                 let name = option.closest('.tool-dropdown').dataset.dropdown;
                 this.close();
                 this.editor.execute(name,option.dataset.option,event);
@@ -28,13 +28,14 @@ export default class EditorDropdown {
     }
     static render(feature){
         let id = 'menu-'+feature.name;
+        let role = feature.actionMenu?'menu':'listbox';
         return `<div class="tool-dropdown" data-dropdown="${feature.name}">
-            <button type="button" class="tool tool-dropdown-button${feature.iconOnly?' icon-only':''}" part="dropdown-trigger" data-action="${feature.name}" aria-label="${feature.label}" title="${feature.label}" aria-haspopup="listbox" aria-expanded="false" aria-controls="${id}">
+            <button type="button" class="tool tool-dropdown-button${feature.iconOnly?' icon-only':''}" part="dropdown-trigger" data-action="${feature.name}" aria-label="${feature.label}" title="${feature.label}" aria-haspopup="${role}" aria-expanded="false" aria-controls="${id}">
                 ${feature.icon?renderIcon(feature.icon):''}
                 <span class="tool-label" ${feature.iconOnly?'hidden':''}></span>${renderIcon(arrow,true)}
             </button>
-            <div class="tool-menu" part="dropdown-menu ${feature.name}-menu" id="${id}" role="listbox" aria-label="${feature.label}" popover="manual" hidden>
-                ${feature.options.map(option=>`<button type="button" class="tool-option" part="dropdown-option" role="option" tabindex="-1" aria-selected="false" data-option="${escapeHTML(option.value)}"${option.font?' style="font-family:'+escapeHTML(option.font)+'"':''}>${option.icon?renderIcon(option.icon):''}<span>${escapeHTML(option.label)}</span></button>`).join('')}
+            <div class="tool-menu" part="dropdown-menu ${feature.name}-menu" id="${id}" role="${role}" aria-label="${feature.label}" popover="manual" hidden>
+                ${feature.options.map(option=>`<button type="button" class="tool-option" part="dropdown-option" role="${feature.actionMenu?'menuitem':'option'}" tabindex="-1"${feature.actionMenu?'':' aria-selected="false"'} data-option="${escapeHTML(option.value)}"${option.font?' style="font-family:'+escapeHTML(option.font)+'"':''}>${option.icon?renderIcon(option.icon):''}<span>${escapeHTML(option.label)}</span></button>`).join('')}
             </div>
         </div>`;
     }
@@ -76,9 +77,11 @@ export default class EditorDropdown {
         let width = menu.getBoundingClientRect().width;
         menu.style.left = Math.max(8,Math.min(rect.left,window.innerWidth-width-8))+'px';
         menu.style.top = (upwards?rect.top-menu.getBoundingClientRect().height-4:rect.bottom+4)+'px';
-        let selected = menu.querySelector('[aria-selected="true"],[aria-pressed="true"]')||menu.querySelector('button');
-        selected.focus({preventScroll:true});
-        this.scrollOption(selected);
+        let selected = menu.querySelector('[aria-selected="true"]:not(:disabled),[aria-pressed="true"]:not(:disabled)')||menu.querySelector('button:not(:disabled)');
+        if(selected){
+            selected.focus({preventScroll:true});
+            this.scrollOption(selected);
+        }
     }
     close(focus=false){
         if(!this.opened){
@@ -100,10 +103,10 @@ export default class EditorDropdown {
     update(feature,value){
         let group = this.editor.toolbar.querySelector('[data-dropdown="'+feature.name+'"]');
         let button = group.querySelector('[data-action]');
-        let current = value||feature.options[0].value;
+        let current = feature.actionMenu?null:value||feature.options[0].value;
         let option = feature.options.find(option=>option.value===current);
-        button.value = current;
-        button.querySelector('.tool-label').textContent = option?option.label:feature.display?.(current)||feature.label;
+        button.value = current||'';
+        button.querySelector('.tool-label').textContent = feature.actionMenu?feature.label:option?option.label:feature.display?.(current)||feature.label;
         let icon = feature.icon&&(option?.icon||feature.icon);
         if(icon&&button._icon!==icon){
             button.querySelector('.tool-icon').outerHTML = renderIcon(icon);
@@ -115,7 +118,10 @@ export default class EditorDropdown {
         }
         group.querySelectorAll('[data-option]').forEach(item=>{
             let selected = item.dataset.option===current;
-            item.setAttribute('aria-selected',String(selected));
+            if(!feature.actionMenu){
+                item.setAttribute('aria-selected',String(selected));
+            }
+            item.disabled = !!feature.disabled?.(this.editor,item.dataset.option);
             item.setAttribute('part','dropdown-option'+(selected?' dropdown-option-selected':''));
         });
     }
@@ -165,7 +171,10 @@ export default class EditorDropdown {
             }
             return;
         }
-        let options = Array.from(this.opened.querySelectorAll('[data-option]'));
+        let options = Array.from(this.opened.querySelectorAll('[data-option]:not(:disabled)'));
+        if(!options.length){
+            return;
+        }
         let index = options.indexOf(this.editor.shadowRoot.activeElement);
         let next;
         if(event.key==='ArrowDown'){

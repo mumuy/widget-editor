@@ -1,4 +1,20 @@
 // SVG 直接使用字符串，统一在工具栏中渲染。
+export const insert = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 4v16M4 12h16"/>
+</svg>`;
+
+export const indentIncrease = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 4h18M11 9h10M11 15h10M3 20h18M3 8l4 4-4 4"/>
+</svg>`;
+
+export const indentDecrease = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 4h18M11 9h10M11 15h10M3 20h18M7 8l-4 4 4 4"/>
+</svg>`;
+
+export const emoji = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="9"/><path d="M8 14a4 4 0 0 0 8 0M8 9h.01M16 9h.01"/>
+</svg>`;
+
 export const alignCenter = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
     <path d="M3 5h18M6 10h12M3 15h18M6 20h12"/>
 </svg>`;

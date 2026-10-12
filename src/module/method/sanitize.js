@@ -12,7 +12,8 @@ const styleRules = {
     'font-weight':value=>/^(normal|bold|[1-9]00)$/.test(value),
     'font-style':value=>/^(normal|italic|oblique)$/.test(value),
     'text-decoration':value=>/^(none|underline|line-through|underline line-through)$/.test(value),
-    'text-align':value=>/^(left|center|right|justify)$/.test(value)
+    'text-align':value=>/^(left|center|right|justify)$/.test(value),
+    'text-indent':value=>value==='2em'
 };
 
 export function escapeHTML(value){

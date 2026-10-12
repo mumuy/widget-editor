@@ -194,6 +194,13 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
     background: var(--button-active-background);
     color: var(--button-active-color);
 }
+.tool-option:disabled{
+    opacity: .4;
+    cursor: default;
+}
+.tool-option:disabled:hover{
+    background: transparent;
+}
 .tool-color{
     width: 34px;
     cursor: pointer;
@@ -619,6 +626,29 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
 }
 .table-dialog{
     width: min(320px,calc(100vw - 32px));
+}
+.emoji-dialog{
+    width: min(380px,calc(100vw - 32px));
+}
+.emoji-grid{
+    display: grid;
+    grid-template-columns: repeat(8,minmax(0,1fr));
+    gap: 4px;
+}
+.emoji-button{
+    aspect-ratio: 1;
+    min-width: 0;
+    padding: 0;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-size: 24px;
+    cursor: pointer;
+}
+.emoji-button:hover,.emoji-button:focus-visible{
+    background: var(--button-active-background);
+    border-color: var(--button-active-color);
+    outline: none;
 }
 .table-picker{
     margin-bottom: 18px;
