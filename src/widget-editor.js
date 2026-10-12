@@ -40,10 +40,12 @@ class WidgetEditor extends HTMLElement {
             this.dispatchEvent(new CustomEvent('ready',{bubbles:true,composed:true}));
         }
         this.dropdown.connect();
+        this.table?.connect();
         document.addEventListener('selectionchange',this._onSelection);
     }
     disconnectedCallback(){
         this.dropdown?.disconnect();
+        this.table?.disconnect();
         document.removeEventListener('selectionchange',this._onSelection);
         this._dialog?.remove();
         this._dialog = null;
