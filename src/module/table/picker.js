@@ -19,8 +19,8 @@ export default function tablePicker(dialog,onChange){
             cell.tabIndex = Number(cell.dataset.row)===row&&Number(cell.dataset.column)===column?0:-1;
         });
     };
-    for(let row=1;row<=10;row++){
-        for(let column=1;column<=10;column++){
+    for(let row=1;row<=8;row++){
+        for(let column=1;column<=8;column++){
             let cell = document.createElement('button');
             cell.type = 'button';
             cell.className = 'table-grid-cell';
@@ -47,11 +47,11 @@ export default function tablePicker(dialog,onChange){
                 let offset = offsets[event.key];
                 if(offset){
                     event.preventDefault();
-                    let y = Math.max(1,Math.min(10,row+offset[0]));
-                    let x = Math.max(1,Math.min(10,column+offset[1]));
+                    let y = Math.max(1,Math.min(8,row+offset[0]));
+                    let x = Math.max(1,Math.min(8,column+offset[1]));
                     confirmed = false;
                     select(y,x);
-                    cells[(y-1)*10+x-1].focus({preventScroll:true});
+                    cells[(y-1)*8+x-1].focus({preventScroll:true});
                 }
             });
             cells.push(cell);

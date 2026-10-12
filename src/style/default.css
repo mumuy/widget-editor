@@ -625,7 +625,7 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
     white-space: nowrap;
 }
 .table-dialog{
-    width: min(320px,calc(100vw - 32px));
+    width: min(480px,calc(100vw - 32px));
 }
 .emoji-dialog{
     width: min(380px,calc(100vw - 32px));
@@ -660,11 +660,13 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
 }
 .table-grid{
     display: grid;
-    grid-template-columns: repeat(10,minmax(0,1fr));
+    grid-template-columns: repeat(8,minmax(0,1fr));
     gap: 3px;
 }
 .table-grid-cell{
-    aspect-ratio: 1;
+    aspect-ratio: 2;
+    width: 100%;
+    min-height: 24px;
     min-width: 0;
     padding: 0;
     background: var(--field-background-color);
