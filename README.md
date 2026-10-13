@@ -37,6 +37,10 @@
 | `insert` | 插入菜单中的功能，以英文逗号分隔 | `divider,table,image,video,attachment,audio,emoji,code` |
 | `custom` | 工具栏功能及显示顺序，以英文逗号分隔 | 使用默认工具栏 |
 | `language` | 界面语言：`zh-CN`、`zh-HK` 或 `en-US` | `zh-CN` |
+| `heading` | 标题下拉菜单的选项及顺序 | `p,h1,h2,h3,h4,h5,h6` |
+| `fontfamily` | 字体下拉菜单的选项及顺序 | 下方列出的全部字体 |
+| `fontsize` | 字号下拉菜单的选项及顺序，单位为 px | `12,14,16,18,20,24,28,32,36,48` |
+| `alignment` | 对齐下拉菜单的选项及顺序 | `left,center,right,justify` |
 | `image` | 图片允许的插入方式 | `upload,url` |
 | `video` | 视频允许的插入方式 | `upload,url,iframe` |
 | `audio` | 音频允许的插入方式 | `upload,url` |
@@ -70,6 +74,49 @@ let editor = document.querySelector('#editor');
 editor.setAttribute('insert','emoji,image');
 editor.removeAttribute('insert'); // 恢复默认插入菜单
 ```
+
+### 下拉菜单选项
+
+通过组件属性，可以分别控制标题、字体、字号和对齐菜单开放的选项及顺序：
+
+```html
+<widget-editor
+    heading="p,h2,h3"
+    fontfamily="yahei,simsun,kaiti"
+    fontsize="14,16,20,24"
+    alignment="left,center">
+</widget-editor>
+```
+
+属性使用英文逗号分隔，忽略大小写、重复值和不支持的值。字号填写数字，不加 `px`。设置为空（例如 `heading=""`）会隐藏对应下拉框；不设置或移除属性则使用全局默认值。`custom` 控制工具栏是否显示该功能，这四个属性控制菜单中的选项。
+
+字体支持以下字段：
+
+| 字段 | 字体 |
+| --- | --- |
+| `default` | 默认字体 |
+| `yahei` | 微软雅黑 |
+| `simsun` | 宋体 |
+| `simhei` | 黑体 |
+| `kaiti` | 楷体 |
+| `fangsong` | 仿宋 |
+| `pingfang` | 苹方 |
+| `dengxian` | 等线 |
+| `stsong` | 华文宋体 |
+| `stkaiti` | 华文楷体 |
+| `stxihei` | 华文细黑 |
+| `sourceSans` | 思源黑体 |
+| `sourceSerif` | 思源宋体 |
+
+运行时修改属性会立即更新菜单，已有内容保持不变：
+
+```javascript
+editor.setAttribute('fontsize','16,24,36');
+editor.setAttribute('alignment','left,right');
+editor.removeAttribute('fontsize'); // 恢复全局默认字号选项
+```
+
+所有属性的默认值统一在 `src/module/config.js` 的 `attributes` 中配置，例如 `attributes.fontsize.default`；组件实例上的属性优先。
 
 ### 自定义工具栏
 
