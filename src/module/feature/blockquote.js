@@ -38,9 +38,12 @@ export default {
                 if(block&&editor.content.contains(block)){
                     container = block.matches('li,td,th')?block:block.parentElement;
                 }
-                let blocks = Array.from(container.childNodes).filter(node=>range.intersectsNode(node));
+                let blocks = Array.from(container.childNodes).filter(node=>range.intersectsNode(node)&&
+                    !editor.blocks.boundary(node)&&(node.nodeType!==Node.TEXT_NODE||node.textContent.trim()));
                 quote = document.createElement('blockquote');
-                if(blocks.length){
+                if(blocks.length&&blocks.every(node=>node.nodeName==='BLOCKQUOTE')){
+                    blocks.forEach(node=>node.replaceWith(...node.childNodes));
+                }else if(blocks.length){
                     blocks[0].before(quote);
                     blocks.forEach(node=>{
                         if(node.nodeName==='BLOCKQUOTE'){

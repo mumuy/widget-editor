@@ -102,6 +102,26 @@ export default class EditorBlocks {
             this.dismiss();
         });
     }
+    unwrap(paragraph){
+        let editor = this.editor;
+        let quote = paragraph.parentElement;
+        let range = editor.getRange().cloneRange();
+        let node = range.startContainer;
+        let offset = range.startOffset;
+        editor.history.record();
+        editor.transaction(()=>{
+            let tail = quote.cloneNode(false);
+            while(paragraph.nextSibling){
+                tail.appendChild(paragraph.nextSibling);
+            }
+            quote.after(paragraph);
+            if(tail.children.length){paragraph.after(tail);}
+            if(!quote.children.length){quote.remove();}
+            range.setStart(node,offset);
+            range.collapse(true);
+            this.select(range);
+        });
+    }
     edge(node,range,end=false){
         if(!node.contains(range.startContainer)){return false;}
         let part = document.createRange();
@@ -130,6 +150,16 @@ export default class EditorBlocks {
         if(event.isComposing||!range||editor.source){return false;}
         let node = range.startContainer;
         let element = node.nodeType===Node.TEXT_NODE?node.parentElement:node;
+        let paragraph = element.closest(paragraphTags);
+        let quote = paragraph?.parentElement;
+        if(range.collapsed&&quote?.matches('blockquote')&&
+            (event.inputType==='insertParagraph'&&this.empty(paragraph)||
+                event.inputType==='deleteContentBackward'&&(this.empty(paragraph)||this.edge(quote,range))||
+                event.inputType==='deleteContentForward'&&this.empty(paragraph))){
+            event.preventDefault();
+            this.unwrap(paragraph);
+            return true;
+        }
         if(['insertParagraph','insertLineBreak'].includes(event.inputType)){
             element.closest('[data-block-boundary]')?.removeAttribute('data-block-boundary');
         }
@@ -150,14 +180,13 @@ export default class EditorBlocks {
         }
         let backward = event.inputType==='deleteContentBackward';
         if(!backward&&event.inputType!=='deleteContentForward'){return false;}
-        let paragraph = element.closest(paragraphTags);
         let block;
         if(paragraph&&this.edge(paragraph,range,!backward)){
             block = backward?paragraph.previousElementSibling:paragraph.nextElementSibling;
         }else if(node.nodeType===Node.ELEMENT_NODE){
             block = node.childNodes[range.startOffset-(backward?1:0)];
         }
-        if(!this.block(block)){return false;}
+        if(!this.block(block)&&!(backward&&block?.matches('blockquote')&&this.empty(block))){return false;}
         event.preventDefault();
         this.remove(block,paragraph);
         return true;
