@@ -20,6 +20,22 @@ export const observedAttributes = Object.keys(attributes);
 export const toolbarAttributes = observedAttributes.filter(name=>attributes[name].toolbar);
 export const mediaAttributes = observedAttributes.filter(name=>attributes[name].media);
 
+// 下拉框允许的项目及显示顺序；空数组隐藏对应控件。
+export const dropdownOptions = {
+    heading:['p','h1','h2','h3','h4','h5','h6'],
+    fontFamily:[
+        'default','yahei','simsun','simhei','kaiti','fangsong','pingfang',
+        'dengxian','stsong','stkaiti','stxihei','sourceSans','sourceSerif'
+    ],
+    fontSize:[12,14,16,18,20,24,28,32,36,48],
+    alignment:['left','center','right','justify']
+};
+
+function listValues(value){
+    let names = Array.isArray(value)?value:String(value??'').split(',');
+    return Array.from(new Set(names.map(name=>String(name).trim().toLowerCase()).filter(Boolean)));
+}
+
 export default class EditorConfig {
     constructor(editor){
         this.editor = editor;
@@ -38,10 +54,12 @@ export default class EditorConfig {
         return value??attribute.default;
     }
     list(name){
-        let value = this.get(name);
-        if(value===null){return [];}
-        let names = Array.isArray(value)?value:String(value).split(',');
-        return Array.from(new Set(names.map(name=>name.trim().toLowerCase()).filter(Boolean)));
+        return listValues(this.get(name));
+    }
+    options(name,items){
+        if(!Object.hasOwn(dropdownOptions,name)){return items;}
+        let available = new Map(items.map(item=>[String(item.value).toLowerCase(),item]));
+        return listValues(dropdownOptions[name]).map(value=>available.get(value)).filter(Boolean);
     }
     methods(name){
         if(!mediaAttributes.includes(name)){return null;}

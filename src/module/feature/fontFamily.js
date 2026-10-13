@@ -18,7 +18,9 @@ export default {
     'name':'fontFamily',
     'label':'字体',
     'type':'dropdown',
-    'options':options,
+    options(editor){
+        return editor.config.options('fontFamily',options);
+    },
     execute(editor,value){
         let option = options.find(option=>option.value===value);
         if(option){

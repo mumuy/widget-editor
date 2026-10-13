@@ -299,6 +299,9 @@ class WidgetEditor extends HTMLElement {
         if(!feature||this.source&&!['source','fullscreen'].includes(name)||insertion&&!this.canInsert(name)){
             return;
         }
+        if(feature.type==='dropdown'&&!feature.actionMenu&&!feature.options.some(option=>String(option.value)===String(value))){
+            return;
+        }
         if(this.codes.selected()&&!['undo','redo','source','fullscreen','format'].includes(name)){
             return;
         }

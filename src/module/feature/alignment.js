@@ -6,12 +6,14 @@ export default {
     'label':'对齐方式',
     'type':'dropdown',
     'iconOnly':true,
-    'options':[
-        {'value':'left','label':'左对齐','icon':icon},
-        {'value':'center','label':'居中对齐','icon':center},
-        {'value':'right','label':'右对齐','icon':right},
-        {'value':'justify','label':'两端对齐','icon':justify}
-    ],
+    options(editor){
+        return editor.config.options('alignment',[
+            {'value':'left','label':'左对齐','icon':icon},
+            {'value':'center','label':'居中对齐','icon':center},
+            {'value':'right','label':'右对齐','icon':right},
+            {'value':'justify','label':'两端对齐','icon':justify}
+        ]);
+    },
     execute(editor,value){
         let commands = {
             'left':'justifyLeft',
