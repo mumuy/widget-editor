@@ -172,10 +172,7 @@ class WidgetEditor extends HTMLElement {
                 active:editor=>!!editor.fullscreen?.state}];
         this.features = controls.map(feature=>typeof feature.options==='function'?{...feature,options:feature.options(this)}:feature);
         let available = new Map([...this.features,...insertFeatures].map(feature=>[feature.name.toLowerCase(),feature]));
-        let names = this.config.list('custom');
-        this.toolbarFeatures = names!==null?
-            [...this.features.slice(0,2),...names.map(name=>available.get(name)).filter(feature=>feature&&!['undo','redo'].includes(feature.name))]:
-            this.features.filter(feature=>!['source','fullscreen'].includes(feature.name));
+        this.toolbarFeatures = [...this.features.slice(0,2),...this.config.list('custom').map(name=>available.get(name)).filter(feature=>feature&&!['undo','redo'].includes(feature.name))];
         return this.toolbarFeatures.map(function(feature){
             let attributes = `data-action="${feature.name}" aria-label="${feature.label}"`;
             if(feature.type==='dropdown'){
