@@ -91,6 +91,7 @@ export default {
     '附件地址':'Attachment URL',
     '图片描述':'Image description',
     '视频描述':'Video description',
+    '视频标题':'Video title',
     '音频描述':'Audio description',
     '图片的文字说明':'Description of the image',
     '留空时使用文件名':'Leave blank to use the file name',

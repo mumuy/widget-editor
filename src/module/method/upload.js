@@ -27,7 +27,9 @@ export default function openUpload(editor,options){
             panel.querySelectorAll('input,textarea').forEach(input=>input.disabled=!active||busy);
         });
         if(options.iframe){
-            editor.locale.set(dialog.querySelector('[name="'+options.field.name+'"]'),mode==='iframe'?'留空时使用原始标题':options.field.placeholder,{},'placeholder');
+            let input = dialog.querySelector('[name="'+options.field.name+'"]');
+            editor.locale.set(input,mode==='iframe'?'留空时使用原始标题':options.field.placeholder,{},'placeholder');
+            editor.locale.set(input.closest('.field').querySelector('span'),mode==='iframe'?(options.field.iframeLabel||options.field.label):options.field.label,options.field.params);
         }
     };
     let setBusy = function(value){

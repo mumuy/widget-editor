@@ -16,7 +16,7 @@ export default {
             'types':videoTypes,
             'accept':'video/mp4,video/webm,video/ogg,.m4v,.ogv',
             'error':'请选择 MP4、WebM 或 Ogg 视频',
-            'field':{'name':'title','label':'视频描述','type':'text','placeholder':'留空时使用文件名'},
+            'field':{'name':'title','label':'视频描述','iframeLabel':'视频标题','type':'text','placeholder':'留空时使用文件名'},
             iframe(value,values){
                 let template = document.createElement('template');
                 template.innerHTML = value;
