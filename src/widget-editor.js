@@ -30,6 +30,7 @@ class WidgetEditor extends HTMLElement {
                 this.updateToolbar();
             }else{
                 this.links?.refresh();
+                this.codes?.refresh();
             }
         };
     }
@@ -54,6 +55,7 @@ class WidgetEditor extends HTMLElement {
         this.dropdown.connect();
         this.table?.connect();
         this.links.connect();
+        this.codes.connect();
         this.tooltip.connect();
         this.fullscreen.connect();
         document.addEventListener('selectionchange',this._onSelection);
@@ -63,6 +65,7 @@ class WidgetEditor extends HTMLElement {
         this.dropdown?.disconnect();
         this.table?.disconnect();
         this.links?.disconnect();
+        this.codes?.disconnect();
         this.tooltip?.disconnect();
         document.removeEventListener('selectionchange',this._onSelection);
         this._dialog?.dismiss();
@@ -124,11 +127,12 @@ class WidgetEditor extends HTMLElement {
         return this.value;
     }
     contentHTML(){
-        if(!this.content.querySelector('[data-table-selected]')){
+        if(!this.content.querySelector('[data-table-selected],[data-code-placeholder]')){
             return this.content.innerHTML;
         }
         let content = this.content.cloneNode(true);
         content.querySelectorAll('[data-table-selected]').forEach(cell=>cell.removeAttribute('data-table-selected'));
+        content.querySelectorAll('pre code br[data-code-placeholder]').forEach(node=>node.remove());
         return content.innerHTML;
     }
     setHTML(value){
@@ -220,7 +224,8 @@ class WidgetEditor extends HTMLElement {
                 }
             }
         });
-        this.content.addEventListener('beforeinput',()=>{
+        this.content.addEventListener('beforeinput',event=>{
+            if(this.codes?.beforeInput(event)){return;}
             this.normalizeContent(true);
             document.execCommand('defaultParagraphSeparator',false,'p');
         });
@@ -232,6 +237,9 @@ class WidgetEditor extends HTMLElement {
         this.content.addEventListener('compositionend',()=>this.update());
         ['pointerup','keyup','focus'].forEach(name=>this.content.addEventListener(name,()=>{
             this.saveSelection();
+            if(this.painter&&this.codes.selected()){
+                this.cancelPainter();
+            }
             if(this.painter&&name!=='focus'){
                 let range = this.getRange();
                 if(range&&!range.collapsed){
@@ -277,6 +285,9 @@ class WidgetEditor extends HTMLElement {
         if(!feature||this.source&&!['source','fullscreen'].includes(name)||insertion&&!this.canInsert(name)){
             return;
         }
+        if(this.codes.selected()&&!['undo','redo','source','fullscreen','format'].includes(name)){
+            return;
+        }
         this.saveSelection();
         feature.execute(this,value,event);
         if(insertion&&this._dialog){
@@ -291,6 +302,7 @@ class WidgetEditor extends HTMLElement {
         return this.selection.save();
     }
     restoreSelection(){
+        this.codes?.normalize(this.selection.range);
         this.normalizeContent(true,this.selection.range);
         let range = this.selection.restore();
         document.execCommand('defaultParagraphSeparator',false,'p');
@@ -411,13 +423,14 @@ class WidgetEditor extends HTMLElement {
     updatePlaceholder(){
         // 提示独立于编辑内容，空标题、列表等结构也应保留自己的布局。
         let text = this.content.textContent.replace(/[\s\u200b-\u200d\ufeff]/g,'');
-        let structure = this.content.querySelector('h1,h2,h3,h4,h5,h6,ul,ol,li,img,video,audio,table,blockquote');
+        let structure = this.content.querySelector('h1,h2,h3,h4,h5,h6,ul,ol,li,img,video,audio,table,blockquote,hr,pre');
         let blocks = Array.from(this.content.querySelectorAll('p,div')).filter(node=>!node.querySelector('p,div'));
         let lines = this.content.querySelectorAll('br').length;
         this.placeholder.hidden = this.source||!!text||!!structure||blocks.length>1||lines>1;
     }
     update(record=true,emit=true){
         if(!this.source){
+            this.codes?.normalize();
             this.normalizeContent();
         }
         this.content.querySelectorAll('a[href]').forEach(link=>{
@@ -448,11 +461,13 @@ class WidgetEditor extends HTMLElement {
         }
         this.table?.refresh();
         this.links?.refresh();
+        this.codes?.refresh();
+        let inCode = !!this.codes?.selected();
         let features = new Map([...this.features,...this.toolbarFeatures].map(feature=>[feature.name,feature]));
         features.forEach(feature=>{
             let controls = this.panel.querySelectorAll('[data-action="'+feature.name+'"]');
             controls.forEach(control=>{
-                control.disabled = this.source&&!['source','fullscreen'].includes(feature.name)||feature.name==='undo'&&!this.history.canUndo||feature.name==='redo'&&!this.history.canRedo;
+                control.disabled = this.source&&!['source','fullscreen'].includes(feature.name)||inCode&&!['undo','redo','source','fullscreen','format'].includes(feature.name)||feature.name==='undo'&&!this.history.canUndo||feature.name==='redo'&&!this.history.canRedo;
                 if(feature.type==='dropdown'){
                     this.dropdown.update(feature,feature.value?.(this));
                 }else if(feature.type==='color'){
@@ -475,7 +490,7 @@ class WidgetEditor extends HTMLElement {
         let language = this.locale.name;
         if(this.panel.lang!==language){
             this.panel.lang = language;
-            [this.toolbar,this.footer,this.table?.toolbar,this.links?.toolbar,this._dialog].forEach(root=>this.locale.apply(root));
+            [this.toolbar,this.footer,this.table?.toolbar,this.links?.toolbar,this.codes?.toolbar,this._dialog].forEach(root=>this.locale.apply(root));
             this.locale.apply(this.content,false);
             this.locale.apply(this.sourceArea,false);
         }

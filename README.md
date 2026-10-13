@@ -48,11 +48,13 @@
 | `audio` | 音频 |
 | `attachment` | 附件 |
 | `emoji` | 表情 |
+| `divider` | 分割线 |
+| `code` | 代码块 |
 
 例如，`insert="table,image"` 只提供表格和图片。启用全部插入功能：
 
 ```html
-<widget-editor insert="table,image,video,attachment,audio,emoji"></widget-editor>
+<widget-editor insert="table,image,video,attachment,audio,emoji,divider,code"></widget-editor>
 ```
 
 重复字段只显示一次，未知字段会被忽略。不设置 `insert` 或设置为空时，工具栏不显示插入菜单；通过 `custom` 配置的独立插入按钮仍可使用。已有内容始终可以显示和编辑。
@@ -100,6 +102,8 @@ editor.removeAttribute('insert');
 | `audio` | 独立插入音频按钮 |
 | `attachment` | 独立插入附件按钮 |
 | `emoji` | 独立插入表情按钮 |
+| `divider` | 独立插入分割线按钮 |
+| `code` | 独立插入代码块按钮 |
 | `source` | 源代码 |
 | `fullscreen` | 全屏 |
 
@@ -273,11 +277,28 @@ customElements.whenDefined('widget-editor').then(function(){
 
 **表格**：在 8×8 选择区域中移动鼠标预览行列数，点击格子确认范围，再点击「插入表格」。确认后范围保持固定，鼠标重新进入已选范围才恢复预览。可勾选「第一行作为表头」。点击表格内的单元格，会浮动显示行列操作；拖动或按住 Shift 选择连续单元格后，可合并或拆分。
 
-底部显示源代码按钮、编辑模式、字数统计和全屏按钮。链接校验、文件类型或大小限制、上传失败等信息直接显示在对应弹窗内。
+底部左侧显示全屏和源代码按钮，右侧显示字数统计。链接校验、文件类型或大小限制、上传失败等信息直接显示在对应弹窗内。
 
 HTML 输出中，纯文本单元格保持在一行，例如 `<td>文字</td>`；空白单元格使用 `<td>&nbsp;</td>`，不输出占位的 `<br>`。表头单元格使用相同规则，单元格内实际输入的换行、图片和段落会保留。
 
 **表情**：点击 emoji 仅选中并高亮，点击弹窗中的「插入表情」按钮后才插入。
+
+**分割线与代码块**：通过 `insert="divider,code"` 放入插入菜单，也可以通过 `custom="bold,divider,code"` 直接放入工具栏。分割线输出为 `hr`；代码块使用 `pre` 和 `code`，选中的文字可直接转换为代码块。
+
+光标进入代码块时，附近会显示编程语言选择框，支持 HTML、JavaScript、CSS、Java、TypeScript、PHP、Python、Go、JSON、SQL、Bash 和纯文本。切换语言会重新高亮，保留文字和选区，支持撤销。HTML 中的 `script`、`style` 内容分别按 JavaScript、CSS 高亮。
+
+代码块内 Enter 换行，Tab 插入四个空格，选中多行时可用 Tab / Shift + Tab 增加或减少缩进；Ctrl / Command + Enter 返回代码块后的正文。粘贴保留纯文本与缩进，代码文本不会作为 HTML 执行。在代码块中暂时禁用文字格式按钮，使用「清除格式」可以转换回普通段落。
+
+高亮用原生 JavaScript 实现。配色变量全部写在 `code` 的 `style` 属性里，标记使用内联 `color: var(--code-keyword)` 等样式；字体、空白处理和背景同样使用内联样式，导出的 HTML 不需要组件样式表就能显示高亮。可以在初始代码块中指定配色：
+
+```html
+<widget-editor insert="divider,code">
+    <pre><code data-language="javascript" style="--code-keyword:#8250df;--code-comment:#6a737d;">const message = "Hello";
+console.log(message);</code></pre>
+</widget-editor>
+```
+
+可配置的颜色变量包括 `--code-text`、`--code-background`、`--code-border`、`--code-comment`、`--code-keyword`、`--code-string`、`--code-number`、`--code-function`、`--code-property`、`--code-tag`、`--code-attribute`、`--code-operator`、`--code-punctuation` 和 `--code-regexp`。未指定的颜色会自动补齐，配色在源码切换和 HTML 导入导出后保留。HTML 代码在初始内容中需要转义，例如 `&lt;div&gt;`。
 
 **源代码**：点击左下角的源码按钮查看或修改 HTML，再次点击返回可视化编辑。内容会按组件支持的标签和样式整理，并自动排版。普通文本段落使用 `p`，空白行输出为独立的 `br`。
 

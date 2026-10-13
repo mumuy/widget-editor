@@ -1,6 +1,6 @@
-const blockTags = new Set('P DIV H1 H2 H3 H4 H5 H6 UL OL LI VIDEO AUDIO TABLE THEAD TBODY TFOOT TR TH TD BLOCKQUOTE'.split(' '));
+const blockTags = new Set('P DIV H1 H2 H3 H4 H5 H6 UL OL LI VIDEO AUDIO TABLE THEAD TBODY TFOOT TR TH TD BLOCKQUOTE HR PRE'.split(' '));
 const paragraphTags = new Set('P H1 H2 H3 H4 H5 H6'.split(' '));
-const structuralTags = new Set('P DIV H1 H2 H3 H4 H5 H6 UL OL TABLE BLOCKQUOTE'.split(' '));
+const structuralTags = new Set('P DIV H1 H2 H3 H4 H5 H6 UL OL TABLE BLOCKQUOTE HR PRE'.split(' '));
 
 function boundary(node,offset){
     return {node,offset,left:node.childNodes[offset-1],right:node.childNodes[offset]};
@@ -74,6 +74,9 @@ export default function normalizeParagraphs(content,range=null,ensure=false){
     };
     let clean = function(parent){
         Array.from(parent.children).forEach(node=>{
+            if(node.tagName==='PRE'){
+                return;
+            }
             clean(node);
             if(node.tagName==='DIV'){
                 if(Array.from(node.children).some(child=>blockTags.has(child.tagName))){

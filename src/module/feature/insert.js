@@ -5,8 +5,10 @@ import video from './video.js';
 import audio from './audio.js';
 import attachment from './attachment.js';
 import emoji from './emoji.js';
+import divider from './divider.js';
+import code from './code.js';
 
-export const insertFeatures = [table,image,video,audio,attachment,emoji];
+export const insertFeatures = [table,image,video,audio,attachment,emoji,divider,code];
 
 export default {
     'name':'insert',

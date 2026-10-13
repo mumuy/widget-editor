@@ -1,8 +1,10 @@
 import hexColor from './color.js';
 import {safeDataURL,fileName} from './file.js';
+import {colors,codeColor,normalizeCode} from '../code/content.js';
+import {languageName} from '../code/language.js';
 
 // 仅保留工具栏支持的标签及编辑时需要的段落、换行；粘贴、源码及 API 共用此入口。
-const allowedTags = new Set('p div span br strong b em i u s strike sup sub h1 h2 h3 h4 h5 h6 ul ol li a img video audio table thead tbody tfoot tr th td blockquote'.split(' '));
+const allowedTags = new Set('p div span br strong b em i u s strike sup sub h1 h2 h3 h4 h5 h6 ul ol li a img video audio table thead tbody tfoot tr th td blockquote hr pre code'.split(' '));
 const blockedTags = new Set('script style iframe object embed svg math form input button textarea select link meta base template'.split(' '));
 const styleRules = {
     'color':value=>/^(#[\da-f]{3,8}|rgba?\([\d\s.,%]+\)|[a-z]+)$/i.test(value),
@@ -74,6 +76,12 @@ export default function sanitizeHTML(html){
                 return;
             }
             let styles = {};
+            if(tag==='code'){
+                Object.keys(colors).forEach(name=>{
+                    let value = node.style.getPropertyValue('--code-'+name).trim();
+                    if(codeColor(value)){styles['--code-'+name] = value;}
+                });
+            }
             Object.keys(styleRules).forEach(function(name){
                 let value = node.style.getPropertyValue(name).trim();
                 if(name==='text-decoration'){
@@ -84,6 +92,9 @@ export default function sanitizeHTML(html){
                 }
             });
             let attributes = {};
+            if(tag==='code'){
+                attributes['data-language'] = languageName(node.getAttribute('data-language')||node.className.match(/(?:^|\s)language-([\w-]+)/)?.[1]);
+            }
             if(tag==='a'){
                 let download = node.hasAttribute('download');
                 let href = safeURL(node.getAttribute('href'),download?'attachment':false);
@@ -148,5 +159,6 @@ export default function sanitizeHTML(html){
         });
     };
     clean(template.content);
+    normalizeCode(template.content);
     return template.innerHTML;
 }

@@ -79,7 +79,7 @@
                         </div>
                         <div class="bd">
                             <div class="panel" id="panel-article" role="tabpanel" aria-labelledby="tab-article">
-                                <widget-editor id="editor" insert="table,image,video,attachment,audio,emoji" height="420" placeholder="请输入文章内容……" aria-label="文章编辑器">
+                                <widget-editor id="editor" insert="table,image,video,attachment,audio,emoji,divider,code" height="420" placeholder="请输入文章内容……" aria-label="文章编辑器">
                                     <h1>富文本编辑器</h1>
                                     <p>一个标签实现富文本编辑，支持常用的文字排版功能。</p>
                                     <h2>文字格式</h2>
@@ -91,6 +91,7 @@
                                         <li>支持 H1 至 H6 标题、块引用和段落对齐</li>
                                         <li>支持有序列表、无序列表、链接和图片、视频、音频、附件插入</li>
                                         <li>支持表格选格插入、行列增删、单元格合并与拆分</li>
+                                        <li>支持分割线和多种编程语言的代码块高亮</li>
                                     </ul>
                                     <h3>使用方法</h3>
                                     <ol>
@@ -99,10 +100,15 @@
                                         <li>点击源码查看并编辑 HTML</li>
                                     </ol>
                                     <p>更多内容请查看<a href="https://github.com/mumuy/widget-editor/" target="_blank" rel="noopener noreferrer">项目源码</a>。</p>
+                                    <hr>
+                                    <h3>代码示例</h3>
+                                    <pre><code data-language="javascript">const editor = document.querySelector('widget-editor');
+console.log(editor.value);</code></pre>
+                                    <p>在代码块中输入内容，并通过浮动菜单切换编程语言。</p>
                                 </widget-editor>
                             </div>
                             <div class="panel" id="panel-announcement" role="tabpanel" aria-labelledby="tab-announcement" hidden>
-                                <widget-editor id="editor-announcement" custom="heading,alignment,bold,italic,underline,color,link,image,video,table,attachment,emoji" height="420" placeholder="请输入公告内容……" aria-label="公告编辑器">
+                                <widget-editor id="editor-announcement" custom="heading,alignment,bold,italic,underline,color,link,image,video,table,attachment,emoji,divider,code" height="420" placeholder="请输入公告内容……" aria-label="公告编辑器">
                                     <h2 style="text-align:center;">周末读书会</h2>
                                     <p style="text-align:center;color:#999;">欢迎带上喜爱的书籍，一起分享阅读心得。</p>
                                     <h3>活动安排</h3>

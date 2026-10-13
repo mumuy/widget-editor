@@ -1,5 +1,5 @@
-const textBlocks = 'p,h1,h2,h3,h4,h5,h6,li,td,th';
-const blockTags = new Set('P DIV H1 H2 H3 H4 H5 H6 LI TD TH TR TABLE THEAD TBODY TFOOT UL OL BLOCKQUOTE VIDEO AUDIO'.split(' '));
+const textBlocks = 'p,h1,h2,h3,h4,h5,h6,li,td,th,pre';
+const blockTags = new Set('P DIV H1 H2 H3 H4 H5 H6 LI TD TH TR TABLE THEAD TBODY TFOOT UL OL BLOCKQUOTE VIDEO AUDIO PRE HR'.split(' '));
 const containers = new Set('TABLE THEAD TBODY TFOOT TR UL OL BLOCKQUOTE'.split(' '));
 const markerText = 'widget-editor-clear-format';
 
@@ -47,7 +47,15 @@ function paragraphs(fragment){
             if(!node.data.trim()&&(containers.has(node.parentNode.nodeName)||node.parentNode.nodeName==='LI'&&Array.from(node.parentNode.children).some(child=>blockTags.has(child.nodeName)))){
                 return;
             }
-            text += node.data.replace(/\u200b/g,'');
+            let value = node.data.replace(/\u200b/g,'');
+            if(node.parentElement?.closest('pre')){
+                value.split(/\r\n?|\n/).forEach((line,index)=>{
+                    if(index){flush(true);}
+                    text += line;
+                });
+            }else{
+                text += value;
+            }
         }else if(node.nodeName==='BR'){
             flush(true);
         }else{
