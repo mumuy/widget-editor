@@ -42,8 +42,7 @@
     },
     "scripts": {
         "build": "rollup -c",
-        "watch": "rollup -wc",
-        "start": "node scripts/server.mjs"
+        "watch": "rollup -wc"
     },
     "homepage": "https://github.com/mumuy/widget-editor/",
     "directories": {},
