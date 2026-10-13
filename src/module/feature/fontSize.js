@@ -4,9 +4,11 @@ export default {
     'name':'fontSize',
     'label':'文字大小',
     'type':'dropdown',
-    'options':sizes.map((value)=>{
-        return {'value':String(value),'label':value+' px'};
-    }),
+    options(editor){
+        return editor.config.options('fontSize',sizes.map(value=>{
+            return {'value':String(value),'label':value+' px'};
+        }));
+    },
     execute(editor,value){
         if(sizes.includes(Number(value))){
             editor.applyStyle({'font-size':value+'px'});
