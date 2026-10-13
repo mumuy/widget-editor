@@ -199,7 +199,7 @@ customElements.whenDefined('widget-editor').then(function(){
 
 - **上传文件**：选择本地文件并点击插入，组件触发 `upload` 事件，由你的页面负责上传。
 - **URL**：填写文件地址，点击插入即可使用，支持 HTTP、HTTPS 或相对地址。
-- **嵌入 iframe**（仅视频）：粘贴第三方视频网站提供的 iframe 代码，点击「插入视频」。组件自动将宽度设为 `960`、高度设为 `640`，并写入 `max-width: 100%`；嵌入地址须使用 HTTP、HTTPS 或相对地址。插入的 iframe 支持源码往返、删除及撤销。
+- **嵌入 iframe**（仅视频）：粘贴第三方视频网站提供的 iframe 代码，点击「插入视频」。组件自动写入 `width: 100%`、`height: auto`、`max-width: 100%` 和 `aspect-ratio: 16 / 9`，高度随容器宽度按比例变化；嵌入地址须使用 HTTP、HTTPS 或相对地址。插入的 iframe 支持源码往返、删除及撤销。
 
 组件不会自行向服务器上传文件。上传成功后，调用 `onUploadComplete(url)`，组件将返回的地址插入到打开弹窗前的光标或选区位置。
 

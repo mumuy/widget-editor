@@ -99,8 +99,6 @@ export default function sanitizeHTML(html){
                 let src = safeURL(node.getAttribute('src'),'iframe');
                 if(!src){node.remove();return;}
                 attributes.src = src;
-                attributes.width = '960';
-                attributes.height = '640';
                 attributes.frameborder = '0';
                 attributes.allowfullscreen = '';
                 if(node.getAttribute('title')){attributes.title = node.getAttribute('title');}
@@ -108,7 +106,7 @@ export default function sanitizeHTML(html){
                 let allow = (node.getAttribute('allow')||'').split(';').map(value=>value.trim()).filter(value=>permissions.has(value.split(/\s/)[0]));
                 if(allow.length){attributes.allow = allow.join('; ');}
                 if(node.hasAttribute('sandbox')){attributes.sandbox = node.getAttribute('sandbox');}
-                styles = {'max-width':'100%'};
+                styles = {'width':'100%','height':'auto','max-width':'100%','aspect-ratio':'16 / 9'};
                 node.replaceChildren();
             }
             if(tag==='a'){
