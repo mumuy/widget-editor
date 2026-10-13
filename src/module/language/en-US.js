@@ -162,7 +162,6 @@ export default {
     '文本格式工具栏':'Text formatting toolbar',
     '富文本内容':'Rich text content',
     'HTML 源代码':'HTML source code',
-    '可视化编辑':'Visual editing',
     '{count} 字':'{count} characters',
     '在这里开始写作…':'Start writing here…',
     '全屏':'Fullscreen',

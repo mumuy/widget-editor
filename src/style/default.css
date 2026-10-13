@@ -544,9 +544,6 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     line-height: 20px;
     border-top: 1px solid var(--panel-border-color);
 }
-.mode-label{
-    flex-shrink: 0;
-}
 .word-count{
     margin-left: auto;
     white-space: nowrap;

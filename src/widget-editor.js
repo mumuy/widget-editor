@@ -186,9 +186,8 @@ class WidgetEditor extends HTMLElement {
             </div>
             <div class="ft">
                 <button type="button" class="tool tool-button source-button" data-action="source" aria-label="源代码" aria-pressed="false">${renderIcon(sourceIcon)}</button>
-                <span class="mode-label">可视化编辑</span>
-                <span class="word-count">0 字</span>
                 <button type="button" class="tool tool-button fullscreen-button" data-action="fullscreen" aria-label="全屏" aria-pressed="false">${renderIcon(fullscreenIcon)}</button>
+                <span class="word-count">0 字</span>
             </div>
         </div>`;
         this.panel = this.shadowRoot.querySelector('.mod-panel');
@@ -199,7 +198,6 @@ class WidgetEditor extends HTMLElement {
         this.toolbar = this.shadowRoot.querySelector('.toolbar');
         this.footer = this.shadowRoot.querySelector('.ft');
         this.sourceButton = this.footer.querySelector('[data-action="source"]');
-        this.modeLabel = this.footer.querySelector('.mode-label');
         this.wordCount = this.footer.querySelector('.word-count');
     }
     bindEvents(){
@@ -405,7 +403,6 @@ class WidgetEditor extends HTMLElement {
             this.sourceArea.hidden = false;
             this.sourceArea.focus({preventScroll:true});
         }
-        this.locale.set(this.modeLabel,this.source?'HTML 源代码':'可视化编辑');
         this.updatePlaceholder();
         this.updateToolbar();
     }
