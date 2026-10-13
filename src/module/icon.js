@@ -60,11 +60,11 @@ export const formatPainter = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0
 </svg>`;
 
 export const image = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-    <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 5-5 4 4 4-6 5 7"/>
+    <rect x="2" y="2" width="20" height="20" rx="2"/><circle cx="7.5" cy="7.5" r="1.8"/><path d="m2 18 6-6 4 4 4-6 6 9"/>
 </svg>`;
 
 export const video = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-    <rect x="3" y="5" width="13" height="14" rx="2"/><path d="m16 9 5-3v12l-5-3M8 9l4 3-4 3z"/>
+    <rect x="2" y="3" width="14" height="18" rx="2"/><path d="m16 8 6-4v16l-6-4M7 8l6 4-6 4z"/>
 </svg>`;
 
 export const audio = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -92,7 +92,7 @@ export const divider = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 
 </svg>`;
 
 export const code = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-    <path d="m8 7-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/>
+    <path d="m8 5-6 7 6 7M16 5l6 7-6 7M15 2 9 22"/>
 </svg>`;
 
 export const orderedList = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -119,7 +119,9 @@ export const unorderedList = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0
     <path d="M10 5h11M10 12h11M10 19h11"/><circle cx="4" cy="5" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="19" r="1"/>
 </svg>`;
 
-export const blockquote = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h6v7H4zM10 13c0 4-2 5-5 5M14 6h6v7h-6zM20 13c0 4-2 5-5 5"/></svg>`;
+export const blockquote = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M4 5h7v8c0 4-2 6-6 6v-3c2 0 3-1 3-3H4V5Zm10 0h7v8c0 4-2 6-6 6v-3c2 0 3-1 3-3h-4V5Z"/>
+</svg>`;
 
 export const paragraph = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
     <path d="M4 5h16M12 5v15M9 20h6"/>
