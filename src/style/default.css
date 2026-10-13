@@ -10,7 +10,7 @@
     --button-background-color: #edf2f7;
     --button-text-color: #526175;
     --button-active-color: #2876df;
-    --button-active-background: #e9f1fe;
+    --button-active-background: #e0ecff;
     --muted-text-color: #8a95a4;
     --field-background-color: #fff;
     --table-header-background: #f3f6fa;
@@ -470,7 +470,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     overflow: auto;
 }
 .table-toolbar{
-    width: 520px;
+    width: 480px;
 }
 .link-toolbar,.code-toolbar{
     padding: 5px;
@@ -478,7 +478,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
 .table-actions{
     display: grid;
     grid-template-columns: repeat(4,minmax(0,1fr));
-    gap: 6px;
+    gap: 4px;
 }
 .table-actions button,.link-toolbar button,.code-toolbar button{
     display: flex;
@@ -486,14 +486,14 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     justify-content: center;
     gap: 5px;
     min-width: 0;
-    min-height: 40px;
-    padding: 8px 6px;
+    min-height: 36px;
+    padding: 0 6px;
     background: transparent;
     color: var(--button-text-color);
     border: 1px solid var(--panel-border-color);
     border-radius: 3px;
     font: inherit;
-    line-height: 20px;
+    line-height: 36px;
     white-space: nowrap;
     cursor: pointer;
 }
@@ -546,7 +546,6 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
 .code-language-menu .tool-option{
     justify-content: flex-start;
     min-height: 30px;
-    padding: 5px 8px;
     border: 0;
 }
 .editor-source{
