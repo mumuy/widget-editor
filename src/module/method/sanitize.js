@@ -4,8 +4,8 @@ import {colors,codeColor,normalizeCode} from '../code/content.js';
 import {languageName} from '../code/language.js';
 
 // 仅保留工具栏支持的标签及编辑时需要的段落、换行；粘贴、源码及 API 共用此入口。
-const allowedTags = new Set('p div span br strong b em i u s strike sup sub h1 h2 h3 h4 h5 h6 ul ol li a img video audio table thead tbody tfoot tr th td blockquote hr pre code'.split(' '));
-const blockedTags = new Set('script style iframe object embed svg math form input button textarea select link meta base template'.split(' '));
+const allowedTags = new Set('p div span br strong b em i u s strike sup sub h1 h2 h3 h4 h5 h6 ul ol li a img video audio iframe table thead tbody tfoot tr th td blockquote hr pre code'.split(' '));
+const blockedTags = new Set('script style object embed svg math form input button textarea select link meta base template'.split(' '));
 const styleRules = {
     'color':value=>/^(#[\da-f]{3,8}|rgba?\([\d\s.,%]+\)|[a-z]+)$/i.test(value),
     'background-color':value=>/^(#[\da-f]{3,8}|rgba?\([\d\s.,%]+\)|[a-z]+)$/i.test(value),
@@ -94,6 +94,22 @@ export default function sanitizeHTML(html){
             let attributes = {};
             if(tag==='code'){
                 attributes['data-language'] = languageName(node.getAttribute('data-language')||node.className.match(/(?:^|\s)language-([\w+#-]+)(?=\s|$)/)?.[1]);
+            }
+            if(tag==='iframe'){
+                let src = safeURL(node.getAttribute('src'),'iframe');
+                if(!src){node.remove();return;}
+                attributes.src = src;
+                attributes.width = '960';
+                attributes.height = '640';
+                attributes.frameborder = '0';
+                attributes.allowfullscreen = '';
+                if(node.getAttribute('title')){attributes.title = node.getAttribute('title');}
+                let permissions = new Set('accelerometer autoplay clipboard-write encrypted-media fullscreen gyroscope picture-in-picture web-share'.split(' '));
+                let allow = (node.getAttribute('allow')||'').split(';').map(value=>value.trim()).filter(value=>permissions.has(value.split(/\s/)[0]));
+                if(allow.length){attributes.allow = allow.join('; ');}
+                if(node.hasAttribute('sandbox')){attributes.sandbox = node.getAttribute('sandbox');}
+                styles = {'max-width':'100%'};
+                node.replaceChildren();
             }
             if(tag==='a'){
                 let download = node.hasAttribute('download');

@@ -1,7 +1,7 @@
 const paragraphTags = 'p,h1,h2,h3,h4,h5,h6';
-const blockTags = 'pre,table,hr,video,audio';
+const blockTags = 'pre,table,hr,video,audio,iframe';
 const containerTags = 'blockquote,ul,ol';
-const mediaTags = 'img,video,audio';
+const mediaTags = 'img,video,audio,iframe';
 
 export default class EditorBlocks {
     constructor(editor){

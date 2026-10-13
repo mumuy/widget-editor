@@ -4,7 +4,8 @@ import {safeURL} from './sanitize.js';
 // 文件由外部上传，组件只管理插入弹窗、进度与回调状态。
 export default function openUpload(editor,options){
     let range = editor.getRange()?.cloneRange();
-    let mode = 'url';
+    let modes = options.iframe?['file','url','iframe']:['file','url'];
+    let mode = modes[0];
     let busy = false;
     let cancelUpload = null;
     let progress;
@@ -23,12 +24,15 @@ export default function openUpload(editor,options){
         dialog.querySelectorAll('[data-insert-panel]').forEach(panel=>{
             let active = panel.dataset.insertPanel===mode;
             panel.hidden = !active;
-            panel.querySelector('input').disabled = !active||busy;
+            panel.querySelectorAll('input,textarea').forEach(input=>input.disabled=!active||busy);
         });
+        if(options.iframe){
+            editor.locale.set(dialog.querySelector('[name="'+options.field.name+'"]'),mode==='iframe'?'留空时使用原始标题':options.field.placeholder,{},'placeholder');
+        }
     };
     let setBusy = function(value){
         busy = value;
-        dialog.querySelectorAll('input,[data-insert-tab]').forEach(input=>input.disabled=busy);
+        dialog.querySelectorAll('input,textarea,[data-insert-tab]').forEach(input=>input.disabled=busy);
         setMode(mode);
         progress.hidden = !busy;
         editor.locale.set(dialog.querySelector('[type="submit"]'),busy?'上传中…':'插入'+options.name);
@@ -90,9 +94,10 @@ export default function openUpload(editor,options){
         'title':'插入'+options.name,
         'keepOpen':true,
         'fields':[
-            {'name':'url','label':options.name+'地址','type':'text','placeholder':'https://example.com/file','required':true},
             {'name':'file','label':'选择{type}（最大 {size} MB）','params':{type:options.name,size:options.size},'type':'file',
                 'accept':options.accept||'','required':true},
+            {'name':'url','label':options.name+'地址','type':'text','placeholder':'https://example.com/file','required':true},
+            ...(options.iframe?[{'name':'iframe','label':'iframe 嵌入代码','type':'textarea','placeholder':'粘贴视频网站提供的 iframe 代码','required':true}]:[]),
             options.field
         ],
         'submitLabel':'插入'+options.name,
@@ -102,10 +107,9 @@ export default function openUpload(editor,options){
             tabs.className = 'insert-tabs';
             tabs.setAttribute('role','tablist');
             tabs.setAttribute('aria-label','插入方式');
-            tabs.innerHTML = `<button type="button" role="tab" id="insert-url-tab" aria-controls="insert-url-panel" data-insert-tab="url">URL</button>
-                <button type="button" role="tab" id="insert-file-tab" aria-controls="insert-file-panel" data-insert-tab="file">上传文件</button>`;
+            tabs.innerHTML = modes.map(name=>`<button type="button" role="tab" id="insert-${name}-tab" aria-controls="insert-${name}-panel" data-insert-tab="${name}">${name==='file'?'上传文件':name==='url'?'URL':'嵌入 iframe'}</button>`).join('');
             dialog.querySelector('.dialog-body').prepend(tabs);
-            ['url','file'].forEach(name=>{
+            modes.forEach(name=>{
                 let field = dialog.querySelector('[name="'+name+'"]').closest('.field');
                 let panel = document.createElement('div');
                 panel.className = 'insert-panel';
@@ -129,11 +133,11 @@ export default function openUpload(editor,options){
                 }
                 let value;
                 if(event.key==='ArrowLeft'||event.key==='ArrowRight'){
-                    value = mode==='url'?'file':'url';
+                    value = modes[(modes.indexOf(mode)+(event.key==='ArrowRight'?1:-1)+modes.length)%modes.length];
                 }else if(event.key==='Home'){
-                    value = 'url';
+                    value = modes[0];
                 }else if(event.key==='End'){
-                    value = 'file';
+                    value = modes.at(-1);
                 }
                 if(value){
                     event.preventDefault();
@@ -152,6 +156,17 @@ export default function openUpload(editor,options){
             cancelUpload?.();
         },
         async onSubmit(values){
+            if(mode==='iframe'){
+                let html = options.iframe(values.iframe,values);
+                if(!html){
+                    dialog.message('请输入有效的 iframe 嵌入代码');
+                    return false;
+                }
+                dialog.close();
+                editor.selection.range = range;
+                editor.insertHTML(html);
+                return true;
+            }
             let file = mode==='file'?values.file:null;
             let source;
             if(mode==='file'){

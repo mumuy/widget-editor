@@ -1,5 +1,5 @@
 const textBlocks = 'p,h1,h2,h3,h4,h5,h6,li,td,th,pre';
-const blockTags = new Set('P DIV H1 H2 H3 H4 H5 H6 LI TD TH TR TABLE THEAD TBODY TFOOT UL OL BLOCKQUOTE VIDEO AUDIO PRE HR'.split(' '));
+const blockTags = new Set('P DIV H1 H2 H3 H4 H5 H6 LI TD TH TR TABLE THEAD TBODY TFOOT UL OL BLOCKQUOTE VIDEO AUDIO IFRAME PRE HR'.split(' '));
 const containers = new Set('TABLE THEAD TBODY TFOOT TR UL OL BLOCKQUOTE'.split(' '));
 const markerText = 'widget-editor-clear-format';
 
@@ -16,7 +16,7 @@ function intersect(range,scope){
 
 function hasContent(fragment,spaces=false){
     let text = fragment.textContent.replace(/\u200b/g,'');
-    return !!(spaces?text.length:text.trim().length)||!!fragment.querySelector('br,img,video,audio');
+    return !!(spaces?text.length:text.trim().length)||!!fragment.querySelector('br,img,video,audio,iframe');
 }
 
 function boundaryBlock(node,offset,end=false){

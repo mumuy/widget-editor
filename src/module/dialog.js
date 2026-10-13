@@ -39,7 +39,7 @@ export default function openDialog(editor,options){
         label.className = 'field';
         let caption = document.createElement('span');
         editor.locale.set(caption,field.label,field.params);
-        let input = document.createElement(field.type==='select' ? 'select' : 'input');
+        let input = document.createElement(['select','textarea'].includes(field.type)?field.type:'input');
         input.name = field.name;
         if(field.type==='select'){
             field.options.forEach(function(option){
@@ -48,7 +48,7 @@ export default function openDialog(editor,options){
                 item.textContent = option.label;
                 input.appendChild(item);
             });
-        }else{
+        }else if(field.type!=='textarea'){
             input.type = field.type || 'text';
         }
         ['min','max','placeholder','accept'].forEach(function(name){
