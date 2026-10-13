@@ -1,4 +1,4 @@
-import {emoji as icon} from '../icon.js';
+import {emoji as icon,renderIcon} from '../icon.js';
 
 const labels = new Map([
     ['😀','开心'],['😃','大笑'],['😄','笑脸'],['😁','咧嘴笑'],['😊','微笑'],['😂','笑哭'],['🤣','哈哈大笑'],['🥰','喜欢'],
@@ -10,6 +10,17 @@ const labels = new Map([
     ['☀️','太阳'],['🌈','彩虹'],['⭐','星星'],['🌙','月亮'],['🍀','幸运'],['☕','咖啡'],['🎂','蛋糕'],['🚀','火箭']
 ]);
 
+const categoryIcons = [
+    '<circle cx="12" cy="12" r="9"/><path d="M8 14a4 4 0 0 0 8 0M8 9h.01M16 9h.01"/>',
+    '<circle cx="12" cy="7" r="4"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/>',
+    '<ellipse cx="5" cy="9" rx="2" ry="3"/><ellipse cx="10" cy="5" rx="2" ry="3"/><ellipse cx="16" cy="5" rx="2" ry="3"/><ellipse cx="21" cy="9" rx="2" ry="3"/><path d="M7 17c0-3 3-6 6-6s6 3 6 6c0 4-4 2-6 2s-6 2-6-2Z"/>',
+    '<path d="M4 8h12v6a6 6 0 0 1-12 0ZM16 9h2a3 3 0 0 1 0 6h-2M7 2v3M11 2v3M3 22h15"/>',
+    '<path d="m5 8 2-5h10l2 5M3 8h18v9H3ZM5 17v3M19 17v3M6 12h2M16 12h2"/>',
+    '<circle cx="12" cy="12" r="9"/><path d="m12 7 5 4-2 6H9l-2-6ZM12 3v4M3.5 9.5 7 11M20.5 9.5 17 11M6.5 19 9 17M17.5 19 15 17"/>',
+    '<path d="M8 14a6 6 0 1 1 8 0l-1 3H9ZM9 20h6M10 23h4"/>',
+    '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/>'
+].map(content=>`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${content}</svg>`);
+
 const groups = [
     ['笑脸情绪','😀 😃 😄 😁 😆 😅 😂 🤣 😊 🙂 🙃 😉 😌 😍 🥰 😘 😗 😙 😚 😋 😛 😜 🤪 😝 🤑 🤗 🤭 🤫 🤔 🤐 🤨 😐 😑 😶 😏 😒 🙄 😬 😮 😯 😲 😳 🥺 😢 😭 😤 😠 😡 🤯 😱 😨 😰 😥 😓 😞 😔 😟 😕 🙁 ☹️ 😣 😖 😫 😩 🥱 😴 🤤 😪 😎 🤓 🧐 🤩 🥳 😷 🤒 🤕 🤢 🤮 🤧 😵 🤠 😇 😈 👿 👻 💀 🤖 👽 💩 😺 😸 😹 😻 😼 😽 🙀 😿 😾'],
     ['人物手势','👋 🤚 🖐️ ✋ 🖖 👌 🤏 ✌️ 🤞 🤟 🤘 🤙 👈 👉 👆 👇 ☝️ 👍 👎 ✊ 👊 🤛 🤜 👏 🙌 👐 🤲 🤝 🙏 💪 🦾 🦵 🦶 👂 👃 👀 👁️ 🧠 🦷 👶 🧒 🧑 👩 👨 🧓 👵 👴 🧑‍💻 🧑‍🎨 🧑‍🍳 🧑‍🔬 🧑‍🚀 👮 🧑‍🚒 🧑‍🏫 🧑‍⚕️'],
@@ -19,7 +30,7 @@ const groups = [
     ['活动庆祝','⚽ 🏀 🏈 ⚾ 🥎 🎾 🏐 🏉 🎱 🏓 🏸 🏒 🏑 🥅 ⛳ 🏹 🎣 🥊 🥋 🛹 ⛸️ 🎿 🛷 🏋️ 🤸 🏊 🚴 🏃 🧘 💃 🕺 🎯 🎮 🕹️ 🎲 🧩 ♟️ 🎭 🎨 🎬 🎤 🎧 🎼 🎹 🥁 🎷 🎺 🎸 🎻 🏆 🥇 🥈 🥉 🏅 🎖️ 🎉 🎊 🎈 🎁 🎀 🎇 🎆'],
     ['生活物品','📱 📲 💻 ⌨️ 🖥️ 🖨️ 🖱️ 💾 💿 📷 📸 📹 🎥 📺 📻 ☎️ 🔋 🔌 💡 🔦 🕯️ ⏰ ⌚ ⏳ ⌛ 📚 📖 📕 📗 📘 📙 📓 📔 📒 📝 ✏️ 🖊️ 🖋️ 🖌️ 📌 📍 📎 🖇️ 📐 📏 ✂️ 📁 📂 🗂️ 📅 📆 📋 📊 📈 📉 🔍 🔎 🔒 🔓 🔑 🗝️ 🔨 🪛 🔧 🛠️ ⚙️ 🧰 🧲 ⚖️ 💰 💵 💳 💎 🛒 👕 👖 👗 👟 👠 🎒 👜 👓 🕶️ ☂️ 🧴 🧼 🧹 🧺 🛏️ 🛋️ 🪑 🚪 🪴'],
     ['符号爱心','❤️ 🧡 💛 💚 💙 💜 🖤 🤍 🤎 💔 ❣️ 💕 💞 💓 💗 💖 💘 💝 💟 💌 💋 💯 💢 💥 💫 💦 💤 ✅ ☑️ ✔️ ❌ ❎ ➕ ➖ ✖️ ➗ ❗ ❓ ❕ ❔ ‼️ ⁉️ ⚠️ 🚫 ⛔ 🔴 🟠 🟡 🟢 🔵 🟣 ⚫ ⚪ 🟤 🔺 🔻 🔸 🔹 🔶 🔷 ⬛ ⬜ ◼️ ◻️ ▶️ ⏸️ ⏹️ ⏭️ ⏮️ 🔁 🔂 🔀 ⬆️ ⬇️ ⬅️ ➡️ ↗️ ↘️ ↙️ ↖️ ↔️ ↕️ ♻️ ⚜️ 🔱 ©️ ®️ ™️ #️⃣ *️⃣ 0️⃣ 1️⃣ 2️⃣ 3️⃣ 4️⃣ 5️⃣ 6️⃣ 7️⃣ 8️⃣ 9️⃣ 🔟']
-].map(([name,values])=>({name,emojis:values.split(' ')}));
+].map(([name,values],index)=>({name,icon:categoryIcons[index],emojis:values.split(' ')}));
 
 export default {
     'name':'emoji',
@@ -35,18 +46,16 @@ export default {
                 dialog.classList.add('emoji-dialog');
                 let picker = document.createElement('div');
                 picker.className = 'emoji-picker';
-                picker.innerHTML = '<div class="emoji-tabs" role="tablist" aria-label="表情分类"></div><div class="emoji-panel" id="emoji-panel" role="tabpanel"><div class="emoji-grid" role="group"></div></div><div class="emoji-preview"><span>已选表情</span><span class="emoji-selected" aria-live="polite"></span></div>';
+                picker.innerHTML = '<div class="emoji-tabs" role="tablist" aria-label="表情分类"></div><div class="emoji-panel" id="emoji-panel" role="tabpanel"><div class="emoji-grid" role="group"></div></div>';
                 let tabs = picker.querySelector('.emoji-tabs');
                 let panel = picker.querySelector('.emoji-panel');
                 let grid = picker.querySelector('.emoji-grid');
-                let preview = picker.querySelector('.emoji-selected');
                 let update = ()=>{
                     let current = Array.from(grid.children).findIndex(button=>button.dataset.emoji===selected);
                     Array.from(grid.children).forEach((button,index)=>{
                         button.setAttribute('aria-pressed',String(index===current));
                         button.tabIndex = index===Math.max(0,current)?0:-1;
                     });
-                    preview.textContent = selected;
                 };
                 let select = button=>{
                     selected = button.dataset.emoji;
@@ -81,10 +90,12 @@ export default {
                     button.id = 'emoji-tab-'+index;
                     button.setAttribute('role','tab');
                     button.setAttribute('aria-controls','emoji-panel');
-                    editor.locale.set(button,group.name);
+                    button.innerHTML = renderIcon(group.icon);
+                    editor.locale.set(button,group.name,{},'aria-label');
+                    editor.locale.set(button,group.name,{},'title');
                     button.addEventListener('click',()=>show(index));
                     button.addEventListener('keydown',event=>{
-                        let offsets = {ArrowLeft:-1,ArrowRight:1,ArrowUp:-4,ArrowDown:4};
+                        let offsets = {ArrowLeft:-1,ArrowRight:1,ArrowUp:-1,ArrowDown:1};
                         let next = event.key==='Home'?0:event.key==='End'?groups.length-1:
                             offsets[event.key]?(index+offsets[event.key]+groups.length)%groups.length:null;
                         if(next!==null){

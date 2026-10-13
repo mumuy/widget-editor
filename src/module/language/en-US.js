@@ -124,7 +124,6 @@ export default {
     '活动庆祝':'Activities',
     '生活物品':'Objects',
     '符号爱心':'Symbols',
-    '已选表情':'Selected emoji',
     '{category}：{emoji}':'{category}: {emoji}',
     '开心':'Grinning',
     '大笑':'Laughing',
