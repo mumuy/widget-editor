@@ -216,14 +216,21 @@ class WidgetEditor extends HTMLElement {
         });
         this.content.addEventListener('beforeinput',event=>{
             if(!event.isComposing){this.history.record();}
-            if(this.codes?.beforeInput(event)||this.blocks.beforeInput(event)){return;}
+            if(this.codes?.beforeInput(event)||this.blocks.beforeInput(event)){
+                if(event.defaultPrevented&&event.inputType?.startsWith('delete')){this.selection.ensureVisible();}
+                return;
+            }
             this.normalizeContent(true);
             document.execCommand('defaultParagraphSeparator',false,'p');
         });
-        this.content.addEventListener('keydown',event=>this.blocks.keyDown(event),true);
+        this.content.addEventListener('keydown',event=>{
+            this.blocks.keyDown(event);
+            if(event.defaultPrevented&&['Backspace','Delete'].includes(event.key)){this.selection.ensureVisible();}
+        },true);
         this.content.addEventListener('input',event=>{
             if(!event.isComposing&&!this._transaction){
                 this.update();
+                if(event.inputType?.startsWith('delete')){this.selection.ensureVisible();}
             }
         });
         this.content.addEventListener('compositionstart',()=>this.history.record());

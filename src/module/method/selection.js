@@ -41,6 +41,22 @@ export default class EditorSelection {
         this.range = range.cloneRange();
         return range;
     }
+    ensureVisible(){
+        let editor = this.editor;
+        let range = this.current();
+        if(!range?.collapsed||editor.shadowRoot.activeElement!==editor.content){return;}
+        let rect = range.getBoundingClientRect();
+        if(!rect.height){
+            let node = range.startContainer;
+            rect = (node.nodeType===Node.TEXT_NODE?node.parentElement:node).getBoundingClientRect();
+        }
+        let body = editor.body.getBoundingClientRect();
+        let top = Math.max(0,body.top)+4;
+        let bottom = Math.min(document.documentElement.clientHeight,body.bottom)-4;
+        if(!rect.height||rect.height>bottom-top){return;}
+        let offset = rect.top<top?rect.top-top:rect.bottom>bottom?rect.bottom-bottom:0;
+        if(offset){editor.body.scrollBy({top:offset,behavior:'instant'});}
+    }
     bookmark(){
         let range = this.current()||this.range;
         let root = this.editor.content;
