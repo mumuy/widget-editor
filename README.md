@@ -34,7 +34,7 @@
 | --- | --- | --- |
 | `placeholder` | 空白编辑器中的提示文字 | `在这里开始写作…` |
 | `height` | 编辑区域高度，单位为 px，有效范围为 160～2000 | `420` |
-| `insert` | 插入菜单中的功能，以英文逗号分隔 | 不显示插入菜单 |
+| `insert` | 插入菜单中的功能，以英文逗号分隔 | `divider,table,image,video,attachment,audio,emoji,code` |
 | `custom` | 工具栏功能及显示顺序，以英文逗号分隔 | 使用默认工具栏 |
 | `language` | 界面语言：`zh-CN`、`zh-HK` 或 `en-US` | `zh-CN` |
 | `image` | 图片允许的插入方式 | `upload,url` |
@@ -46,29 +46,29 @@
 
 | 字段 | 功能 |
 | --- | --- |
+| `divider` | 分割线 |
 | `table` | 表格 |
 | `image` | 图片 |
 | `video` | 视频 |
-| `audio` | 音频 |
 | `attachment` | 附件 |
+| `audio` | 音频 |
 | `emoji` | 表情 |
-| `divider` | 分割线 |
 | `code` | 代码块 |
 
-例如，`insert="table,image"` 只提供表格和图片。启用全部插入功能：
+不设置 `insert` 时，默认按上述顺序提供全部插入功能：
 
 ```html
-<widget-editor insert="table,image,video,attachment,audio,emoji,divider,code"></widget-editor>
+<widget-editor></widget-editor>
 ```
 
-重复字段只显示一次，未知字段会被忽略。不设置 `insert` 或设置为空时，工具栏不显示插入菜单；通过 `custom` 配置的独立插入按钮仍可使用。已有内容始终可以显示和编辑。
+例如，`insert="table,image"` 只提供表格和图片。重复字段只显示一次，未知字段会被忽略。显式设置 `insert=""` 可隐藏插入菜单；通过 `custom` 配置的独立插入按钮仍可使用。已有内容始终可以显示和编辑。
 
 也可以在使用过程中调整配置：
 
 ```javascript
 let editor = document.querySelector('#editor');
 editor.setAttribute('insert','emoji,image');
-editor.removeAttribute('insert');
+editor.removeAttribute('insert'); // 恢复默认插入菜单
 ```
 
 ### 自定义工具栏
@@ -199,7 +199,7 @@ customElements.whenDefined('widget-editor').then(function(){
 
 ## 图片、视频、音频和附件
 
-通过 `insert` 或 `custom` 启用对应功能后，点击工具栏按钮插入内容。未配置插入方式属性时，开放该类型的全部方式，默认打开「上传文件」：
+默认插入菜单已包含图片、视频、音频和附件，点击对应选项即可插入。未配置插入方式属性时，开放该类型的全部方式，默认打开「上传文件」：
 
 - **上传文件**：选择本地文件并点击插入，组件触发 `upload` 事件，由你的页面负责上传。
 - **URL**：填写文件地址，点击插入即可使用，支持 HTTP、HTTPS 或相对地址。
@@ -217,7 +217,7 @@ customElements.whenDefined('widget-editor').then(function(){
 </widget-editor>
 ```
 
-不设置属性时全开放；设置为空（例如 `video=""`）则禁用该类型的插入功能。无效字段会忽略，重复字段仅保留一次。这些属性只配置插入方式，仍需用 `insert` 或 `custom` 显示对应工具栏功能。运行时修改属性会立即生效，并关闭该类型已打开的弹框；未完成的旧上传回调也会失效。
+不设置属性时全开放；设置为空（例如 `video=""`）则禁用该类型的插入功能。无效字段会忽略，重复字段仅保留一次。这些属性只配置插入方式；自定义工具栏时，通过 `custom` 加入插入菜单或对应的独立按钮。运行时修改属性会立即生效，并关闭该类型已打开的弹框；未完成的旧上传回调也会失效。
 
 组件不会自行向服务器上传文件。上传成功后，调用 `onUploadComplete(url)`，组件将返回的地址插入到打开弹窗前的光标或选区位置。
 
