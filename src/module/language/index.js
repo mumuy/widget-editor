@@ -1,5 +1,6 @@
 import english from './en-US.js';
 import traditional from './zh-HK.js';
+import {attributes} from '../config.js';
 
 const languages = {'en-US':english,'zh-HK':traditional};
 const aliases = {'zh':'zh-CN','zh-cn':'zh-CN','zh-hans':'zh-CN','zh-hk':'zh-HK','zh-tw':'zh-HK','zh-hant':'zh-HK','en':'en-US','en-us':'en-US','en-gb':'en-US'};
@@ -11,8 +12,8 @@ export default class EditorLanguage {
         this.records = new WeakMap();
     }
     get name(){
-        let name = (this.editor.getAttribute('language')||'').trim().toLowerCase();
-        return Object.hasOwn(aliases,name)?aliases[name]:'zh-CN';
+        let name = this.editor.config.get('language').trim().toLowerCase();
+        return Object.hasOwn(aliases,name)?aliases[name]:attributes.language.default;
     }
     text(key,params={}){
         let messages = languages[this.name]||{};

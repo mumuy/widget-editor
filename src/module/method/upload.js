@@ -1,11 +1,10 @@
 import {fileType,urlFileName} from './file.js';
 import {safeURL} from './sanitize.js';
-import insertMethods from './insertMethods.js';
 
 // 文件由外部上传，组件只管理插入弹窗、进度与回调状态。
 export default function openUpload(editor,options){
     let range = editor.getRange()?.cloneRange();
-    let modes = insertMethods(editor,options.kind).map(name=>name==='upload'?'file':name);
+    let modes = editor.config.methods(options.kind).map(name=>name==='upload'?'file':name);
     if(!modes.length){return;}
     let mode = modes[0];
     let busy = false;

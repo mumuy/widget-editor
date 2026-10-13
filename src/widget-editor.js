@@ -6,7 +6,7 @@ import formatHTML from './module/method/formatHTML.js';
 import applyStyle from './module/method/applyStyle.js';
 import normalizeParagraphs from './module/method/normalizeParagraphs.js';
 import normalizeTableCells from './module/method/normalizeTableCells.js';
-import insertMethods,{mediaAttributes} from './module/method/insertMethods.js';
+import EditorConfig,{observedAttributes,toolbarAttributes,mediaAttributes} from './module/config.js';
 import EditorHistory from './module/history.js';
 import EditorBlocks from './module/blocks.js';
 import openDialog from './module/dialog.js';
@@ -21,6 +21,7 @@ class WidgetEditor extends HTMLElement {
     constructor(){
         super();
         this.attachShadow({mode:'open'});
+        this.config = new EditorConfig(this);
         this.locale = new EditorLanguage(this);
         this.source = false;
         this.painter = null;
@@ -37,7 +38,7 @@ class WidgetEditor extends HTMLElement {
         };
     }
     static get observedAttributes(){
-        return ['placeholder','height','insert','custom','language',...mediaAttributes];
+        return observedAttributes;
     }
     connectedCallback(){
         if(!this._initialized){
@@ -84,7 +85,7 @@ class WidgetEditor extends HTMLElement {
             this.tooltip?.refresh();
             return;
         }
-        if((name==='insert'||name==='custom'||mediaAttributes.includes(name))&&this.dropdown){
+        if(toolbarAttributes.includes(name)&&this.dropdown){
             this.saveSelection();
             this.dropdown.close();
             this.tooltip?.hide();
@@ -100,8 +101,7 @@ class WidgetEditor extends HTMLElement {
             this.updateToolbar();
         }
         this.updatePlaceholder();
-        let height = Number(this.getAttribute('height'));
-        this.style.setProperty('--editor-height',(height>=160&&height<=2000?height:420)+'px');
+        this.style.setProperty('--editor-height',this.config.get('height')+'px');
         this.updateLocale();
     }
     get value(){
@@ -172,8 +172,8 @@ class WidgetEditor extends HTMLElement {
                 active:editor=>!!editor.fullscreen?.state}];
         this.features = controls.map(feature=>typeof feature.options==='function'?{...feature,options:feature.options(this)}:feature);
         let available = new Map([...this.features,...insertFeatures].map(feature=>[feature.name.toLowerCase(),feature]));
-        let names = Array.from(new Set((this.getAttribute('custom')||'').split(',').map(name=>name.trim().toLowerCase())));
-        this.toolbarFeatures = this.hasAttribute('custom')?
+        let names = this.config.list('custom');
+        this.toolbarFeatures = names!==null?
             [...this.features.slice(0,2),...names.map(name=>available.get(name)).filter(feature=>feature&&!['undo','redo'].includes(feature.name))]:
             this.features.filter(feature=>!['source','fullscreen'].includes(feature.name));
         return this.toolbarFeatures.map(function(feature){
@@ -313,7 +313,7 @@ class WidgetEditor extends HTMLElement {
         this.updateToolbar();
     }
     canInsert(name){
-        return insertMethods(this,name)?.length!==0&&
+        return this.config.methods(name)?.length!==0&&
             (this.toolbarFeatures.some(feature=>feature.name===name)||this.features.find(feature=>feature.name==='insert').options.some(option=>option.value===name));
     }
     saveSelection(){
@@ -513,7 +513,7 @@ class WidgetEditor extends HTMLElement {
             this.locale.apply(this.content,false);
             this.locale.apply(this.sourceArea,false);
         }
-        let placeholder = this.getAttribute('placeholder')||this.t('在这里开始写作…');
+        let placeholder = this.config.get('placeholder');
         if(this.placeholder.textContent!==placeholder){
             this.placeholder.textContent = placeholder;
         }
