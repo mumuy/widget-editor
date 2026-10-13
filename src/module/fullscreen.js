@@ -99,9 +99,15 @@ export default class EditorFullscreen {
         this.update(false);
     }
     update(enabled){
-        this.button.innerHTML = renderIcon(enabled?fullscreenExit:fullscreen);
-        this.button.classList.toggle('active',enabled);
-        this.button.setAttribute('aria-pressed',String(enabled));
-        this.editor.locale.set(this.button,enabled?'退出全屏':'全屏',{},'aria-label');
+        [this.button,...this.editor.toolbar.querySelectorAll('[data-action="fullscreen"]')].forEach(button=>{
+            let icon = enabled?fullscreenExit:fullscreen;
+            if(button._icon!==icon){
+                button.innerHTML = renderIcon(icon);
+                button._icon = icon;
+            }
+            button.classList.toggle('active',enabled);
+            button.setAttribute('aria-pressed',String(enabled));
+            this.editor.locale.set(button,enabled?'退出全屏':'全屏',{},'aria-label');
+        });
     }
 }

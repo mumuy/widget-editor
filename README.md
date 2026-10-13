@@ -34,7 +34,8 @@
 | --- | --- | --- |
 | `placeholder` | 空白编辑器中的提示文字 | `在这里开始写作…` |
 | `height` | 编辑区域高度，单位为 px，有效范围为 160～2000 | `420` |
-| `insert` | 允许使用的插入功能，以英文逗号分隔 | 不启用插入功能 |
+| `insert` | 插入菜单中的功能，以英文逗号分隔 | 不显示插入菜单 |
+| `custom` | 工具栏功能及显示顺序，以英文逗号分隔 | 使用默认工具栏 |
 | `language` | 界面语言：`zh-CN`、`zh-HK` 或 `en-US` | `zh-CN` |
 
 `insert` 支持以下字段，字段顺序就是插入菜单中的顺序：
@@ -54,7 +55,7 @@
 <widget-editor insert="table,image,video,attachment,audio,emoji"></widget-editor>
 ```
 
-重复字段只显示一次，未知字段会被忽略。不设置 `insert` 或设置为空时，工具栏不显示插入按钮。该属性控制插入操作，已有内容仍可显示和编辑。
+重复字段只显示一次，未知字段会被忽略。不设置 `insert` 或设置为空时，工具栏不显示插入菜单；通过 `custom` 配置的独立插入按钮仍可使用。已有内容始终可以显示和编辑。
 
 也可以在使用过程中调整配置：
 
@@ -62,6 +63,59 @@
 let editor = document.querySelector('#editor');
 editor.setAttribute('insert','emoji,image');
 editor.removeAttribute('insert');
+```
+
+### 自定义工具栏
+
+设置 `custom` 后，撤销和重做固定显示在最左侧，其他功能只显示配置的字段，并按字段顺序排列。例如，把图片和视频直接放在工具栏：
+
+```html
+<widget-editor custom="heading,fontFamily,fontSize,bold,italic,color,image,video"></widget-editor>
+```
+
+| 字段 | 功能 |
+| --- | --- |
+| `heading` | 标题与正文 |
+| `fontFamily` | 字体 |
+| `fontSize` | 文字大小 |
+| `alignment` | 对齐方式 |
+| `indentation` | 首行缩进 |
+| `bold` | 加粗 |
+| `italic` | 斜体 |
+| `underline` | 下划线 |
+| `strikethrough` | 删除线 |
+| `superscript` | 上标 |
+| `subscript` | 下标 |
+| `color` | 文字颜色 |
+| `blockquote` | 块引用 |
+| `orderedList` | 有序列表 |
+| `unorderedList` | 无序列表 |
+| `link` | 超链接 |
+| `format` | 清除格式 |
+| `formatPainter` | 格式刷 |
+| `insert` | 插入菜单，菜单内容由 `insert` 属性配置 |
+| `table` | 独立插入表格按钮 |
+| `image` | 独立插入图片按钮 |
+| `video` | 独立插入视频按钮 |
+| `audio` | 独立插入音频按钮 |
+| `attachment` | 独立插入附件按钮 |
+| `emoji` | 独立插入表情按钮 |
+| `source` | 源代码 |
+| `fullscreen` | 全屏 |
+
+独立插入按钮无需设置 `insert` 属性，仍使用相同的弹窗和 `upload` 事件。两种配置可以一起使用：
+
+```html
+<widget-editor custom="bold,italic,image,insert" insert="table,video,emoji"></widget-editor>
+```
+
+字段不区分大小写，重复字段只显示一次，未知字段会被忽略。`custom=""` 只显示撤销和重做；不设置或移除 `custom` 则恢复默认工具栏。底部的全屏、源码按钮及字数统计保留，配置 `source` 或 `fullscreen` 时，也会在工具栏中提供对应按钮。
+
+支持运行时修改，不会清空内容、选区或撤销记录：
+
+```javascript
+editor.setAttribute('custom','heading,bold,link,image');
+editor.removeAttribute('custom');
 ```
 
 ### 界面语言

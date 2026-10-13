@@ -33,8 +33,11 @@ export default {
             </div>
         </div>`;
     },
-    bind(editor){
+    bindToolbar(editor){
         let group = editor.toolbar.querySelector('[data-dropdown="color"]');
+        if(!group){
+            return;
+        }
         group.querySelectorAll('[data-color]').forEach(button=>{
             editor.locale.set(button,'文字颜色 {color}',{color:button.dataset.color},'aria-label');
         });

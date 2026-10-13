@@ -6,7 +6,7 @@ import audio from './audio.js';
 import attachment from './attachment.js';
 import emoji from './emoji.js';
 
-const features = [table,image,video,audio,attachment,emoji];
+export const insertFeatures = [table,image,video,audio,attachment,emoji];
 
 export default {
     'name':'insert',
@@ -17,12 +17,12 @@ export default {
     'iconOnly':true,
     options(editor){
         return Array.from(new Set((editor.getAttribute('insert')||'').split(',').map(name=>name.trim().toLowerCase()))).map(name=>{
-            let feature = features.find(feature=>feature.name===name);
+            let feature = insertFeatures.find(feature=>feature.name===name);
             return feature?{value:name,label:feature.label.replace(/^插入/,''),icon:feature.icon,feature}:null;
         }).filter(Boolean);
     },
     bind(editor){
-        features.forEach(feature=>feature.bind?.(editor));
+        insertFeatures.forEach(feature=>feature.bind?.(editor));
     },
     execute(editor,value,event){
         if(editor.features.find(feature=>feature.name==='insert').options.some(option=>option.value===value)){
