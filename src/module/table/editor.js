@@ -201,10 +201,10 @@ export default class TableEditor {
         this.toolbar.querySelector('[data-table-action="split"]').disabled = !area.items.some(item=>item.rows>1||item.columns>1);
         // 拖选结束后再显示，浮层不会挡住要选择的单元格。
         if(!this.dragging&&!this.shiftSelecting){
-            this.show();
+            this.show(area);
         }
     }
-    show(){
+    show(area){
         if(!this.editor.isConnected){
             return;
         }
@@ -217,13 +217,27 @@ export default class TableEditor {
         let rect = this.toolbar.getBoundingClientRect();
         let width = document.documentElement.clientWidth;
         let height = document.documentElement.clientHeight;
-        let left = Math.max(8,Math.min(point.x+12,width-rect.width-8));
-        let top = point.y+12;
-        if(top+rect.height>height-8){
-            top = point.y-rect.height-12;
-        }
-        this.toolbar.style.left = left+'px';
-        this.toolbar.style.top = Math.max(8,Math.min(top,height-rect.height-8))+'px';
+        let selected = area.items.reduce((bounds,item)=>{
+            let box = item.cell.getBoundingClientRect();
+            return {left:Math.min(bounds.left,box.left),right:Math.max(bounds.right,box.right),
+                top:Math.min(bounds.top,box.top),bottom:Math.max(bounds.bottom,box.bottom)};
+        },cell);
+        let overlap = (left,top,box)=>Math.max(0,Math.min(left+rect.width,box.right)-Math.max(left,box.left))*
+            Math.max(0,Math.min(top+rect.height,box.bottom)-Math.max(top,box.top));
+        // 先避开当前单元格，再避开整个选区；同等位置优先靠近鼠标。
+        let positions = [selected,cell].flatMap(box=>[
+            [point.x+12,box.bottom+12],[point.x+12,box.top-rect.height-12],
+            [box.right+12,point.y+12],[box.left-rect.width-12,point.y+12]
+        ]).map(([left,top])=>{
+            left = Math.max(8,Math.min(left,width-rect.width-8));
+            top = Math.max(8,Math.min(top,height-rect.height-8));
+            return {left,top,current:overlap(left,top,cell),selected:overlap(left,top,selected),
+                distance:Math.hypot(Math.max(left-point.x,0,point.x-left-rect.width),
+                    Math.max(top-point.y,0,point.y-top-rect.height))};
+        });
+        positions.sort((a,b)=>a.current-b.current||a.selected-b.selected||a.distance-b.distance);
+        this.toolbar.style.left = positions[0].left+'px';
+        this.toolbar.style.top = positions[0].top+'px';
     }
     refresh(){
         if(this.editor.source||this.first&&!this.editor.content.contains(this.first)){
