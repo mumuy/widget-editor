@@ -185,8 +185,8 @@ class WidgetEditor extends HTMLElement {
                 <textarea class="editor-source" aria-label="HTML 源代码" spellcheck="false" hidden></textarea>
             </div>
             <div class="ft">
-                <button type="button" class="tool tool-button source-button" data-action="source" aria-label="源代码" aria-pressed="false">${renderIcon(sourceIcon)}</button>
                 <button type="button" class="tool tool-button fullscreen-button" data-action="fullscreen" aria-label="全屏" aria-pressed="false">${renderIcon(fullscreenIcon)}</button>
+                <button type="button" class="tool tool-button source-button" data-action="source" aria-label="源代码" aria-pressed="false">${renderIcon(sourceIcon)}</button>
                 <span class="word-count">0 字</span>
             </div>
         </div>`;
