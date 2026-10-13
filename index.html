@@ -73,8 +73,8 @@
                         <div class="hd">
                             <ul class="nav" role="tablist" aria-label="编辑示例">
                                 <li class="active"><a href="#panel-article" id="tab-article" role="tab" aria-selected="true" aria-controls="panel-article">文章示例</a></li>
-                                <li><a href="#panel-announcement" id="tab-announcement" role="tab" aria-selected="false" aria-controls="panel-announcement" tabindex="-1">繁体公告</a></li>
-                                <li><a href="#panel-blank" id="tab-blank" role="tab" aria-selected="false" aria-controls="panel-blank" tabindex="-1">English</a></li>
+                                <li><a href="#panel-announcement" id="tab-announcement" role="tab" aria-selected="false" aria-controls="panel-announcement" tabindex="-1">公告示例</a></li>
+                                <li><a href="#panel-blank" id="tab-blank" role="tab" aria-selected="false" aria-controls="panel-blank" tabindex="-1">空白示例</a></li>
                             </ul>
                         </div>
                         <div class="bd">
@@ -102,28 +102,28 @@
                                 </widget-editor>
                             </div>
                             <div class="panel" id="panel-announcement" role="tabpanel" aria-labelledby="tab-announcement" hidden>
-                                <widget-editor id="editor-announcement" language="zh-HK" insert="image,table,attachment,emoji" height="420" placeholder="請輸入公告內容……" aria-label="公告編輯器">
-                                    <h2 style="text-align:center;">周末讀書會</h2>
-                                    <p style="text-align:center;color:#999;">歡迎帶同喜愛的書籍，一起分享閱讀心得。</p>
-                                    <h3>活動安排</h3>
+                                <widget-editor id="editor-announcement" insert="image,table,attachment,emoji" height="420" placeholder="请输入公告内容……" aria-label="公告编辑器">
+                                    <h2 style="text-align:center;">周末读书会</h2>
+                                    <p style="text-align:center;color:#999;">欢迎带上喜爱的书籍，一起分享阅读心得。</p>
+                                    <h3>活动安排</h3>
                                     <table>
-                                        <thead><tr><th>時間</th><th>環節</th><th>內容</th></tr></thead>
+                                        <thead><tr><th>时间</th><th>环节</th><th>内容</th></tr></thead>
                                         <tbody>
-                                            <tr><td>14:00</td><td>自由交流</td><td>介紹你帶來的書</td></tr>
-                                            <tr><td>14:30</td><td>主題分享</td><td>分享閱讀心得</td></tr>
-                                            <tr><td>15:30</td><td>交流討論</td><td>推薦下一本書</td></tr>
+                                            <tr><td>14:00</td><td>自由交流</td><td>介绍你带来的书</td></tr>
+                                            <tr><td>14:30</td><td>主题分享</td><td>分享阅读心得</td></tr>
+                                            <tr><td>15:30</td><td>交流讨论</td><td>推荐下一本书</td></tr>
                                         </tbody>
                                     </table>
-                                    <h3>參加須知</h3>
+                                    <h3>参加须知</h3>
                                     <ul>
-                                        <li>帶備一本想分享的書籍</li>
-                                        <li>準備一段喜愛的摘錄</li>
+                                        <li>带上一本想分享的书籍</li>
+                                        <li>准备一段喜爱的摘录</li>
                                     </ul>
-                                    <p><strong style="color:#2095f2;">期待與你見面！</strong></p>
+                                    <p><strong style="color:#2095f2;">期待与你见面！</strong></p>
                                 </widget-editor>
                             </div>
                             <div class="panel" id="panel-blank" role="tabpanel" aria-labelledby="tab-blank" hidden>
-                                <widget-editor id="editor-blank" language="en-US" height="420" aria-label="Blank editor"></widget-editor>
+                                <widget-editor id="editor-blank" height="420" aria-label="空白编辑器"></widget-editor>
                             </div>
                         </div>
                         <p class="insert-demo-note">文件在本地读取用于演示，不会上传到服务器。</p>

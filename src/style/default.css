@@ -64,7 +64,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     min-height: 48px;
     padding: 8px 6px;
 }
-.toolbar::after,.table-toolbar::after,.link-toolbar::after,.mod-panel .ft::after{
+.toolbar::after,.mod-panel .ft::after{
     content: attr(data-tooltip);
     position: fixed;
     left: var(--tooltip-left,0px);
@@ -89,7 +89,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     opacity: 0;
     visibility: hidden;
 }
-.toolbar[data-tooltip]::after,.table-toolbar[data-tooltip]::after,.link-toolbar[data-tooltip]::after,.mod-panel .ft[data-tooltip]::after{
+.toolbar[data-tooltip]::after,.mod-panel .ft[data-tooltip]::after{
     opacity: 1;
     visibility: visible;
     transition: opacity .12s .3s,visibility 0s .3s;
