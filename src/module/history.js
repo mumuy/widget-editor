@@ -31,6 +31,7 @@ export default class EditorHistory {
         this.index = index;
         let entry = this.entries[index];
         this.editor.content.innerHTML = entry.value;
+        this.editor.normalizeContent(false,null);
         this.editor.codes?.normalize(null);
         this.editor.selection.fromBookmark(entry.selection);
         this.editor.restoreSelection();

@@ -21,6 +21,9 @@ export default class EditorSelection {
         }
         return this.range;
     }
+    children(node){
+        return Array.from(node.childNodes).filter(child=>!this.editor.blocks.boundary(child));
+    }
     restore(){
         let content = this.editor.content;
         // focus 事件会更新选区，恢复前先保留原来的范围。
@@ -44,15 +47,28 @@ export default class EditorSelection {
         if(!range||!root.contains(range.commonAncestorContainer)){
             return null;
         }
-        let path = function(node){
+        let path = node=>{
             let result = [];
             while(node!==root){
-                result.unshift(Array.prototype.indexOf.call(node.parentNode.childNodes,node));
+                result.unshift(this.children(node.parentNode).indexOf(node));
                 node = node.parentNode;
             }
             return result;
         };
-        return {start:path(range.startContainer),startOffset:range.startOffset,end:path(range.endContainer),endOffset:range.endOffset};
+        let point = (node,offset)=>{
+            let element = node.nodeType===Node.TEXT_NODE?node.parentElement:node;
+            let boundary = element.closest?.('[data-block-boundary]');
+            if(this.editor.blocks.boundary(boundary)){
+                return {path:path(boundary.previousElementSibling),offset:0,boundary:true};
+            }
+            if(node.nodeType!==Node.TEXT_NODE){
+                offset = Array.from(node.childNodes).slice(0,offset).filter(child=>!this.editor.blocks.boundary(child)).length;
+            }
+            return {path:path(node),offset};
+        };
+        let start = point(range.startContainer,range.startOffset);
+        let end = point(range.endContainer,range.endOffset);
+        return {start:start.path,startOffset:start.offset,startBoundary:start.boundary,end:end.path,endOffset:end.offset,endBoundary:end.boundary};
     }
     fromBookmark(bookmark){
         this.range = null;
@@ -60,13 +76,25 @@ export default class EditorSelection {
             return;
         }
         let root = this.editor.content;
-        let find = path=>path.reduce((node,index)=>node&&node.childNodes[index],root);
-        let start = find(bookmark.start);
-        let end = find(bookmark.end);
+        let find = path=>path.reduce((node,index)=>node&&this.children(node)[index],root);
+        let point = (path,offset,boundary)=>{
+            let node = find(path);
+            if(boundary){node = node?.nextElementSibling;}
+            if(!node){return null;}
+            if(node.nodeType===Node.TEXT_NODE){
+                offset = Math.min(offset,node.length);
+            }else{
+                let child = this.children(node)[offset];
+                offset = child?Array.prototype.indexOf.call(node.childNodes,child):node.childNodes.length;
+            }
+            return [node,offset];
+        };
+        let start = point(bookmark.start,bookmark.startOffset,bookmark.startBoundary);
+        let end = point(bookmark.end,bookmark.endOffset,bookmark.endBoundary);
         if(start&&end){
             let range = document.createRange();
-            range.setStart(start,Math.min(bookmark.startOffset,start.nodeType===3?start.length:start.childNodes.length));
-            range.setEnd(end,Math.min(bookmark.endOffset,end.nodeType===3?end.length:end.childNodes.length));
+            range.setStart(...start);
+            range.setEnd(...end);
             this.range = range;
         }
     }

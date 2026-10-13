@@ -41,7 +41,9 @@ function paragraphs(fragment){
         }
     };
     let visit = node=>{
-        if(node.nodeType===Node.COMMENT_NODE&&node.data===markerText){
+        if(node.hasAttribute?.('data-block-boundary')){
+            return;
+        }else if(node.nodeType===Node.COMMENT_NODE&&node.data===markerText){
             caret = {line:lines.length,offset:text.length};
         }else if(node.nodeType===Node.TEXT_NODE){
             if(!node.data.trim()&&(containers.has(node.parentNode.nodeName)||node.parentNode.nodeName==='LI'&&Array.from(node.parentNode.children).some(child=>blockTags.has(child.nodeName)))){
@@ -146,6 +148,7 @@ export default function clearFormat(content,current){
     after.selectNodeContents(content);
     after.setStart(range.endContainer,range.endOffset);
     let plans = Array.from(content.childNodes).filter(node=>range.intersectsNode(node)).map(node=>{
+        if(node.hasAttribute?.('data-block-boundary')){return null;}
         let scope = document.createRange();
         scope.selectNode(node);
         let selected = intersect(range,scope).cloneContents();

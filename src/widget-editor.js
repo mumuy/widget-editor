@@ -7,6 +7,7 @@ import applyStyle from './module/method/applyStyle.js';
 import normalizeParagraphs from './module/method/normalizeParagraphs.js';
 import normalizeTableCells from './module/method/normalizeTableCells.js';
 import EditorHistory from './module/history.js';
+import EditorBlocks from './module/blocks.js';
 import openDialog from './module/dialog.js';
 import EditorDropdown from './module/dropdown.js';
 import EditorTooltip from './module/tooltip.js';
@@ -43,6 +44,7 @@ class WidgetEditor extends HTMLElement {
             this.addStyle();
             this._initialized = true;
             this.selection = new EditorSelection(this);
+            this.blocks = new EditorBlocks(this);
             this.history = new EditorHistory(this);
             this.dropdown = new EditorDropdown(this);
             this.value = this._pendingValue===null?this.innerHTML:this._pendingValue;
@@ -127,17 +129,17 @@ class WidgetEditor extends HTMLElement {
         return this.value;
     }
     contentHTML(){
-        if(!this.content.querySelector('[data-table-selected],[data-code-placeholder],[data-code-boundary]')){
+        if(!this.content.querySelector('[data-table-selected],[data-code-placeholder],[data-block-boundary]')){
             return this.content.innerHTML;
         }
         let content = this.content.cloneNode(true);
         content.querySelectorAll('[data-table-selected]').forEach(cell=>cell.removeAttribute('data-table-selected'));
         content.querySelectorAll('pre code br[data-code-placeholder]').forEach(node=>node.remove());
-        content.querySelectorAll('[data-code-boundary]').forEach(node=>{
-            if(this.codes.empty(node)&&node.previousElementSibling?.tagName==='PRE'&&!node.nextElementSibling){
+        content.querySelectorAll('[data-block-boundary]').forEach(node=>{
+            if(this.blocks.boundary(node)){
                 node.remove();
             }else{
-                node.removeAttribute('data-code-boundary');
+                node.removeAttribute('data-block-boundary');
             }
         });
         return content.innerHTML;
@@ -232,15 +234,18 @@ class WidgetEditor extends HTMLElement {
             }
         });
         this.content.addEventListener('beforeinput',event=>{
-            if(this.codes?.beforeInput(event)){return;}
+            if(!event.isComposing){this.history.record();}
+            if(this.codes?.beforeInput(event)||this.blocks.beforeInput(event)){return;}
             this.normalizeContent(true);
             document.execCommand('defaultParagraphSeparator',false,'p');
         });
+        this.content.addEventListener('keydown',event=>this.blocks.keyDown(event),true);
         this.content.addEventListener('input',event=>{
             if(!event.isComposing&&!this._transaction){
                 this.update();
             }
         });
+        this.content.addEventListener('compositionstart',()=>this.history.record());
         this.content.addEventListener('compositionend',()=>this.update());
         ['pointerup','keyup','focus'].forEach(name=>this.content.addEventListener(name,()=>{
             this.saveSelection();
@@ -321,6 +326,7 @@ class WidgetEditor extends HTMLElement {
             range = null;
         }
         let changed = normalizeParagraphs(this.content,range,ensure);
+        this.blocks.normalize();
         if(range&&changed){
             this.selection.range = range.cloneRange();
             if(current){
