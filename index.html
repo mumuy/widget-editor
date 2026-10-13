@@ -72,13 +72,13 @@
                     <section class="mod-tabs" id="demo">
                         <div class="hd">
                             <ul class="nav" role="tablist" aria-label="编辑示例">
-                                <li class="active"><a href="#panel-article" id="tab-article" role="tab" aria-selected="true" aria-controls="panel-article">文章示例</a></li>
-                                <li><a href="#panel-announcement" id="tab-announcement" role="tab" aria-selected="false" aria-controls="panel-announcement" tabindex="-1">公告示例</a></li>
-                                <li><a href="#panel-blank" id="tab-blank" role="tab" aria-selected="false" aria-controls="panel-blank" tabindex="-1">空白示例</a></li>
+                                <li class="active"><a href="#panel-total" id="tab-article" role="tab" aria-selected="true" aria-controls="panel-total">完整功能</a></li>
+                                <li><a href="#panel-base" id="tab-base" role="tab" aria-selected="false" aria-controls="panel-base" tabindex="-1">基础功能</a></li>
+                                <li><a href="#panel-custom" id="tab-custom" role="tab" aria-selected="false" aria-controls="panel-custom" tabindex="-1">自定义配置</a></li>
                             </ul>
                         </div>
                         <div class="bd">
-                            <div class="panel" id="panel-article" role="tabpanel" aria-labelledby="tab-article">
+                            <div class="panel" id="panel-total" role="tabpanel" aria-labelledby="tab-article">
                                 <widget-editor id="editor" height="420" placeholder="请输入文章内容……" aria-label="文章编辑器">
                                     <h1>富文本编辑器</h1>
                                     <p>一个标签实现富文本编辑，支持常用的文字排版功能。</p>
@@ -107,8 +107,8 @@ console.log(editor.value);</code></pre>
                                     <p>在代码块中输入内容，并通过浮动菜单切换编程语言。</p>
                                 </widget-editor>
                             </div>
-                            <div class="panel" id="panel-announcement" role="tabpanel" aria-labelledby="tab-announcement" hidden>
-                                <widget-editor id="editor-announcement" custom="heading,alignment,bold,italic,underline,color,link,image,video,table,attachment,emoji,divider,code" height="420" placeholder="请输入公告内容……" aria-label="公告编辑器">
+                            <div class="panel" id="panel-base" role="tabpanel" aria-labelledby="tab-base" hidden>
+                                <widget-editor id="editor-announcement" insert="" height="420" placeholder="请输入公告内容……" aria-label="公告编辑器">
                                     <h2 style="text-align:center;">周末读书会</h2>
                                     <p style="text-align:center;color:#999;">欢迎带上喜爱的书籍，一起分享阅读心得。</p>
                                     <h3>活动安排</h3>
@@ -128,8 +128,8 @@ console.log(editor.value);</code></pre>
                                     <p><strong style="color:#2095f2;">期待与你见面！</strong></p>
                                 </widget-editor>
                             </div>
-                            <div class="panel" id="panel-blank" role="tabpanel" aria-labelledby="tab-blank" hidden>
-                                <widget-editor id="editor-blank" height="420" aria-label="空白编辑器"></widget-editor>
+                            <div class="panel" id="panel-custom" role="tabpanel" aria-labelledby="tab-custom" hidden>
+                                <widget-editor id="editor-custom" custom="heading,alignment,bold,italic,underline,strikethrough,superscript,subscript,color,link,divider,table,code,image,video" height="420" aria-label="自定义编辑器"></widget-editor>
                             </div>
                         </div>
                         <p class="insert-demo-note">文件在本地读取用于演示，不会上传到服务器。</p>
