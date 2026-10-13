@@ -93,7 +93,7 @@ export default function sanitizeHTML(html){
             });
             let attributes = {};
             if(tag==='code'){
-                attributes['data-language'] = languageName(node.getAttribute('data-language')||node.className.match(/(?:^|\s)language-([\w-]+)/)?.[1]);
+                attributes['data-language'] = languageName(node.getAttribute('data-language')||node.className.match(/(?:^|\s)language-([\w+#-]+)(?=\s|$)/)?.[1]);
             }
             if(tag==='a'){
                 let download = node.hasAttribute('download');

@@ -285,7 +285,9 @@ HTML 输出中，纯文本单元格保持在一行，例如 `<td>文字</td>`；
 
 **分割线与代码块**：通过 `insert="divider,code"` 放入插入菜单，也可以通过 `custom="bold,divider,code"` 直接放入工具栏。分割线输出为 `hr`；代码块使用 `pre` 和 `code`，选中的文字可直接转换为代码块。
 
-光标进入代码块时，附近会显示编程语言选择框，支持 HTML、JavaScript、CSS、Java、TypeScript、PHP、Python、Go、JSON、SQL、Bash 和纯文本。切换语言会重新高亮，保留文字和选区，支持撤销。HTML 中的 `script`、`style` 内容分别按 JavaScript、CSS 高亮。
+光标进入代码块时，右上方会显示固定在代码块上的自定义语言下拉框，支持 HTML、JavaScript、CSS、Java、TypeScript、PHP、Python、Go、JSON、SQL、Bash、C++、C、C#、JSX、Visual Basic、Ruby、Swift、Lua、Markdown 和纯文本。切换语言会重新高亮，保留文字和选区，支持撤销。HTML 中的 `script`、`style` 内容分别按 JavaScript、CSS 高亮；JSX 的标签与表达式分别识别，Markdown 围栏代码按指定语言高亮。
+
+初始内容通过 `code` 的 `data-language` 指定语言。新增语言的代码依次为 `cpp`、`c`、`csharp`、`jsx`、`visual-basic`、`ruby`、`swift`、`lua`、`markdown`；也兼容 `c++`、`c#`、`cs`、`vb`、`vbnet`、`rb`、`md` 等常见别名。语言下拉框可以通过 `::part(code-language-trigger)`、`::part(code-language-menu)` 和 `::part(dropdown-option)` 调整样式。
 
 代码块内 Enter 换行，Tab 插入四个空格，选中多行时可用 Tab / Shift + Tab 增加或减少缩进；Ctrl / Command + Enter 返回代码块后的正文。粘贴保留纯文本与缩进，代码文本不会作为 HTML 执行。在代码块中暂时禁用文字格式按钮，使用「清除格式」可以转换回普通段落。
 

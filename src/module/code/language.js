@@ -1,9 +1,15 @@
 export const languages = [
     ['text','纯文本'],['html','HTML'],['javascript','JavaScript'],['css','CSS'],['java','Java'],
-    ['typescript','TypeScript'],['php','PHP'],['python','Python'],['go','Go'],['json','JSON'],['sql','SQL'],['bash','Bash']
+    ['typescript','TypeScript'],['php','PHP'],['python','Python'],['go','Go'],['json','JSON'],['sql','SQL'],['bash','Bash'],
+    ['cpp','C++'],['c','C'],['csharp','C#'],['jsx','JSX'],['visual-basic','Visual Basic'],['ruby','Ruby'],
+    ['swift','Swift'],['lua','Lua'],['markdown','Markdown']
 ];
 
-const aliases = {js:'javascript',ts:'typescript',xml:'html',py:'python',golang:'go',sh:'bash',shell:'bash',plaintext:'text',txt:'text'};
+const aliases = {
+    js:'javascript',ts:'typescript',xml:'html',py:'python',golang:'go',sh:'bash',shell:'bash',plaintext:'text',txt:'text',
+    'c++':'cpp',cplusplus:'cpp','c#':'csharp',cs:'csharp',vb:'visual-basic',vbnet:'visual-basic',
+    'visual basic':'visual-basic',visualbasic:'visual-basic',rb:'ruby',md:'markdown'
+};
 
 export function languageName(value){
     value = String(value||'text').trim().toLowerCase();
@@ -20,7 +26,15 @@ const keywords = {
     go:'break case chan const continue default defer else fallthrough for func go goto if import interface map package range return select struct switch type var true false nil bool byte complex64 complex128 error float32 float64 int int8 int16 int32 int64 rune string uint uint8 uint16 uint32 uint64 uintptr',
     json:'true false null',
     sql:'add all alter and any as asc between by case check column constraint create cross database default delete desc distinct drop else end except exists false foreign from full group having if in index inner insert intersect into is join key left like limit not null offset on or order outer primary references right select set table then true union unique update values view when where with',
-    bash:'if then else elif fi for while until do done case esac in function select time coproc break continue return exit export readonly local declare typeset unset shift source'
+    bash:'if then else elif fi for while until do done case esac in function select time coproc break continue return exit export readonly local declare typeset unset shift source',
+    c:'auto break case char const continue default do double else enum extern float for goto if inline int long register restrict return short signed sizeof static struct switch typedef union unsigned void volatile while _Alignas _Alignof _Atomic _Bool _Complex _Generic _Imaginary _Noreturn _Static_assert _Thread_local true false NULL size_t',
+    cpp:'alignas alignof and and_eq asm auto bitand bitor bool break case catch char char8_t char16_t char32_t class compl concept const consteval constexpr constinit const_cast continue co_await co_return co_yield decltype default delete do double dynamic_cast else enum explicit export extern false float for friend goto if inline int long mutable namespace new noexcept not not_eq nullptr operator or or_eq private protected public register reinterpret_cast requires return short signed sizeof static static_assert static_cast struct switch template this thread_local throw true try typedef typeid typename union unsigned using virtual void volatile wchar_t while xor xor_eq string vector',
+    csharp:'abstract as async await base bool break byte case catch char checked class const continue decimal default delegate do double dynamic else enum event explicit extern false finally fixed float for foreach get global goto if implicit in init int interface internal is lock long namespace new not null object operator out override params partial private protected public readonly record ref required return sbyte sealed set short sizeof stackalloc static string struct switch this throw true try typeof uint ulong unchecked unmanaged unsafe ushort using value var virtual void volatile when where while with yield',
+    'visual-basic':'addhandler addressof alias and andalso as async await boolean byref byte byval call case catch cbool cbyte cchar cdate cdec cdbl char cint class clng cobj const continue csbyte cshort csng cstr ctype cuint culng cushort date decimal declare default delegate dim directcast do double each else elseif end enum erase error event exit false finally for friend function get gettype global gosub goto handles if implements imports in inherits integer interface is isnot let lib like long loop me mod module mustinherit mustoverride mybase myclass namespace narrowing new next not nothing notinheritable notoverridable object of on operator optional or orelse out overloads overridable overrides paramarray partial private property protected public raiseevent readonly redim rem removehandler resume return sbyte select set shadows shared short single static step stop string structure sub synclock then throw to true try trycast typeof uinteger ulong ushort using when while widening with withevents writeonly xor yield',
+    ruby:'alias and begin BEGIN break case class def defined? do else elsif end END ensure false for if in module next nil not or redo rescue retry return self super then true undef unless until when while yield',
+    swift:'actor any as associatedtype async await borrowing break case catch class consuming continue convenience default defer deinit didSet distributed do dynamic else enum extension fallthrough false fileprivate final for func get guard if import in indirect infix init inout internal is isolated lazy let mutating nil nonisolated nonmutating open operator optional override package postfix precedencegroup prefix private protocol public repeat required rethrows return self Self set some static struct subscript super switch throw throws true try typealias unowned var weak where while willSet Bool Character Double Float Int String',
+    lua:'and break do else elseif end false for function goto if in local nil not or repeat return then true until while'
 };
 
 export const profiles = Object.fromEntries(Object.entries(keywords).map(([name,words])=>[name,new Set(words.split(' '))]));
+profiles.jsx = profiles.javascript;

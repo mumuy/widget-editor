@@ -1,4 +1,7 @@
 import {languageName,profiles} from './language.js';
+import {quoted,comment,literal} from './syntax.js';
+import jsx from './jsx.js';
+import markdown from './markdown.js';
 
 // 只识别代码文本中的词法标记，不执行代码，也不把代码作为 HTML 解析。
 export default function highlight(source,language){
@@ -36,34 +39,14 @@ export default function highlight(source,language){
             openings.lastIndex = index;
         }
         highlight(source.slice(index),'html').forEach(token=>add(token.text,token.type));
+    }else if(language==='markdown'){
+        markdown(source,add,highlight);
     }else if(language==='html'){
         html(source,add);
     }else{
         scan(source,language,add);
     }
     return tokens;
-}
-
-function quoted(source,index,quote,triple=false,raw=false,multiline=true){
-    let delimiter = triple?quote.repeat(3):quote;
-    let end = index+delimiter.length;
-    while(end<source.length){
-        if(source[end]==='\n'&&!multiline){
-            break;
-        }else if(source[end]==='\\'&&!raw){
-            end += 2;
-        }else if(source.startsWith(delimiter,end)){
-            end += delimiter.length;
-            if(!triple&&source[end]===quote&&quote!==String.fromCharCode(96)){
-                end++;
-            }else{
-                break;
-            }
-        }else{
-            end++;
-        }
-    }
-    return Math.min(end,source.length);
 }
 
 function html(source,add){
@@ -154,32 +137,30 @@ function scan(source,language,add,phpBlock=false){
             emit(space[0],'text');
             continue;
         }
-        let lineComment = language==='sql'?rest.startsWith('--'):
-            ['python','bash'].includes(language)?rest.startsWith('#')&&(language!=='bash'||index===0||/[\s;|&()<>]/.test(source[index-1])):
-                !['css','json'].includes(language)&&rest.startsWith('//')||language==='php'&&rest.startsWith('#');
-        if(lineComment){
-            let comment = rest.match(/^[^\n]*/)[0];
-            if(phpBlock&&comment.includes('?>')){comment = comment.slice(0,comment.indexOf('?>'));}
-            emit(comment,'comment');
+        let note = comment(source,index,language);
+        if(note){
+            if(phpBlock&&note.includes('?>')&&!note.startsWith('/*')){note = note.slice(0,note.indexOf('?>'));}
+            emit(note,'comment');
             continue;
         }
-        if(!['python','bash','json'].includes(language)&&rest.startsWith('/*')){
-            let end = rest.indexOf('*/',2);
-            emit(end<0?rest:rest.slice(0,end+2),'comment');
+        let string = literal(source,index,language);
+        if(string){
+            emit(string.text,string.type);
             continue;
         }
-        let prefix = language==='python'?rest.match(/^(?:fr|rf|br|rb|[frbu])(?=["'])/i)?.[0]||'':'';
-        let quote = source[index+prefix.length];
-        if(quote==='"'||quote==="'"||quote===String.fromCharCode(96)&&['javascript','typescript','go','bash'].includes(language)){
-            let triple = ['python','java'].includes(language)&&source.startsWith(quote.repeat(3),index+prefix.length);
-            let raw = language==='sql'||language==='go'&&quote===String.fromCharCode(96)||language==='bash'&&quote==="'";
-            let multiline = triple||quote===String.fromCharCode(96)||['php','sql','bash'].includes(language);
-            let end = quoted(source,index+prefix.length,quote,triple,raw,multiline);
-            let type = language==='json'&&/^\s*:/.test(source.slice(end))?'property':'string';
-            emit(source.slice(index,end),type);
+        if(language==='jsx'&&rest[0]==='<'){
+            let end = jsx(source,index,add,highlight);
+            if(end>index){index = end;previous = '>';continue;}
+        }
+        if(['c','cpp','csharp','swift','visual-basic'].includes(language)&&rest[0]==='#'){
+            let directive = rest.match(/^#[ \t]*[a-z_]\w*/i);
+            if(directive){emit(directive[0],'keyword');continue;}
+        }
+        if(['c','cpp'].includes(language)&&previous.replace(/[ \t]/g,'')==='#include'&&rest[0]==='<'){
+            emit(rest.match(/^<[^>\n]*(?:>|$)/)[0],'string');
             continue;
         }
-        if(['javascript','typescript'].includes(language)&&rest[0]==='/'&&(!previous||/^(return|throw|case|yield|await)$/.test(previous)||/[=(:,[!&|?;{}]$/.test(previous))){
+        if(['javascript','typescript','jsx','ruby'].includes(language)&&rest[0]==='/'&&(!previous||/^(return|throw|case|yield|await)$/.test(previous)||/[=(:,[!&|?;{}]$/.test(previous))){
             let end = 1;
             let group = false;
             while(end<rest.length&&rest[end]!=='\n'){
@@ -204,7 +185,10 @@ function scan(source,language,add,phpBlock=false){
             emit(variable[0],'property');
             continue;
         }
-        let number = rest.match(/^(?:0[xX][\da-fA-F_]+(?:[lL]|n)?|0[bB][01_]+(?:[lL]|n)?|0[oO][0-7_]+(?:[lL]|n)?|(?:\d[\d_]*(?:\.[\d_]*)?|\.\d[\d_]*)(?:[eE][+-]?\d[\d_]*)?(?:[fFdDlL]|n)?)(?!\w)/);
+        let special = language==='visual-basic'?rest.match(/^&(?:H[\da-f]+|B[01]+|O[0-7]+)/i):
+            language==='ruby'?rest.match(/^(?:@@?\w+|\$[a-z_]\w*|:[a-z_]\w*[!?]?)/i):null;
+        if(special){emit(special[0],language==='visual-basic'?'number':'property');continue;}
+        let number = rest.match(/^(?:0[xX][\da-fA-F_]+|0[bB][01_]+|0[oO][0-7_]+|(?:\d[\d_]*(?:\.[\d_]*)?|\.\d[\d_]*)(?:[eE][+-]?\d[\d_]*)?)(?:[uU](?:ll|LL|[lL])?|(?:ll|LL|[lL])[uU]?|[fFdDmM]|n)?(?!\w)/);
         let selector = language==='css'&&depth===0?rest.match(/^[#.][\w-]+/):null;
         if(selector){
             emit(selector[0],'tag');
@@ -222,11 +206,11 @@ function scan(source,language,add,phpBlock=false){
                 continue;
             }
         }
-        let word = rest.match(language==='css'?/^(?:--)?[a-z_][\w-]*/i:/^[a-z_$][\w$]*/i);
+        let word = rest.match(language==='css'?/^(?:--)?[a-z_][\w-]*/i:language==='ruby'?/^[a-z_$][\w$]*[!?]?/i:/^[a-z_$][\w$]*/i);
         if(word){
             let text = word[0];
             let after = source.slice(index+text.length);
-            let key = ['sql','php'].includes(language)?text.toLowerCase():text;
+            let key = ['sql','php','visual-basic'].includes(language)?text.toLowerCase():text;
             let type = profiles[language]?.has(key)?'keyword':/^\s*\(/.test(after)?'function':['.','?.'].includes(previous)||/^\s*:/.test(after)?'property':'text';
             if(language==='css'&&type!=='function'){
                 type = depth===0?'tag':/^\s*:/.test(after)?'property':'string';

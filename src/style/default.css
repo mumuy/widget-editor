@@ -529,18 +529,21 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
 .code-toolbar .code-language-trigger{
     width: 100%;
     justify-content: space-between;
+    min-height: 32px;
+    border: 0;
+}
+.code-language-label{
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .code-language-menu{
-    display: grid;
-    grid-template-columns: repeat(2,minmax(0,1fr));
-    gap: 4px;
-    margin-top: 5px;
-    max-height: 260px;
-    overflow: auto;
+    width: 192px;
 }
-.code-language-menu button{
-    min-height: 32px;
-    padding: 4px 5px;
+.code-language-menu .tool-option{
+    justify-content: flex-start;
+    min-height: 30px;
+    padding: 5px 8px;
+    border: 0;
 }
 .editor-source{
     font-family: Menlo,Monaco,Consolas,'Andale Mono','lucida console','Courier New',monospace;

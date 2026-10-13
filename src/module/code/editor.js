@@ -15,8 +15,8 @@ export default class EditorCode {
         this.toolbar.setAttribute('popover','manual');
         this.toolbar.setAttribute('role','toolbar');
         this.toolbar.setAttribute('aria-label','代码块');
-        this.toolbar.innerHTML = `<button type="button" class="code-language-trigger" aria-label="编程语言" aria-haspopup="listbox" aria-expanded="false">${renderIcon(icon)}<span class="code-language-label"></span>${renderIcon(chevron,true)}</button>
-            <div class="code-language-menu" role="listbox" aria-label="编程语言" hidden>${languages.map(([name,label])=>`<button type="button" role="option" data-language="${name}" aria-selected="false">${label}</button>`).join('')}</div>`;
+        this.toolbar.innerHTML = `<button type="button" class="code-language-trigger" part="dropdown-trigger code-language-trigger" aria-label="编程语言" aria-haspopup="listbox" aria-controls="code-language-menu" aria-expanded="false">${renderIcon(icon)}<span class="code-language-label"></span>${renderIcon(chevron,true)}</button>
+            <div class="tool-menu code-language-menu" part="dropdown-menu code-language-menu" id="code-language-menu" role="listbox" aria-label="编程语言" popover="manual" hidden>${languages.map(([name,label])=>`<button type="button" class="tool-option" part="dropdown-option" role="option" tabindex="-1" data-language="${name}" aria-selected="false">${label}</button>`).join('')}</div>`;
         editor.shadowRoot.appendChild(this.toolbar);
         this.trigger = this.toolbar.querySelector('.code-language-trigger');
         this.menu = this.toolbar.querySelector('.code-language-menu');
@@ -24,7 +24,8 @@ export default class EditorCode {
         this.onDown = event=>{
             if(event.button===0){
                 this.dragging = true;
-                this.dismiss();
+                this.blocked = null;
+                if(this.opened){this.toggle(false);}
             }
         };
         this.onUp = ()=>{
@@ -47,7 +48,7 @@ export default class EditorCode {
         };
         this.onScroll = event=>{
             if(!(event.target instanceof Node)||!this.toolbar.contains(event.target)){
-                this.dismiss();
+                if(this.target){this.refresh();}
             }
         };
         this.onPaste = event=>{
@@ -90,8 +91,14 @@ export default class EditorCode {
         this.toolbar.addEventListener('keydown',event=>{
             if(event.key==='Escape'){
                 event.preventDefault();
+                event.stopPropagation();
                 if(this.opened){this.toggle(false);}else{this.dismiss();}
                 editor.restoreSelection();
+            }else if(event.key==='Tab'){
+                if(this.opened){this.toggle(false);this.trigger.focus({preventScroll:true});}
+            }else if(['Enter',' '].includes(event.key)&&event.target.matches('[data-language]')){
+                event.preventDefault();
+                event.target.click();
             }else if(['ArrowDown','ArrowUp','ArrowLeft','ArrowRight','Home','End'].includes(event.key)){
                 event.preventDefault();
                 let opening = !this.opened;
@@ -102,6 +109,7 @@ export default class EditorCode {
                 let next = opening?current:event.key==='Home'?0:event.key==='End'?buttons.length-1:
                     Math.max(0,Math.min(buttons.length-1,current+(['ArrowUp','ArrowLeft'].includes(event.key)?-1:1)));
                 buttons[next].focus({preventScroll:true});
+                editor.dropdown.scrollOption(buttons[next]);
             }
         });
     }
@@ -251,15 +259,24 @@ export default class EditorCode {
         });
     }
     toggle(opened){
+        let previous = this.opened;
         this.opened = opened;
+        if(!opened&&this.menu.hidePopover&&this.menu.matches(':popover-open')){this.menu.hidePopover();}
+        if(!opened&&this.menu.contains(this.editor.shadowRoot.activeElement)){this.trigger.focus({preventScroll:true});}
         this.menu.hidden = !opened;
         this.trigger.setAttribute('aria-expanded',String(opened));
         this.refresh();
+        if(opened&&!previous&&!this.toolbar.hidden){
+            let selected = this.menu.querySelector('[aria-selected="true"]');
+            selected?.focus({preventScroll:true});
+            if(selected){this.editor.dropdown.scrollOption(selected);}
+        }
     }
     dismiss(){
         this.blocked = this.selected()?this.range().cloneRange():null;
         this.target = null;
         this.opened = false;
+        if(this.menu.hidePopover&&this.menu.matches(':popover-open')){this.menu.hidePopover();}
         this.menu.hidden = true;
         this.trigger.setAttribute('aria-expanded','false');
         if(this.toolbar.hidePopover&&this.toolbar.matches(':popover-open')){this.toolbar.hidePopover();}
@@ -272,12 +289,11 @@ export default class EditorCode {
         if(!code||this.blocked&&['startContainer','startOffset','endContainer','endOffset'].some(name=>range[name]!==this.blocked[name])){
             this.blocked = null;
         }
-        if(!editor.isConnected||editor.source||editor._dialog?.open||editor.dropdown.opened||this.dragging||editor.table?.dragging||editor.table?.bounds()?.area.items.length>1||!code||this.blocked){
+        if(!editor.isConnected||editor.source||editor._dialog?.open||editor.dropdown.opened||editor.table?.dragging||editor.table?.bounds()?.area.items.length>1||!code||this.blocked){
             this.dismiss();
             return;
         }
-        let rect = range.getBoundingClientRect();
-        if(!rect.height){rect = code.getBoundingClientRect();}
+        let rect = code.getBoundingClientRect();
         let body = editor.body.getBoundingClientRect();
         let width = document.documentElement.clientWidth;
         let height = document.documentElement.clientHeight;
@@ -290,13 +306,28 @@ export default class EditorCode {
         editor.links?.dismiss();
         let language = code.getAttribute('data-language');
         editor.locale.set(this.toolbar.querySelector('.code-language-label'),languages.find(item=>item[0]===language)?.[1]||'纯文本');
-        Array.from(this.menu.children).forEach(button=>button.setAttribute('aria-selected',String(button.dataset.language===language)));
+        Array.from(this.menu.children).forEach(button=>{
+            let selected = button.dataset.language===language;
+            button.setAttribute('aria-selected',String(selected));
+            button.setAttribute('part','dropdown-option'+(selected?' dropdown-option-selected':''));
+        });
         this.toolbar.hidden = false;
         if(this.toolbar.showPopover&&!this.toolbar.matches(':popover-open')){this.toolbar.showPopover();}
         let size = this.toolbar.getBoundingClientRect();
-        let top = rect.bottom+8;
-        if(top+size.height>height-8){top = rect.top-size.height-8;}
-        this.toolbar.style.left = Math.max(8,Math.min(rect.left,width-size.width-8))+'px';
+        this.toolbar.style.left = Math.max(8,Math.min(rect.right-size.width-8,width-size.width-8))+'px';
+        let top = Math.max(body.top-size.height-8,Math.min(rect.top-size.height-8,body.bottom-size.height-8));
         this.toolbar.style.top = Math.max(8,Math.min(top,height-size.height-8))+'px';
+        if(this.opened){this.positionMenu();}
+    }
+    positionMenu(){
+        if(this.menu.showPopover&&!this.menu.matches(':popover-open')){this.menu.showPopover();}
+        let rect = this.trigger.getBoundingClientRect();
+        let below = window.innerHeight-rect.bottom-8;
+        let above = rect.top-8;
+        let upwards = below<Math.min(this.menu.scrollHeight,240)&&above>below;
+        this.menu.style.maxHeight = Math.max(40,Math.min(280,upwards?above:below))+'px';
+        let size = this.menu.getBoundingClientRect();
+        this.menu.style.left = Math.max(8,Math.min(rect.right-size.width,window.innerWidth-size.width-8))+'px';
+        this.menu.style.top = (upwards?rect.top-size.height-4:rect.bottom+4)+'px';
     }
 }
