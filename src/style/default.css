@@ -717,6 +717,9 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     grid-template-columns: repeat(8,minmax(0,1fr));
     gap: 2px;
     margin-bottom: 10px;
+    padding: 3px;
+    background: var(--button-background-color);
+    border-radius: 6px;
 }
 .emoji-tabs button{
     min-width: 0;
@@ -730,8 +733,13 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     border: 1px solid transparent;
     border-radius: 4px;
 }
-.emoji-tabs button:hover,.emoji-tabs [aria-selected="true"]{
-    background: var(--button-active-background);
+.emoji-tabs button:hover{
+    background: var(--panel-background-color);
+    color: var(--button-active-color);
+}
+.emoji-tabs [aria-selected="true"]{
+    background: var(--panel-background-color);
+    border-color: var(--panel-border-color);
     color: var(--button-active-color);
 }
 .emoji-panel{
