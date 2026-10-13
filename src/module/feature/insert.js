@@ -7,6 +7,7 @@ import attachment from './attachment.js';
 import emoji from './emoji.js';
 import divider from './divider.js';
 import code from './code.js';
+import insertMethods from '../method/insertMethods.js';
 
 export const insertFeatures = [table,image,video,audio,attachment,emoji,divider,code];
 
@@ -20,7 +21,7 @@ export default {
     options(editor){
         return Array.from(new Set((editor.getAttribute('insert')||'').split(',').map(name=>name.trim().toLowerCase()))).map(name=>{
             let feature = insertFeatures.find(feature=>feature.name===name);
-            return feature?{value:name,label:feature.label.replace(/^插入/,''),icon:feature.icon,feature}:null;
+            return feature&&insertMethods(editor,name)?.length!==0?{value:name,label:feature.label.replace(/^插入/,''),icon:feature.icon,feature}:null;
         }).filter(Boolean);
     },
     bind(editor){

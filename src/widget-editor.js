@@ -6,6 +6,7 @@ import formatHTML from './module/method/formatHTML.js';
 import applyStyle from './module/method/applyStyle.js';
 import normalizeParagraphs from './module/method/normalizeParagraphs.js';
 import normalizeTableCells from './module/method/normalizeTableCells.js';
+import insertMethods,{mediaAttributes} from './module/method/insertMethods.js';
 import EditorHistory from './module/history.js';
 import EditorBlocks from './module/blocks.js';
 import openDialog from './module/dialog.js';
@@ -36,7 +37,7 @@ class WidgetEditor extends HTMLElement {
         };
     }
     static get observedAttributes(){
-        return ['placeholder','height','insert','custom','language'];
+        return ['placeholder','height','insert','custom','language',...mediaAttributes];
     }
     connectedCallback(){
         if(!this._initialized){
@@ -72,20 +73,24 @@ class WidgetEditor extends HTMLElement {
         document.removeEventListener('selectionchange',this._onSelection);
         this._dialog?.dismiss();
     }
-    attributeChangedCallback(name){
+    attributeChangedCallback(name,oldValue,newValue){
         if(!this.content){
             return;
         }
+        if(mediaAttributes.includes(name)&&oldValue===newValue){return;}
         if(name==='language'){
             this.updateLocale();
             this.links?.refresh();
             this.tooltip?.refresh();
             return;
         }
-        if((name==='insert'||name==='custom')&&this.dropdown){
+        if((name==='insert'||name==='custom'||mediaAttributes.includes(name))&&this.dropdown){
             this.saveSelection();
             this.dropdown.close();
             this.tooltip?.hide();
+            if(mediaAttributes.includes(name)&&this._dialog?.dataset.insert===name){
+                this._dialog.dismiss();
+            }
             this.toolbar.innerHTML = this.toolbarHTML();
             this.toolbarFeatures.forEach(feature=>feature.bindToolbar?.(this));
             this.locale.apply(this.toolbar);
@@ -308,7 +313,8 @@ class WidgetEditor extends HTMLElement {
         this.updateToolbar();
     }
     canInsert(name){
-        return this.toolbarFeatures.some(feature=>feature.name===name)||this.features.find(feature=>feature.name==='insert').options.some(option=>option.value===name);
+        return insertMethods(this,name)?.length!==0&&
+            (this.toolbarFeatures.some(feature=>feature.name===name)||this.features.find(feature=>feature.name==='insert').options.some(option=>option.value===name));
     }
     saveSelection(){
         return this.selection.save();
@@ -480,7 +486,7 @@ class WidgetEditor extends HTMLElement {
         features.forEach(feature=>{
             let controls = this.panel.querySelectorAll('[data-action="'+feature.name+'"]');
             controls.forEach(control=>{
-                control.disabled = this.source&&!['source','fullscreen'].includes(feature.name)||inCode&&!['undo','redo','source','fullscreen','format'].includes(feature.name)||feature.name==='undo'&&!this.history.canUndo||feature.name==='redo'&&!this.history.canRedo;
+                control.disabled = this.source&&!['source','fullscreen'].includes(feature.name)||inCode&&!['undo','redo','source','fullscreen','format'].includes(feature.name)||feature.name==='undo'&&!this.history.canUndo||feature.name==='redo'&&!this.history.canRedo||mediaAttributes.includes(feature.name)&&!this.canInsert(feature.name);
                 if(feature.type==='dropdown'){
                     this.dropdown.update(feature,feature.value?.(this));
                 }else if(feature.type==='color'){

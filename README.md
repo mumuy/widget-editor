@@ -37,6 +37,10 @@
 | `insert` | 插入菜单中的功能，以英文逗号分隔 | 不显示插入菜单 |
 | `custom` | 工具栏功能及显示顺序，以英文逗号分隔 | 使用默认工具栏 |
 | `language` | 界面语言：`zh-CN`、`zh-HK` 或 `en-US` | `zh-CN` |
+| `image` | 图片允许的插入方式 | `upload,url` |
+| `video` | 视频允许的插入方式 | `upload,url,iframe` |
+| `audio` | 音频允许的插入方式 | `upload,url` |
+| `attachment` | 附件允许的插入方式 | `upload,url` |
 
 `insert` 支持以下字段，字段顺序就是插入菜单中的顺序：
 
@@ -195,11 +199,25 @@ customElements.whenDefined('widget-editor').then(function(){
 
 ## 图片、视频、音频和附件
 
-启用对应的 `insert` 字段后，点击工具栏的加号按钮，选择要插入的内容。弹窗默认打开「上传文件」，按以下顺序提供插入方式：
+通过 `insert` 或 `custom` 启用对应功能后，点击工具栏按钮插入内容。未配置插入方式属性时，开放该类型的全部方式，默认打开「上传文件」：
 
 - **上传文件**：选择本地文件并点击插入，组件触发 `upload` 事件，由你的页面负责上传。
 - **URL**：填写文件地址，点击插入即可使用，支持 HTTP、HTTPS 或相对地址。
 - **嵌入 iframe**（仅视频）：粘贴第三方视频网站提供的 iframe 代码，点击「插入视频」。填写「视频标题」会覆盖 iframe 的 `title` 属性，留空则保留原有标题。组件自动写入 `width: 100%`、`height: auto`、`max-width: 100%` 和 `aspect-ratio: 16 / 9`，高度随容器宽度按比例变化；嵌入地址须使用 HTTP、HTTPS 或相对地址。插入的 iframe 支持源码往返、删除及撤销。
+
+分别设置 `image`、`video`、`audio`、`attachment` 属性，可以限制插入方式。使用 `upload` 表示上传文件，`url` 表示填写地址，`iframe` 仅适用于视频；tabs 按配置顺序显示，默认打开第一项：
+
+```html
+<widget-editor
+    insert="image,video,audio,attachment"
+    image="upload,url"
+    video="upload,url,iframe"
+    audio="url"
+    attachment="upload">
+</widget-editor>
+```
+
+不设置属性时全开放；设置为空（例如 `video=""`）则禁用该类型的插入功能。无效字段会忽略，重复字段仅保留一次。这些属性只配置插入方式，仍需用 `insert` 或 `custom` 显示对应工具栏功能。运行时修改属性会立即生效，并关闭该类型已打开的弹框；未完成的旧上传回调也会失效。
 
 组件不会自行向服务器上传文件。上传成功后，调用 `onUploadComplete(url)`，组件将返回的地址插入到打开弹窗前的光标或选区位置。
 

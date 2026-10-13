@@ -1,10 +1,12 @@
 import {fileType,urlFileName} from './file.js';
 import {safeURL} from './sanitize.js';
+import insertMethods from './insertMethods.js';
 
 // 文件由外部上传，组件只管理插入弹窗、进度与回调状态。
 export default function openUpload(editor,options){
     let range = editor.getRange()?.cloneRange();
-    let modes = options.iframe?['file','url','iframe']:['file','url'];
+    let modes = insertMethods(editor,options.kind).map(name=>name==='upload'?'file':name);
+    if(!modes.length){return;}
     let mode = modes[0];
     let busy = false;
     let cancelUpload = null;
@@ -12,6 +14,7 @@ export default function openUpload(editor,options){
     let dialog;
     let current = ()=>editor.isConnected&&!editor.source&&editor._dialog===dialog&&dialog.isConnected&&dialog.open;
     let setMode = function(value,focus=false){
+        if(!modes.includes(value)){return;}
         mode = value;
         dialog.querySelectorAll('[data-insert-tab]').forEach(button=>{
             let active = button.dataset.insertTab===mode;
@@ -92,16 +95,16 @@ export default function openUpload(editor,options){
             }));
         });
     };
+    let fields = {
+        file:{'name':'file','label':'选择{type}（最大 {size} MB）','params':{type:options.name,size:options.size},'type':'file',
+            'accept':options.accept||'','required':true},
+        url:{'name':'url','label':options.name+'地址','type':'text','placeholder':'https://example.com/file','required':true},
+        iframe:{'name':'iframe','label':'iframe 嵌入代码','type':'textarea','placeholder':'粘贴视频网站提供的 iframe 代码','required':true}
+    };
     dialog = editor.openDialog({
         'title':'插入'+options.name,
         'keepOpen':true,
-        'fields':[
-            {'name':'file','label':'选择{type}（最大 {size} MB）','params':{type:options.name,size:options.size},'type':'file',
-                'accept':options.accept||'','required':true},
-            {'name':'url','label':options.name+'地址','type':'text','placeholder':'https://example.com/file','required':true},
-            ...(options.iframe?[{'name':'iframe','label':'iframe 嵌入代码','type':'textarea','placeholder':'粘贴视频网站提供的 iframe 代码','required':true}]:[]),
-            options.field
-        ],
+        'fields':[...modes.map(name=>fields[name]),options.field],
         'submitLabel':'插入'+options.name,
         mount(node){
             dialog = node;
