@@ -23,12 +23,7 @@ export default {
             return feature&&editor.config.methods(name)?.length!==0?{value:name,label:feature.label.replace(/^插入/,''),icon:feature.icon,feature}:null;
         }).filter(Boolean);
     },
-    bind(editor){
-        insertFeatures.forEach(feature=>feature.bind?.(editor));
-    },
     execute(editor,value,event){
-        if(editor.features.find(feature=>feature.name==='insert').options.some(option=>option.value===value)){
-            editor.execute(value,null,event);
-        }
+        editor.execute(value,null,event);
     }
 };

@@ -63,6 +63,7 @@ export default class EditorConfig {
     }
     methods(name){
         if(!mediaAttributes.includes(name)){return null;}
-        return this.list(name).filter(method=>attributes[name].default.includes(method));
+        let allowed = listValues(attributes[name].default);
+        return this.list(name).filter(method=>allowed.includes(method));
     }
 }
