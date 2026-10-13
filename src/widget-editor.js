@@ -1,5 +1,3 @@
-import features from './module/feature/index.js';
-import {insertFeatures} from './module/feature/insert.js';
 import EditorSelection from './module/method/selection.js';
 import sanitizeHTML,{escapeHTML} from './module/method/sanitize.js';
 import formatHTML from './module/method/formatHTML.js';
@@ -9,12 +7,13 @@ import normalizeTableCells from './module/method/normalizeTableCells.js';
 import EditorConfig,{observedAttributes,toolbarAttributes,mediaAttributes} from './module/config.js';
 import EditorHistory from './module/history.js';
 import EditorBlocks from './module/blocks.js';
+import EditorToolbar from './module/toolbar.js';
 import openDialog from './module/dialog.js';
 import EditorDropdown from './module/dropdown.js';
 import EditorTooltip from './module/tooltip.js';
 import EditorFullscreen from './module/fullscreen.js';
 import EditorLanguage from './module/language/index.js';
-import {renderIcon,undo as undoIcon,redo as redoIcon,fullscreen as fullscreenIcon,source as sourceIcon} from './module/icon.js';
+import {renderIcon,fullscreen as fullscreenIcon,source as sourceIcon} from './module/icon.js';
 import styleSheet from './style/default.css' with { type: 'css'};
 
 class WidgetEditor extends HTMLElement {
@@ -22,6 +21,7 @@ class WidgetEditor extends HTMLElement {
         super();
         this.attachShadow({mode:'open'});
         this.config = new EditorConfig(this);
+        this.tools = new EditorToolbar(this);
         this.locale = new EditorLanguage(this);
         this.source = false;
         this.painter = null;
@@ -75,10 +75,9 @@ class WidgetEditor extends HTMLElement {
         this._dialog?.dismiss();
     }
     attributeChangedCallback(name,oldValue,newValue){
-        if(!this.content){
+        if(!this.content||name&&oldValue===newValue){
             return;
         }
-        if(mediaAttributes.includes(name)&&oldValue===newValue){return;}
         if(name==='language'){
             this.updateLocale();
             this.links?.refresh();
@@ -92,8 +91,8 @@ class WidgetEditor extends HTMLElement {
             if(mediaAttributes.includes(name)&&this._dialog?.dataset.insert===name){
                 this._dialog.dismiss();
             }
-            this.toolbar.innerHTML = this.toolbarHTML();
-            this.toolbarFeatures.forEach(feature=>feature.bindToolbar?.(this));
+            this.toolbar.innerHTML = this.tools.render();
+            this.tools.items.forEach(feature=>feature.bindToolbar?.(this));
             this.locale.apply(this.toolbar);
             if(this._dialog?.dataset.insert&&!this.canInsert(this._dialog.dataset.insert)){
                 this._dialog.dismiss();
@@ -126,8 +125,11 @@ class WidgetEditor extends HTMLElement {
         this.update(false,false);
     }
     get text(){
+        return this.getText();
+    }
+    getText(value=this.value){
         let template = document.createElement('template');
-        template.innerHTML = this.value;
+        template.innerHTML = value;
         return (template.content.textContent||'').replace(/\u200b/g,'');
     }
     getHTML(){
@@ -163,29 +165,8 @@ class WidgetEditor extends HTMLElement {
             this.shadowRoot.appendChild($style);
         }
     }
-    toolbarHTML(){
-        let controls = [{name:'undo',label:'撤销',icon:undoIcon,execute:editor=>editor.history.move(-1)},
-            {name:'redo',label:'重做',icon:redoIcon,execute:editor=>editor.history.move(1)},
-            ...features,
-            {name:'fullscreen',label:'全屏',icon:fullscreenIcon,type:'button',
-                execute:editor=>editor.fullscreen.state?editor.fullscreen.close():editor.fullscreen.open(),
-                active:editor=>!!editor.fullscreen?.state}];
-        this.features = controls.map(feature=>typeof feature.options==='function'?{...feature,options:feature.options(this)}:feature);
-        let available = new Map([...this.features,...insertFeatures].map(feature=>[feature.name.toLowerCase(),feature]));
-        this.toolbarFeatures = [...this.features.slice(0,2),...this.config.list('custom').map(name=>available.get(name)).filter(feature=>feature&&!['undo','redo'].includes(feature.name))];
-        return this.toolbarFeatures.map(function(feature){
-            let attributes = `data-action="${feature.name}" aria-label="${feature.label}"`;
-            if(feature.type==='dropdown'){
-                return feature.options.length?EditorDropdown.render(feature):'';
-            }
-            if(feature.type==='color'){
-                return feature.render();
-            }
-            return `<button type="button" class="tool tool-button" ${attributes}>${renderIcon(feature.icon)}</button>`;
-        }).join('');
-    }
     render(){
-        let toolbar = this.toolbarHTML();
+        let toolbar = this.tools.render();
         this.shadowRoot.innerHTML = `<div class="mod-panel">
             <div class="hd">
                 <div class="toolbar" role="toolbar" aria-label="文本格式工具栏">${toolbar}</div>
@@ -212,10 +193,8 @@ class WidgetEditor extends HTMLElement {
         this.wordCount = this.footer.querySelector('.word-count');
     }
     bindEvents(){
-        this.features.forEach(feature=>{
-            feature.bind?.(this);
-            feature.bindToolbar?.(this);
-        });
+        this.tools.features.forEach(feature=>feature.bind?.(this));
+        this.tools.items.forEach(feature=>feature.bindToolbar?.(this));
         this.toolbar.addEventListener('pointerdown',event=>{
             let control = event.target.closest('[data-action]');
             this.saveSelection();
@@ -226,8 +205,8 @@ class WidgetEditor extends HTMLElement {
         this.toolbar.addEventListener('click',event=>{
             let control = event.target.closest('button[data-action]');
             if(control&&!control.disabled){
-                let feature = this.features.find(feature=>feature.name===control.dataset.action)||this.toolbarFeatures.find(feature=>feature.name===control.dataset.action);
-                if(feature.type==='dropdown'||feature.type==='color'){
+                let feature = this.tools.get(control.dataset.action);
+                if(feature?.type==='dropdown'||feature?.type==='color'){
                     this.dropdown.toggle(control);
                 }else{
                     this.dropdown.close();
@@ -294,27 +273,22 @@ class WidgetEditor extends HTMLElement {
         });
     }
     execute(name,value,event){
-        let insertion = insertFeatures.find(feature=>feature.name===name);
-        let feature = this.features.find(feature=>feature.name===name)||insertion;
-        if(!feature||this.source&&!['source','fullscreen'].includes(name)||insertion&&!this.canInsert(name)){
+        let feature = this.tools.get(name);
+        if(this.tools.disabled(feature)){
             return;
         }
-        if(feature.type==='dropdown'&&!feature.actionMenu&&!feature.options.some(option=>String(option.value)===String(value))){
-            return;
-        }
-        if(this.codes.selected()&&!['undo','redo','source','fullscreen','format'].includes(name)){
+        if(feature.type==='dropdown'&&!feature.options.some(option=>String(option.value)===String(value))){
             return;
         }
         this.saveSelection();
         feature.execute(this,value,event);
-        if(insertion&&this._dialog){
-            this._dialog.dataset.insert = name;
+        if(feature.insertion&&this._dialog){
+            this._dialog.dataset.insert = feature.name;
         }
         this.updateToolbar();
     }
     canInsert(name){
-        return this.config.methods(name)?.length!==0&&
-            (this.toolbarFeatures.some(feature=>feature.name===name)||this.features.find(feature=>feature.name==='insert').options.some(option=>option.value===name));
+        return this.tools.canInsert(name);
     }
     saveSelection(){
         return this.selection.save();
@@ -460,7 +434,7 @@ class WidgetEditor extends HTMLElement {
         });
         // 自动排版输出及源码，保留编辑节点和当前选区。
         let value = this.value;
-        let text = this.text;
+        let text = this.getText(value);
         if(!this.source){
             this.sourceArea.value = value;
         }
@@ -481,23 +455,7 @@ class WidgetEditor extends HTMLElement {
         this.table?.refresh();
         this.links?.refresh();
         this.codes?.refresh();
-        let inCode = !!this.codes?.selected();
-        let features = new Map([...this.features,...this.toolbarFeatures].map(feature=>[feature.name,feature]));
-        features.forEach(feature=>{
-            let controls = this.panel.querySelectorAll('[data-action="'+feature.name+'"]');
-            controls.forEach(control=>{
-                control.disabled = this.source&&!['source','fullscreen'].includes(feature.name)||inCode&&!['undo','redo','source','fullscreen','format'].includes(feature.name)||feature.name==='undo'&&!this.history.canUndo||feature.name==='redo'&&!this.history.canRedo||mediaAttributes.includes(feature.name)&&!this.canInsert(feature.name);
-                if(feature.type==='dropdown'){
-                    this.dropdown.update(feature,feature.value?.(this));
-                }else if(feature.type==='color'){
-                    feature.update(this,feature.value(this));
-                }else if(feature.active){
-                    let active = feature.active(this);
-                    control.classList.toggle('active',active);
-                    control.setAttribute('aria-pressed',String(active));
-                }
-            });
-        });
+        this.tools.update();
         this.updateLocale();
         this.fullscreen?.update(!!this.fullscreen.state);
         this.tooltip?.refresh();
