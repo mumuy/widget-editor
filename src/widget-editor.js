@@ -127,12 +127,19 @@ class WidgetEditor extends HTMLElement {
         return this.value;
     }
     contentHTML(){
-        if(!this.content.querySelector('[data-table-selected],[data-code-placeholder]')){
+        if(!this.content.querySelector('[data-table-selected],[data-code-placeholder],[data-code-boundary]')){
             return this.content.innerHTML;
         }
         let content = this.content.cloneNode(true);
         content.querySelectorAll('[data-table-selected]').forEach(cell=>cell.removeAttribute('data-table-selected'));
         content.querySelectorAll('pre code br[data-code-placeholder]').forEach(node=>node.remove());
+        content.querySelectorAll('[data-code-boundary]').forEach(node=>{
+            if(this.codes.empty(node)&&node.previousElementSibling?.tagName==='PRE'&&!node.nextElementSibling){
+                node.remove();
+            }else{
+                node.removeAttribute('data-code-boundary');
+            }
+        });
         return content.innerHTML;
     }
     setHTML(value){
