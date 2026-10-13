@@ -540,9 +540,6 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.code-language-menu{
-    width: 192px;
-}
 .code-language-menu .tool-option{
     justify-content: flex-start;
     min-height: 30px;

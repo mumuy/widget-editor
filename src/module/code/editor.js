@@ -322,12 +322,14 @@ export default class EditorCode {
     positionMenu(){
         if(this.menu.showPopover&&!this.menu.matches(':popover-open')){this.menu.showPopover();}
         let rect = this.trigger.getBoundingClientRect();
-        let below = window.innerHeight-rect.bottom-8;
+        let width = document.documentElement.clientWidth;
+        let below = document.documentElement.clientHeight-rect.bottom-8;
         let above = rect.top-8;
         let upwards = below<Math.min(this.menu.scrollHeight,240)&&above>below;
+        this.menu.style.width = rect.width+'px';
         this.menu.style.maxHeight = Math.max(40,Math.min(280,upwards?above:below))+'px';
         let size = this.menu.getBoundingClientRect();
-        this.menu.style.left = Math.max(8,Math.min(rect.right-size.width,window.innerWidth-size.width-8))+'px';
+        this.menu.style.left = Math.max(8,Math.min(rect.left,width-size.width-8))+'px';
         this.menu.style.top = (upwards?rect.top-size.height-4:rect.bottom+4)+'px';
     }
 }
