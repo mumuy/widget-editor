@@ -26,6 +26,7 @@ export default function openUpload(editor,options){
         dialog.querySelectorAll('[data-insert-panel]').forEach(panel=>{
             let active = panel.dataset.insertPanel===mode;
             panel.hidden = !active;
+            panel.inert = !active;
             panel.querySelectorAll('input,textarea').forEach(input=>input.disabled=!active||busy);
         });
         if(options.iframe){
@@ -107,12 +108,16 @@ export default function openUpload(editor,options){
         'submitLabel':'插入'+options.name,
         mount(node){
             dialog = node;
+            dialog.classList.add('upload-dialog');
             let tabs = document.createElement('div');
             tabs.className = 'insert-tabs';
             tabs.setAttribute('role','tablist');
             tabs.setAttribute('aria-label','插入方式');
             tabs.innerHTML = modes.map(name=>`<button type="button" role="tab" id="insert-${name}-tab" aria-controls="insert-${name}-panel" data-insert-tab="${name}">${name==='file'?'上传文件':name==='url'?'URL':'嵌入 iframe'}</button>`).join('');
             dialog.querySelector('.dialog-body').prepend(tabs);
+            let panels = document.createElement('div');
+            panels.className = 'insert-panels';
+            dialog.querySelector('.dialog-fields').prepend(panels);
             modes.forEach(name=>{
                 let field = dialog.querySelector('[name="'+name+'"]').closest('.field');
                 let panel = document.createElement('div');
@@ -121,7 +126,7 @@ export default function openUpload(editor,options){
                 panel.dataset.insertPanel = name;
                 panel.setAttribute('role','tabpanel');
                 panel.setAttribute('aria-labelledby','insert-'+name+'-tab');
-                field.before(panel);
+                panels.appendChild(panel);
                 panel.appendChild(field);
             });
             tabs.addEventListener('click',event=>{
@@ -153,7 +158,10 @@ export default function openUpload(editor,options){
             progress.className = 'upload-progress';
             progress.hidden = true;
             progress.innerHTML = '<progress max="100" value="0" aria-label="上传进度"></progress><span role="status" aria-live="polite"></span>';
-            dialog.querySelector('.dialog-notice').before(progress);
+            let feedback = document.createElement('div');
+            feedback.className = 'upload-feedback';
+            feedback.append(progress,dialog.querySelector('.dialog-notice'));
+            dialog.querySelector('.dialog-body').appendChild(feedback);
             setMode(mode);
         },
         onClose(){

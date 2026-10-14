@@ -684,6 +684,31 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
 .insert-tabs button:disabled{
     opacity: .45;
 }
+.insert-panels{
+    display: grid;
+}
+.insert-panel{
+    grid-area: 1 / 1;
+    min-width: 0;
+}
+/* 隐藏的标签页仍参与高度计算，同时保留隐藏和禁用状态。 */
+.insert-panel[hidden]{
+    display: block !important;
+    visibility: hidden;
+}
+.upload-feedback{
+    display: grid;
+    align-items: center;
+    height: 40px;
+    margin-top: 8px;
+    overflow: auto;
+}
+.upload-feedback .upload-progress,.upload-feedback .dialog-notice{
+    margin: 0;
+}
+.upload-dialog .dialog-foot{
+    margin-top: 12px;
+}
 .upload-progress{
     display: flex;
     align-items: center;
@@ -837,9 +862,28 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     font-family: Menlo,Monaco,Consolas,'Courier New',monospace;
 }
 .dialog-fields .field input[type="file"]{
-    height: auto;
-    padding: 8px;
-    font-size: 12px;
+    padding: 0;
+    font-size: 13px;
+    line-height: 36px;
+    cursor: pointer;
+}
+.dialog-fields .field input[type="file"]::file-selector-button{
+    height: 36px;
+    margin: 0 10px 0 0;
+    padding: 0 14px;
+    background: var(--button-background-color);
+    color: var(--button-text-color);
+    border: 0;
+    border-right: 1px solid var(--panel-border-color);
+    font: inherit;
+    cursor: pointer;
+}
+.dialog-fields .field input[type="file"]:hover:not(:disabled)::file-selector-button{
+    background: var(--button-active-background);
+    color: var(--button-active-color);
+}
+.dialog-fields .field input[type="file"]:disabled::file-selector-button{
+    cursor: not-allowed;
 }
 .dialog-fields .field input[type="checkbox"]{
     width: 16px;
