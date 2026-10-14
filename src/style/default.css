@@ -1029,6 +1029,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
 }
 .dialog-foot .btn-primary:hover,.link-actions .btn-primary:hover{
     background: var(--button-active-color);
+    color: #fff;
     filter: brightness(.95);
 }
 
