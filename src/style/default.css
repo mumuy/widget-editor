@@ -663,6 +663,54 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
 .mod-panel.fullscreen.mobile-preview .bd{
     margin: auto;
 }
+.mobile-preview .editor-content,.mobile-preview .editor-placeholder{
+    font-size: 14px;
+    line-height: 1.75;
+}
+.mobile-preview .editor-content p{
+    margin: 0 0 10px;
+}
+.mobile-preview .editor-content h1,.mobile-preview .editor-content h2,.mobile-preview .editor-content h3,.mobile-preview .editor-content h4,.mobile-preview .editor-content h5,.mobile-preview .editor-content h6{
+    margin: 18px 0 10px;
+    line-height: 1.5;
+}
+.mobile-preview .editor-content h1{
+    font-size: 28px;
+}
+.mobile-preview .editor-content h2{
+    font-size: 24px;
+}
+.mobile-preview .editor-content h3{
+    font-size: 20px;
+}
+.mobile-preview .editor-content h4{
+    font-size: 18px;
+}
+.mobile-preview .editor-content h5{
+    font-size: 16px;
+}
+.mobile-preview .editor-content h6{
+    font-size: 14px;
+}
+.mobile-preview .editor-content ul,.mobile-preview .editor-content ol{
+    margin: 10px 0;
+    padding-left: 24px;
+}
+.mobile-preview .editor-content table,.mobile-preview .editor-content blockquote,.mobile-preview .editor-content hr,.mobile-preview .editor-content video,.mobile-preview .editor-content audio,.mobile-preview .editor-content iframe{
+    margin: 12px 0;
+}
+.mobile-preview .editor-content th,.mobile-preview .editor-content td{
+    padding: 6px 8px;
+}
+.mobile-preview .editor-content blockquote{
+    padding: 8px 12px;
+}
+.mobile-preview .editor-content blockquote p:last-child,.mobile-preview .editor-content > :last-child{
+    margin-bottom: 0;
+}
+.mobile-preview .editor-content > :first-child{
+    margin-top: 0;
+}
 .editor-dialog{
     width: min(420px,calc(100vw - 32px));
     max-height: calc(100vh - 32px);
