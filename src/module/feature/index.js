@@ -11,7 +11,7 @@ import strikethrough from './strikethrough.js';
 import superscript from './superscript.js';
 import subscript from './subscript.js';
 import source from './source.js';
-import preview from './preview.js';
+import mobile from './mobile.js';
 import alignment from './alignment.js';
 import fontSize from './fontSize.js';
 import color from './color.js';
@@ -21,4 +21,4 @@ import indentation from './indentation.js';
 import fontFamily from './fontFamily.js';
 import blockquote from './blockquote.js';
 
-export default [source,preview,heading,fontFamily,fontSize,alignment,indentation,bold,italic,underline,strikethrough,superscript,subscript,color,backgroundColor,blockquote,orderedList,unorderedList,link,format,formatPainter,insert];
+export default [source,mobile,heading,fontFamily,fontSize,alignment,indentation,bold,italic,underline,strikethrough,superscript,subscript,color,backgroundColor,blockquote,orderedList,unorderedList,link,format,formatPainter,insert];

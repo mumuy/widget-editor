@@ -68,11 +68,11 @@ class WidgetEditor extends HTMLElement {
         this.codes.connect();
         this.tooltip.connect();
         this.fullscreen.connect();
-        this.preview.connect();
+        this.mobile.connect();
         document.addEventListener('selectionchange',this._onSelection);
     }
     disconnectedCallback(){
-        this.preview?.disconnect();
+        this.mobile?.disconnect();
         this.fullscreen?.disconnect();
         this.dropdown?.disconnect();
         this.table?.disconnect();
@@ -479,7 +479,7 @@ class WidgetEditor extends HTMLElement {
     }
     toggleSource(){
         if(!this.source&&(this.formControl.disabled||!this.tools.canView('source'))){return;}
-        this.preview?.close();
+        this.mobile?.close();
         this._dialog?.dismiss();
         this.dropdown.close();
         this.cancelPainter();
@@ -550,7 +550,7 @@ class WidgetEditor extends HTMLElement {
         this.tools.update();
         this.updateLocale();
         this.fullscreen?.update(!!this.fullscreen.state);
-        this.preview?.update();
+        this.mobile?.update();
         this.tooltip?.refresh();
     }
     t(key,params){

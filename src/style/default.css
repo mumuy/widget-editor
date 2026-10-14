@@ -606,7 +606,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     margin-left: auto;
     white-space: nowrap;
 }
-.fullscreen-button,.source-button,.preview-button{
+.fullscreen-button,.source-button,.mobile-button{
     width: 24px;
     height: 24px;
 }
@@ -642,10 +642,10 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     resize: none;
     overscroll-behavior: contain;
 }
-.mod-panel.mobile-preview{
+.mod-panel.mobile{
     background: var(--toolbar-background-color);
 }
-.mod-panel.mobile-preview .bd{
+.mod-panel.mobile .bd{
     --editor-height: 667px;
     --editor-padding-x: 16px;
     --editor-padding-y: 18px;
@@ -655,60 +655,60 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     min-height: 667px;
     max-height: 667px;
     margin: 16px auto;
-    zoom: var(--preview-scale,1);
+    zoom: var(--mobile-scale,1);
     background: var(--panel-background-color);
     border-radius: 4px;
     box-shadow: 0 0 0 1px var(--panel-border-color);
 }
-.mod-panel.fullscreen.mobile-preview .bd{
+.mod-panel.fullscreen.mobile .bd{
     margin: auto;
 }
-.mobile-preview .editor-content,.mobile-preview .editor-placeholder{
+.mobile .editor-content,.mobile .editor-placeholder{
     font-size: 14px;
     line-height: 1.75;
 }
-.mobile-preview .editor-content p{
+.mobile .editor-content p{
     margin: 0 0 10px;
 }
-.mobile-preview .editor-content h1,.mobile-preview .editor-content h2,.mobile-preview .editor-content h3,.mobile-preview .editor-content h4,.mobile-preview .editor-content h5,.mobile-preview .editor-content h6{
+.mobile .editor-content h1,.mobile .editor-content h2,.mobile .editor-content h3,.mobile .editor-content h4,.mobile .editor-content h5,.mobile .editor-content h6{
     margin: 18px 0 10px;
     line-height: 1.5;
 }
-.mobile-preview .editor-content h1{
+.mobile .editor-content h1{
     font-size: 28px;
 }
-.mobile-preview .editor-content h2{
+.mobile .editor-content h2{
     font-size: 24px;
 }
-.mobile-preview .editor-content h3{
+.mobile .editor-content h3{
     font-size: 20px;
 }
-.mobile-preview .editor-content h4{
+.mobile .editor-content h4{
     font-size: 18px;
 }
-.mobile-preview .editor-content h5{
+.mobile .editor-content h5{
     font-size: 16px;
 }
-.mobile-preview .editor-content h6{
+.mobile .editor-content h6{
     font-size: 14px;
 }
-.mobile-preview .editor-content ul,.mobile-preview .editor-content ol{
+.mobile .editor-content ul,.mobile .editor-content ol{
     margin: 10px 0;
     padding-left: 24px;
 }
-.mobile-preview .editor-content table,.mobile-preview .editor-content blockquote,.mobile-preview .editor-content hr,.mobile-preview .editor-content video,.mobile-preview .editor-content audio,.mobile-preview .editor-content iframe{
+.mobile .editor-content table,.mobile .editor-content blockquote,.mobile .editor-content hr,.mobile .editor-content video,.mobile .editor-content audio,.mobile .editor-content iframe{
     margin: 12px 0;
 }
-.mobile-preview .editor-content th,.mobile-preview .editor-content td{
+.mobile .editor-content th,.mobile .editor-content td{
     padding: 6px 8px;
 }
-.mobile-preview .editor-content blockquote{
+.mobile .editor-content blockquote{
     padding: 8px 12px;
 }
-.mobile-preview .editor-content blockquote p:last-child,.mobile-preview .editor-content > :last-child{
+.mobile .editor-content blockquote p:last-child,.mobile .editor-content > :last-child{
     margin-bottom: 0;
 }
-.mobile-preview .editor-content > :first-child{
+.mobile .editor-content > :first-child{
     margin-top: 0;
 }
 .editor-dialog{

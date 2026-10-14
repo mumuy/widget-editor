@@ -62,7 +62,7 @@ export default class EditorFullscreen {
         }
         active = this;
         this.update(true);
-        editor.preview?.fit();
+        editor.mobile?.fit();
     }
     close(){
         if(!this.state){
@@ -100,7 +100,7 @@ export default class EditorFullscreen {
         this.state = null;
         active = null;
         this.update(false);
-        editor.preview?.fit();
+        editor.mobile?.fit();
     }
     update(enabled){
         [this.button,...this.editor.toolbar.querySelectorAll('[data-action="fullscreen"]')].forEach(button=>{

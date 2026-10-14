@@ -57,7 +57,7 @@ export default class EditorForm {
             editor.codes?.dismiss();
             editor.cancelPainter();
             editor.tooltip?.hide();
-            editor.preview?.close();
+            editor.mobile?.close();
             editor.fullscreen?.close();
             editor.shadowRoot.activeElement?.blur();
         }

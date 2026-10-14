@@ -17,7 +17,7 @@ export const attributes = {
     },
     fontsize: { default: [12, 14, 16, 18, 20, 24, 28, 32, 36, 48], toolbar: true },
     alignment: { default: ['left', 'center', 'right', 'justify'], toolbar: true },
-    view: { default: ['source', 'fullscreen', 'preview'], toolbar: true },
+    view: { default: ['source', 'fullscreen', 'mobile'], toolbar: true },
     custom: {
         default: [
             'heading', 'fontFamily', 'fontSize', 'alignment', 'indentation',

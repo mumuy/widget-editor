@@ -1,16 +1,16 @@
 // 保留编辑节点与操作，只切换手机视口尺寸。
-export default class EditorPreview {
+export default class EditorMobile {
     constructor(editor){
         this.editor = editor;
         this.active = false;
         this.scroll = 0;
-        this.button = editor.footer.querySelector('[data-action="preview"]');
+        this.button = editor.footer.querySelector('[data-action="mobile"]');
         this.observer = new ResizeObserver(()=>this.fit());
         this.button.addEventListener('pointerdown',event=>{
             editor.saveSelection();
             event.preventDefault();
         });
-        this.button.addEventListener('click',()=>editor.execute('preview'));
+        this.button.addEventListener('click',()=>editor.execute('mobile'));
         this.onKey = event=>{
             if(event.key==='Escape'&&!event.defaultPrevented&&this.active&&!editor._dialog?.open&&
                 !editor.dropdown.opened&&editor.table?.toolbar.hidden!==false&&editor.links.toolbar.hidden&&
@@ -35,7 +35,7 @@ export default class EditorPreview {
     }
     open(){
         let editor = this.editor;
-        if(this.active||editor.formControl.disabled||!editor.isConnected||!editor.tools.canView('preview')){return;}
+        if(this.active||editor.formControl.disabled||!editor.isConnected||!editor.tools.canView('mobile')){return;}
         if(editor.source){editor.toggleSource();}
         editor._dialog?.dismiss();
         editor.dropdown.close();
@@ -48,7 +48,7 @@ export default class EditorPreview {
         this.scroll = editor.body.scrollTop;
         this.value = editor.value;
         this.active = true;
-        editor.panel.classList.add('mobile-preview');
+        editor.panel.classList.add('mobile');
         this.fit();
         editor.selection.ensureVisible();
         editor.updateToolbar();
@@ -58,8 +58,8 @@ export default class EditorPreview {
         let editor = this.editor;
         editor.saveSelection();
         this.active = false;
-        editor.panel.classList.remove('mobile-preview');
-        editor.panel.style.removeProperty('--preview-scale');
+        editor.panel.classList.remove('mobile');
+        editor.panel.style.removeProperty('--mobile-scale');
         if(editor.isConnected&&!editor.formControl.disabled){editor.selection.restore();}
         if(editor.value===this.value){
             editor.body.scrollTop = this.scroll;
@@ -75,10 +75,10 @@ export default class EditorPreview {
         let height = editor.fullscreen?.state?
             editor.panel.clientHeight-editor.toolbar.parentElement.offsetHeight-editor.footer.offsetHeight-32:Infinity;
         let scale = Math.max(.1,Math.min(1,width/375,height/667));
-        editor.panel.style.setProperty('--preview-scale',String(scale));
+        editor.panel.style.setProperty('--mobile-scale',String(scale));
     }
     update(){
-        [this.button,...this.editor.toolbar.querySelectorAll('[data-action="preview"]')].forEach(button=>{
+        [this.button,...this.editor.toolbar.querySelectorAll('[data-action="mobile"]')].forEach(button=>{
             this.editor.locale.set(button,this.active?'退出手机预览':'手机预览',{},'aria-label');
         });
     }

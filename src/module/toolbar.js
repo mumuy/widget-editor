@@ -58,7 +58,7 @@ export default class EditorToolbar {
             button.hidden = !names.includes(button.dataset.action);
         });
         names.forEach(name=>editor.wordCount.before(editor.footer.querySelector('[data-action="'+name+'"]')));
-        if(!this.canView('preview')){editor.preview?.close();}
+        if(!this.canView('mobile')){editor.mobile?.close();}
         if(!this.canView('fullscreen')){editor.fullscreen?.close();}
         if(editor.source&&!this.canView('source')){editor.toggleSource();}
     }
@@ -75,8 +75,8 @@ export default class EditorToolbar {
         let name = feature.name;
         if(editor.formControl.disabled){return true;}
         if(feature.view&&!this.canView(name)){return true;}
-        if(editor.source&&!['source','fullscreen','preview'].includes(name)){return true;}
-        if(inCode&&!['undo','redo','source','fullscreen','preview','format'].includes(name)){return true;}
+        if(editor.source&&!['source','fullscreen','mobile'].includes(name)){return true;}
+        if(inCode&&!['undo','redo','source','fullscreen','mobile','format'].includes(name)){return true;}
         if(name==='undo'){return !editor.history.canUndo;}
         if(name==='redo'){return !editor.history.canRedo;}
         return feature.type==='dropdown'&&!feature.options.length||!!feature.insertion&&!this.canInsert(name);
