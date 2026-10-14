@@ -1,6 +1,10 @@
 // 属性默认值与界面配置集中在此处；组件实例上的属性优先。
 // custom 定义默认工具栏及顺序；媒体列表同时定义默认方式和允许范围。
 export const attributes = {
+    name: { default: '' },
+    form: { default: '' },
+    disabled: { default: false },
+    required: { default: false },
     placeholder: { default: '在这里开始写作…', translate: true },
     height: { default: 420, min: 160, max: 2000 },
     language: { default: 'zh-CN' },
@@ -45,6 +49,9 @@ export default class EditorConfig {
         let attribute = Object.hasOwn(attributes, name) ? attributes[name] : null;
         if (!attribute) { return null; }
         let value = this.editor.getAttribute(name);
+        if (typeof attribute.default === 'boolean') {
+            return this.editor.hasAttribute(name) || attribute.default;
+        }
         if (typeof attribute.default === 'number') {
             let number = Number(value ?? attribute.default);
             return number >= attribute.min && number <= attribute.max ? number : attribute.default;

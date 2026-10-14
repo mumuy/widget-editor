@@ -1,4 +1,5 @@
 export default {
+    '请填写内容':'Please enter content',
     '源代码':'Source code',
     '撤销':'Undo',
     '重做':'Redo',

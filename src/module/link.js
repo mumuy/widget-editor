@@ -153,6 +153,7 @@ export default class EditorLink {
         this.toolbar.hidden = true;
     }
     refresh(){
+        if(this.editor.formControl.disabled){this.dismiss();return;}
         let editor = this.editor;
         let selected = this.selected();
         let current = editor.selection.current();

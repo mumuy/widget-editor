@@ -155,6 +155,30 @@ console.log(editor.value);</code></pre>
                                     <thead><tr><th scope="col">属性</th><th scope="col">含义</th><th scope="col">默认值</th><th scope="col">用法示例</th></tr></thead>
                                     <tbody>
                                         <tr>
+                                            <th scope="row"><code>name</code></th>
+                                            <td>原生表单提交时的字段名，提交内容为编辑器的 HTML。未设置或为空时不提交。</td>
+                                            <td>空字符串</td>
+                                            <td><code>name="content"</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><code>form</code></th>
+                                            <td>关联表单的 <code>id</code>，可让表单外的编辑器参与提交。</td>
+                                            <td>最近的父级表单</td>
+                                            <td><code>form="article-form"</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><code>disabled</code></th>
+                                            <td>布尔属性，禁用编辑和工具栏操作，不参与表单提交及校验。父级 <code>fieldset</code> 的禁用也会生效。</td>
+                                            <td>不设置（可编辑）</td>
+                                            <td><code>&lt;widget-editor disabled&gt;&lt;/widget-editor&gt;</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><code>required</code></th>
+                                            <td>布尔属性，要求填写内容；空白文字和空段落无效，图片等非文本内容有效。</td>
+                                            <td>不设置（非必填）</td>
+                                            <td><code>&lt;widget-editor name="content" required&gt;&lt;/widget-editor&gt;</code></td>
+                                        </tr>
+                                        <tr>
                                             <th scope="row"><code>placeholder</code></th>
                                             <td>空白编辑器中的提示文字。未自定义时，提示会随界面语言变化。</td>
                                             <td>在这里开始写作…</td>
@@ -236,6 +260,7 @@ console.log(editor.value);</code></pre>
                                 </table>
                             </div>
                             <p><code>custom</code> 控制工具栏是否显示某个功能；<code>heading</code>、<code>fontfamily</code>、<code>fontsize</code>、<code>alignment</code> 控制其下拉菜单的选项。移除属性可恢复默认值，运行时可通过 <code>editor.setAttribute('fontsize','16,24,36')</code> 调整配置。</p>
+                            <p>编辑器支持原生表单提交、重置和校验，使用 <code>new FormData(form).get('content')</code> 可读取 <code>name="content"</code> 的 HTML 内容。布尔属性存在即生效，取消时应移除属性，不能使用 <code>disabled="false"</code>。</p>
                             <p>选择上传文件时，组件通过 <code>upload</code> 事件交给外部处理上传。完整的字体字段、工具栏字段和上传接入示例请查看 <a href="https://github.com/mumuy/widget-editor#readme" target="_blank" rel="noopener noreferrer">使用文档</a>。</p>
                         </div>
                     </section>

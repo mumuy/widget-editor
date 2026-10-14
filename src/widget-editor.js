@@ -6,6 +6,7 @@ import normalizeParagraphs from './module/method/normalizeParagraphs.js';
 import normalizeTableCells from './module/method/normalizeTableCells.js';
 import EditorConfig,{observedAttributes,toolbarAttributes,mediaAttributes} from './module/config.js';
 import EditorHistory from './module/history.js';
+import EditorForm from './module/form.js';
 import EditorBlocks from './module/blocks.js';
 import EditorToolbar from './module/toolbar.js';
 import openDialog from './module/dialog.js';
@@ -20,6 +21,7 @@ class WidgetEditor extends HTMLElement {
     constructor(){
         super();
         this.attachShadow({mode:'open'});
+        this.formControl = new EditorForm(this);
         this.config = new EditorConfig(this);
         this.tools = new EditorToolbar(this);
         this.locale = new EditorLanguage(this);
@@ -40,6 +42,9 @@ class WidgetEditor extends HTMLElement {
     static get observedAttributes(){
         return observedAttributes;
     }
+    static get formAssociated(){
+        return true;
+    }
     connectedCallback(){
         if(!this._initialized){
             this.render();
@@ -49,10 +54,12 @@ class WidgetEditor extends HTMLElement {
             this.blocks = new EditorBlocks(this);
             this.history = new EditorHistory(this);
             this.dropdown = new EditorDropdown(this);
+            this.formControl.initialize(this._pendingValue===null?this.innerHTML:this._pendingValue);
             this.value = this._pendingValue===null?this.innerHTML:this._pendingValue;
             this.bindEvents();
             this.tooltip = new EditorTooltip(this);
             this.fullscreen = new EditorFullscreen(this);
+            this.formControl.setDisabled(this.formControl.disabled||this.disabled);
             this.attributeChangedCallback();
             this.dispatchEvent(new CustomEvent('ready',{bubbles:true,composed:true}));
         }
@@ -74,16 +81,34 @@ class WidgetEditor extends HTMLElement {
         document.removeEventListener('selectionchange',this._onSelection);
         this._dialog?.dismiss();
     }
+    formDisabledCallback(disabled){
+        this.formControl.setDisabled(disabled);
+    }
+    formResetCallback(){
+        this.value = this.formControl.initialValue;
+    }
+    formStateRestoreCallback(state){
+        if(this.formControl.initialValue===null){
+            this.formControl.initialize(this.value);
+        }
+        this.value = state;
+    }
     attributeChangedCallback(name,oldValue,newValue){
         if(!this.content||name&&oldValue===newValue){
             return;
         }
         if(name==='language'){
             this.updateLocale();
+            this.formControl.update();
             this.links?.refresh();
             this.tooltip?.refresh();
             return;
         }
+        if(['name','form','required'].includes(name)){
+            this.formControl.update();
+            return;
+        }
+        if(name==='disabled'){return;}
         if(toolbarAttributes.includes(name)&&this.dropdown){
             this.saveSelection();
             this.dropdown.close();
@@ -126,6 +151,54 @@ class WidgetEditor extends HTMLElement {
     }
     get text(){
         return this.getText();
+    }
+    get name(){
+        return this.getAttribute('name')||'';
+    }
+    set name(value){
+        this.setAttribute('name',value);
+    }
+    get disabled(){
+        return this.hasAttribute('disabled');
+    }
+    set disabled(value){
+        this.toggleAttribute('disabled',!!value);
+    }
+    get required(){
+        return this.hasAttribute('required');
+    }
+    set required(value){
+        this.toggleAttribute('required',!!value);
+    }
+    get form(){
+        return this.formControl.internals.form;
+    }
+    get labels(){
+        return this.formControl.internals.labels;
+    }
+    get validity(){
+        return this.formControl.internals.validity;
+    }
+    get validationMessage(){
+        return this.formControl.internals.validationMessage;
+    }
+    get willValidate(){
+        return this.formControl.internals.willValidate;
+    }
+    checkValidity(){
+        return this.formControl.internals.checkValidity();
+    }
+    reportValidity(){
+        return this.formControl.internals.reportValidity();
+    }
+    setCustomValidity(message){
+        this.formControl.message = String(message);
+        this.formControl.update();
+    }
+    focus(options){
+        if(!this.formControl.disabled){
+            (this.source?this.sourceArea:this.content)?.focus(options);
+        }
     }
     getText(value=this.value){
         let template = document.createElement('template');
@@ -215,6 +288,7 @@ class WidgetEditor extends HTMLElement {
             }
         });
         this.content.addEventListener('beforeinput',event=>{
+            if(this.formControl.disabled){event.preventDefault();return;}
             if(!event.isComposing){this.history.record();}
             if(this.codes?.beforeInput(event)||this.blocks.beforeInput(event)){
                 if(event.defaultPrevented&&event.inputType?.startsWith('delete')){this.selection.ensureVisible();}
@@ -224,6 +298,7 @@ class WidgetEditor extends HTMLElement {
             document.execCommand('defaultParagraphSeparator',false,'p');
         });
         this.content.addEventListener('keydown',event=>{
+            if(this.formControl.disabled){return;}
             this.blocks.keyDown(event);
             if(event.defaultPrevented&&['Backspace','Delete'].includes(event.key)){this.selection.ensureVisible();}
         },true);
@@ -252,6 +327,7 @@ class WidgetEditor extends HTMLElement {
         }));
         this.content.addEventListener('paste',event=>{
             event.preventDefault();
+            if(this.formControl.disabled){return;}
             this.saveSelection();
             let html = event.clipboardData.getData('text/html');
             let text = event.clipboardData.getData('text/plain');
@@ -263,7 +339,7 @@ class WidgetEditor extends HTMLElement {
             if(event.key==='Escape'&&this.painter){
                 this.cancelPainter();
             }
-            if(event.target!==this.content||!(event.ctrlKey||event.metaKey)||event.altKey){
+            if(this.formControl.disabled||event.target!==this.content||!(event.ctrlKey||event.metaKey)||event.altKey){
                 return;
             }
             let key = event.key.toLowerCase();
@@ -277,6 +353,7 @@ class WidgetEditor extends HTMLElement {
         });
         this.sourceArea.addEventListener('input',()=>{
             this.updateCount();
+            this.formControl.update();
         });
     }
     execute(name,value,event){
@@ -336,7 +413,7 @@ class WidgetEditor extends HTMLElement {
         return Array.from(this.content.querySelectorAll('p,div,h1,h2,h3,h4,h5,h6,li,td,th')).filter(node=>range?.intersectsNode(node));
     }
     command(name,value=null,css=true){
-        if(this.source){
+        if(this.source||this.formControl.disabled){
             return;
         }
         this.restoreSelection();
@@ -353,6 +430,7 @@ class WidgetEditor extends HTMLElement {
         }
     }
     transaction(callback){
+        if(this.formControl.disabled){return;}
         this.restoreSelection();
         // 原生命令可能触发 input，事务结束时统一保存和更新。
         this._transaction = true;
@@ -365,6 +443,7 @@ class WidgetEditor extends HTMLElement {
         this.update();
     }
     insertHTML(html){
+        if(this.formControl.disabled){return;}
         let safe = sanitizeHTML(html);
         if(!safe){
             return;
@@ -396,6 +475,7 @@ class WidgetEditor extends HTMLElement {
         }
     }
     toggleSource(){
+        if(this.formControl.disabled){return;}
         this._dialog?.dismiss();
         this.dropdown.close();
         this.cancelPainter();
@@ -418,6 +498,7 @@ class WidgetEditor extends HTMLElement {
             this.sourceArea.focus({preventScroll:true});
         }
         this.updatePlaceholder();
+        this.formControl.update();
         this.updateToolbar();
     }
     updatePlaceholder(){
@@ -447,6 +528,7 @@ class WidgetEditor extends HTMLElement {
         }
         this.updatePlaceholder();
         this.updateCount(text);
+        this.formControl.update(value);
         if(record){
             this.history.record();
         }
@@ -487,6 +569,7 @@ class WidgetEditor extends HTMLElement {
         this.locale.set(this.wordCount,'{count} 字',{count:text.replace(/\s/g,'').length});
     }
     openDialog(options){
+        if(this.formControl.disabled){return;}
         return openDialog(this,options);
     }
 }

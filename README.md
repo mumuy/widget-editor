@@ -32,6 +32,10 @@
 
 | 属性 | 说明 | 默认值 |
 | --- | --- | --- |
+| `name` | 原生表单提交时的字段名，不设置时不提交 | 空字符串 |
+| `form` | 关联表单的 `id`，可用于表单外的编辑器 | 最近的父级表单 |
+| `disabled` | 布尔属性，禁用编辑和操作，不参与提交及校验 | 不设置 |
+| `required` | 布尔属性，要求填写文字或插入图片等内容 | 不设置 |
 | `placeholder` | 空白编辑器中的提示文字 | `在这里开始写作…` |
 | `height` | 编辑区域高度，单位为 px，有效范围为 160～2000 | `420` |
 | `insert` | 插入菜单中的功能，以英文逗号分隔 | `divider,table,image,video,attachment,audio,emoji,code` |
@@ -224,6 +228,49 @@ customElements.whenDefined('widget-editor').then(function(){
 | `setHTML(html)` | 设置 HTML，与设置 `value` 相同 |
 
 通过 `value` 或 `setHTML()` 设置内容不会触发 `change` 事件。
+
+### 原生表单
+
+组件通过 `formAssociated` 和 `attachInternals()` 关联原生表单，无需隐藏输入框。设置 `name` 后，提交值为与 `editor.value` 相同的 HTML；可通过 `FormData` 读取，也可直接提交表单。
+
+```html
+<form id="article-form">
+    <widget-editor name="content" required>
+        <p>初始内容</p>
+    </widget-editor>
+    <button type="submit">保存</button>
+    <button type="reset">重置</button>
+</form>
+```
+
+```javascript
+let form = document.querySelector('#article-form');
+form.addEventListener('submit',function(event){
+    event.preventDefault();
+    let content = new FormData(form).get('content');
+    console.log(content);
+});
+```
+
+`required` 会检查实际内容：空白文字、空段落和占位换行不算填写，图片、视频、音频、表格和分割线可以单独作为内容。表单的 `checkValidity()`、`reportValidity()` 和提交前校验均有效；编辑器也提供 `validity`、`validationMessage`、`willValidate`、`checkValidity()`、`reportValidity()`、`setCustomValidity(message)`，例如：
+
+```javascript
+let editor = form.querySelector('widget-editor');
+editor.setCustomValidity('请检查文章内容');
+editor.reportValidity();
+editor.setCustomValidity(''); // 清除自定义错误
+```
+
+`form.reset()` 或重置按钮会恢复组件首次初始化时的内容，并清空撤销记录，不触发 `change`。通过 `value` 设置内容也会立即同步表单值，但不会改变重置时的初始内容。浏览器恢复表单状态时会恢复 HTML 内容。
+
+可以通过 `editor.name`、`editor.required`、`editor.disabled` 读写对应属性，通过 `editor.form` 获取关联表单，`editor.labels` 获取关联标签。`disabled` 和 `required` 是布尔属性，存在即生效，`disabled="false"` 也会禁用；取消时移除属性或设置 `editor.disabled = false`。父级 `<fieldset disabled>` 同样会禁用编辑器。
+
+编辑器在表单外时，用 `form` 指定要关联的表单：
+
+```html
+<form id="article-form"></form>
+<widget-editor name="content" form="article-form"></widget-editor>
+```
 
 ### 事件
 

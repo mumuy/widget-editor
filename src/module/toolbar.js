@@ -50,6 +50,7 @@ export default class EditorToolbar {
         if(!feature){return true;}
         let editor = this.editor;
         let name = feature.name;
+        if(editor.formControl.disabled){return true;}
         if(editor.source&&!['source','fullscreen'].includes(name)){return true;}
         if(inCode&&!['undo','redo','source','fullscreen','format'].includes(name)){return true;}
         if(name==='undo'){return !editor.history.canUndo;}

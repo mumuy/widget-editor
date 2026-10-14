@@ -23,13 +23,13 @@ export default {
                         colors.map(color=>`<button type="button" class="color-swatch" part="color-swatch" data-color="${color}" style="background:${color}" title="${color}" aria-label="文字颜色 ${color}" aria-pressed="false"></button>`).join('')
                     }
                 </div>
-                <form class="color-form">
+                <div class="color-form">
                     <label for="color-value">自定义颜色</label>
                     <div class="color-fields">
                         <input id="color-value" name="color" type="text" aria-label="颜色色值" placeholder="#336699" pattern="#[0-9a-fA-F]{6}" maxlength="7" required>
                         <button type="submit">确定</button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>`;
     },
@@ -57,7 +57,13 @@ export default {
                 apply(swatch.dataset.color);
             }
         });
-        group.querySelector('form').addEventListener('submit',event=>{
+        // 用 DOM 创建表单，避免编辑器位于外层 form 时被 HTML 解析器忽略。
+        let container = group.querySelector('.color-form');
+        let form = document.createElement('form');
+        form.className = container.className;
+        form.append(...container.childNodes);
+        container.replaceWith(form);
+        form.addEventListener('submit',event=>{
             event.preventDefault();
             if(event.target.reportValidity()){
                 apply(group.querySelector('input').value);
