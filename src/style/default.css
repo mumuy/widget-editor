@@ -663,9 +663,6 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
 .mod-panel.fullscreen.mobile-preview .bd{
     margin: auto;
 }
-.mobile-preview .editor-content [data-block-boundary]{
-    display: none;
-}
 .editor-dialog{
     width: min(420px,calc(100vw - 32px));
     max-height: calc(100vh - 32px);

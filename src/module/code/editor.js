@@ -141,7 +141,7 @@ export default class EditorCode {
         return this.editor.selection.current()||(this.toolbar.contains(this.editor.shadowRoot.activeElement)?this.editor.selection.range:null);
     }
     selected(){
-        if(this.editor.readOnly){return null;}
+        if(this.editor.formControl.disabled){return null;}
         let range = this.range();
         let find = node=>{
             let element = node?.nodeType===Node.TEXT_NODE?node.parentElement:node;

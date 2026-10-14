@@ -1,4 +1,4 @@
-// 保留编辑节点与内容，只切换手机视口和只读状态。
+// 保留编辑节点与操作，只切换手机视口尺寸。
 export default class EditorPreview {
     constructor(editor){
         this.editor = editor;
@@ -12,7 +12,9 @@ export default class EditorPreview {
         });
         this.button.addEventListener('click',()=>editor.execute('preview'));
         this.onKey = event=>{
-            if(event.key==='Escape'&&!event.defaultPrevented&&this.active){
+            if(event.key==='Escape'&&!event.defaultPrevented&&this.active&&!editor._dialog?.open&&
+                !editor.dropdown.opened&&editor.table?.toolbar.hidden!==false&&editor.links.toolbar.hidden&&
+                editor.codes.toolbar.hidden&&!editor.painter){
                 event.preventDefault();
                 event.stopPropagation();
                 this.close();
@@ -44,28 +46,26 @@ export default class EditorPreview {
         editor.codes.dismiss();
         editor.tooltip.hide();
         this.scroll = editor.body.scrollTop;
-        this.range = editor.selection.range?.cloneRange();
+        this.value = editor.value;
         this.active = true;
         editor.panel.classList.add('mobile-preview');
-        editor.formControl.updateEditing();
-        if(editor.selection.current()){
-            (editor.shadowRoot.getSelection?.()||window.getSelection()).removeAllRanges();
-        }
         this.fit();
-        editor.body.scrollTop = 0;
+        editor.selection.ensureVisible();
         editor.updateToolbar();
     }
     close(){
         if(!this.active){return;}
         let editor = this.editor;
+        editor.saveSelection();
         this.active = false;
         editor.panel.classList.remove('mobile-preview');
         editor.panel.style.removeProperty('--preview-scale');
-        editor.formControl.updateEditing();
-        editor.selection.range = this.range||null;
-        this.range = null;
         if(editor.isConnected&&!editor.formControl.disabled){editor.selection.restore();}
-        editor.body.scrollTop = this.scroll;
+        if(editor.value===this.value){
+            editor.body.scrollTop = this.scroll;
+        }
+        editor.selection.ensureVisible();
+        this.value = null;
         editor.updateToolbar();
     }
     fit(){

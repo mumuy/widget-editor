@@ -43,7 +43,9 @@ export default class EditorForm {
         this.disabled = disabled;
         let editor = this.editor;
         if(!editor.content){return;}
-        this.updateEditing();
+        editor.content.contentEditable = String(!disabled);
+        editor.content.tabIndex = disabled?-1:0;
+        editor.content.setAttribute('aria-disabled',String(disabled));
         editor.sourceArea.disabled = disabled;
         editor.panel.querySelector('.hd').inert = disabled;
         editor.footer.inert = disabled;
@@ -61,12 +63,5 @@ export default class EditorForm {
         }
         editor.updateToolbar();
         this.update();
-    }
-    updateEditing(){
-        let editor = this.editor;
-        editor.content.contentEditable = String(!editor.readOnly);
-        editor.content.tabIndex = this.disabled?-1:0;
-        editor.content.setAttribute('aria-disabled',String(this.disabled));
-        editor.content.setAttribute('aria-readonly',String(!!editor.preview?.active));
     }
 }

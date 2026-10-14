@@ -154,9 +154,6 @@ class WidgetEditor extends HTMLElement {
     get text(){
         return this.getText();
     }
-    get readOnly(){
-        return this.formControl.disabled||!!this.preview?.active;
-    }
     get name(){
         return this.getAttribute('name')||'';
     }
@@ -294,7 +291,7 @@ class WidgetEditor extends HTMLElement {
             }
         });
         this.content.addEventListener('beforeinput',event=>{
-            if(this.readOnly){event.preventDefault();return;}
+            if(this.formControl.disabled){event.preventDefault();return;}
             if(!event.isComposing){this.history.record();}
             if(this.codes?.beforeInput(event)||this.blocks.beforeInput(event)){
                 if(event.defaultPrevented&&event.inputType?.startsWith('delete')){this.selection.ensureVisible();}
@@ -304,7 +301,7 @@ class WidgetEditor extends HTMLElement {
             document.execCommand('defaultParagraphSeparator',false,'p');
         });
         this.content.addEventListener('keydown',event=>{
-            if(this.readOnly){return;}
+            if(this.formControl.disabled){return;}
             this.blocks.keyDown(event);
             if(event.defaultPrevented&&['Backspace','Delete'].includes(event.key)){this.selection.ensureVisible();}
         },true);
@@ -333,7 +330,7 @@ class WidgetEditor extends HTMLElement {
         }));
         this.content.addEventListener('paste',event=>{
             event.preventDefault();
-            if(this.readOnly){return;}
+            if(this.formControl.disabled){return;}
             this.saveSelection();
             let html = event.clipboardData.getData('text/html');
             let text = event.clipboardData.getData('text/plain');
@@ -345,7 +342,7 @@ class WidgetEditor extends HTMLElement {
             if(event.key==='Escape'&&this.painter){
                 this.cancelPainter();
             }
-            if(this.readOnly||event.target!==this.content||!(event.ctrlKey||event.metaKey)||event.altKey){
+            if(this.formControl.disabled||event.target!==this.content||!(event.ctrlKey||event.metaKey)||event.altKey){
                 return;
             }
             let key = event.key.toLowerCase();
@@ -419,7 +416,7 @@ class WidgetEditor extends HTMLElement {
         return Array.from(this.content.querySelectorAll('p,div,h1,h2,h3,h4,h5,h6,li,td,th')).filter(node=>range?.intersectsNode(node));
     }
     command(name,value=null,css=true){
-        if(this.source||this.readOnly){
+        if(this.source||this.formControl.disabled){
             return;
         }
         this.restoreSelection();
@@ -436,7 +433,7 @@ class WidgetEditor extends HTMLElement {
         }
     }
     transaction(callback){
-        if(this.readOnly){return;}
+        if(this.formControl.disabled){return;}
         this.restoreSelection();
         // 原生命令可能触发 input，事务结束时统一保存和更新。
         this._transaction = true;
@@ -449,7 +446,7 @@ class WidgetEditor extends HTMLElement {
         this.update();
     }
     insertHTML(html){
-        if(this.readOnly){return;}
+        if(this.formControl.disabled){return;}
         let safe = sanitizeHTML(html);
         if(!safe){
             return;
@@ -576,7 +573,7 @@ class WidgetEditor extends HTMLElement {
         this.locale.set(this.wordCount,'{count} 字',{count:text.replace(/\s/g,'').length});
     }
     openDialog(options){
-        if(this.readOnly){return;}
+        if(this.formControl.disabled){return;}
         return openDialog(this,options);
     }
 }

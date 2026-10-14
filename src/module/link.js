@@ -196,7 +196,7 @@ export default class EditorLink {
     apply(values,link=null,range=this.editor.getRange()){
         let editor = this.editor;
         let url = safeURL(String(values.url||'').trim());
-        if(!url||editor.source||editor.readOnly||link&&!this.link(link)){return false;}
+        if(!url||editor.source||editor.formControl.disabled||link&&!this.link(link)){return false;}
         let text = String(values.text||'').trim()||url;
         editor.history.record();
         if(link){
@@ -240,7 +240,7 @@ export default class EditorLink {
         this.toolbar.hidden = true;
     }
     refresh(){
-        if(this.editor.readOnly){this.dismiss();return;}
+        if(this.editor.formControl.disabled){this.dismiss();return;}
         let editor = this.editor;
         let selected = this.selected();
         let current = this.focused()?editor.selection.range:editor.selection.current();
@@ -287,7 +287,7 @@ export default class EditorLink {
     unlink(){
         let editor = this.editor;
         let link = this.link(this.target);
-        if(!link||editor.source||editor.readOnly){
+        if(!link||editor.source||editor.formControl.disabled){
             this.dismiss();
             return;
         }

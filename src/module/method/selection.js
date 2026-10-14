@@ -55,7 +55,10 @@ export default class EditorSelection {
         let bottom = Math.min(document.documentElement.clientHeight,body.bottom)-4;
         if(!rect.height||rect.height>bottom-top){return;}
         let offset = rect.top<top?rect.top-top:rect.bottom>bottom?rect.bottom-bottom:0;
-        if(offset){editor.body.scrollBy({top:offset,behavior:'instant'});}
+        if(offset){
+            let scale = body.height/editor.body.offsetHeight||1;
+            editor.body.scrollBy({top:offset/scale,behavior:'instant'});
+        }
     }
     bookmark(){
         let range = this.current()||this.range;
