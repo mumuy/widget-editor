@@ -100,17 +100,15 @@
 
 .mod-demo{
     margin-bottom: 25px;
-    background: #fff;
-    border: 1px solid #f0f0f099;
-    border-radius: 8px;
-    box-shadow: 1px 2px 12px rgba(0, 0, 0, 0.02);
 }
 .mod-demo .bd{
-    padding: 20px;
+    margin-bottom: 10px;
+}
+.mod-demo .bd widget-editor{
+    box-shadow: 1px 2px 12px rgba(0, 0, 0, 0.02);
 }
 .mod-demo .insert-demo-note{
-    margin: 0;
-    padding: 0 20px 16px;
+    padding: 0 15px 15px;
     color: #999;
     font-size: 12px;
     line-height: 1.6;

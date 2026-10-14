@@ -761,28 +761,32 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     margin-bottom: 10px;
     padding: 3px;
     background: var(--button-background-color);
-    border-radius: 6px;
+    border-radius: 25px;
 }
 .emoji-tabs button{
     min-width: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 32px;
+    height: 36px;
     padding: 4px;
     background: transparent;
     color: var(--button-text-color);
     border: 1px solid transparent;
-    border-radius: 4px;
+    border-radius: 18px;
 }
 .emoji-tabs button:hover{
     background: var(--panel-background-color);
     color: var(--button-active-color);
 }
+.emoji-tabs .tool-icon{
+    width: 22px;
+    height: 22px;
+}
 .emoji-tabs [aria-selected="true"]{
     background: var(--panel-background-color);
-    border-color: var(--panel-border-color);
     color: var(--button-active-color);
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
 }
 .emoji-panel{
     height: min(220px,40vh);

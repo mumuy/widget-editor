@@ -59,8 +59,8 @@
                 <div class="inner">
                     <section class="mod-poster">
                         <div class="bd">
-                            <h1>富文本编辑器组件<span class="tag">开源组件</span></h1>
-                            <p>一个标签实现富文本编辑，让你的文字更加精彩！</p>
+                            <h1>富文本编辑器<span class="tag">开源组件</span></h1>
+                            <p>一个标签实现富文本编辑！极简易用、功能强大~</p>
                             <div class="buttons">
                                 <a class="btn btn-blue" href="https://passer-by.com/widget-markdown/" target="_blank" rel="noopener noreferrer">
                                     <img src="./static/image/icon-markdown.png" width="24" height="24" alt="Markdown">
@@ -115,124 +115,121 @@ console.log(editor.value);</code></pre>
                     <section class="module mod-params" id="parameters" aria-labelledby="parameters-title">
                         <div class="hd"><span id="parameters-title">参数说明</span></div>
                         <div class="bd">
-                            <p>在 <code>&lt;widget-editor&gt;</code> 标签上设置以下属性；未设置时使用默认值。列表使用英文逗号分隔，配置顺序就是显示顺序，重复值和不支持的值会被忽略。</p>
+                            <p>在组件上设置以下属性；未设置时使用默认值。列表使用英文逗号分隔，配置顺序就是显示顺序，重复值和不支持的值会被忽略。</p>
                             <div class="table-scroll" role="region" aria-labelledby="parameters-title" tabindex="0">
                                 <table>
                                     <colgroup><col style="width:16%;"><col style="width:52%;"><col style="width:32%;"></colgroup>
                                     <thead><tr><th scope="col">属性</th><th scope="col">含义</th><th scope="col">默认值</th></tr></thead>
                                     <tbody>
                                         <tr>
-                                            <th scope="row"><code>name</code></th>
-                                            <td>原生表单提交时的字段名，提交内容为编辑器的 HTML。未设置或为空时不提交。</td>
+                                            <th scope="row"><span>name</span></th>
+                                            <td>原生表单提交时的字段名，提交内容为编辑器的 HTML。</td>
                                             <td>空字符串</td>
                                         </tr>
                                         <tr>
-                                            <th scope="row"><code>form</code></th>
+                                            <th scope="row"><span>form</span></th>
                                             <td>关联表单的 <code>id</code>，可让表单外的编辑器参与提交。</td>
                                             <td>最近的父级表单</td>
                                         </tr>
                                         <tr>
-                                            <th scope="row"><code>disabled</code></th>
-                                            <td>布尔属性，禁用编辑和工具栏操作，不参与表单提交及校验。父级 <code>fieldset</code> 的禁用也会生效。</td>
+                                            <th scope="row"><span>disabled</span></th>
+                                            <td>禁用编辑和工具栏操作，不参与表单提交及校验。</td>
                                             <td>不设置（可编辑）</td>
                                         </tr>
                                         <tr>
-                                            <th scope="row"><code>required</code></th>
-                                            <td>布尔属性，要求填写内容；空白文字和空段落无效，图片等非文本内容有效。</td>
+                                            <th scope="row"><span>required</span></th>
+                                            <td>要求填写内容；空白文字和空段落无效，图片等非文本内容有效。</td>
                                             <td>不设置（非必填）</td>
                                         </tr>
                                         <tr>
-                                            <th scope="row"><code>placeholder</code></th>
-                                            <td>空白编辑器中的提示文字。未自定义时，提示会随界面语言变化。</td>
+                                            <th scope="row"><span>placeholder</span></th>
+                                            <td>空白编辑器中的提示文字。</td>
                                             <td>在这里开始写作…</td>
                                         </tr>
                                         <tr>
-                                            <th scope="row"><code>height</code></th>
-                                            <td>编辑区域高度，单位为 px，允许 160～2000；填写数字即可。</td>
+                                            <th scope="row"><span>height</span></th>
+                                            <td>编辑区域高度，单位为 px，允许 160～2000；</td>
                                             <td><code>480</code></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row"><code>language</code></th>
+                                            <th scope="row"><span>language</span></th>
                                             <td>界面语言：<code>zh-CN</code> 简体中文、<code>zh-HK</code> 香港繁体中文、<code>en-US</code> 英语。</td>
                                             <td><code>zh-CN</code></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row"><code>heading</code></th>
-                                            <td>标题菜单的选项及顺序，<code>p</code> 为正文，<code>h1</code>～<code>h6</code> 为标题。空值隐藏菜单。</td>
+                                            <th scope="row"><span>heading</span></th>
+                                            <td>标题菜单的选项及顺序，<code>p</code> 为正文，<code>h1</code>～<code>h6</code> 为标题。</td>
                                             <td><code>p,h1,h2,h3,h4,h5,h6</code></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row"><code>fontfamily</code></th>
-                                            <td>字体菜单的选项及顺序，例如 <code>yahei</code>（微软雅黑）、<code>simsun</code>（宋体）、<code>kaiti</code>（楷体）。空值隐藏菜单。</td>
+                                            <th scope="row"><span>fontfamily</span></th>
+                                            <td>字体菜单的选项及顺序，例如 <code>yahei</code>（微软雅黑）、<code>simsun</code>（宋体）。</td>
                                             <td><details><summary>全部 13 种预设字体</summary><code>default,yahei,simsun,simhei,kaiti,fangsong,pingfang,dengxian,stsong,stkaiti,stxihei,sourceSans,sourceSerif</code></details></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row"><code>fontsize</code></th>
-                                            <td>字号菜单的选项及顺序，只填写支持的数字，不加 <code>px</code>。空值隐藏菜单。</td>
+                                            <th scope="row"><span>fontsize</span></th>
+                                            <td>字号菜单的选项及顺序，只填写支持的数字，不加 <code>px</code>。</td>
                                             <td><code>12,14,16,18,20,24,28,32,36,48</code></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row"><code>alignment</code></th>
-                                            <td>对齐菜单的选项及顺序：<code>left</code> 左对齐、<code>center</code> 居中、<code>right</code> 右对齐、<code>justify</code> 两端对齐。空值隐藏菜单。</td>
+                                            <th scope="row"><span>alignment</span></th>
+                                            <td>对齐菜单的选项及顺序。</td>
                                             <td><code>left,center,right,justify</code></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row"><code>custom</code></th>
-                                            <td>工具栏功能及顺序，可把图片、视频等插入功能直接放到工具栏。撤销和重做固定显示；空值仅保留这两个按钮。</td>
+                                            <th scope="row"><span>custom</span></th>
+                                            <td>工具栏功能及顺序。撤销和重做固定显示。</td>
                                             <td><details><summary>默认工具栏</summary><code>heading,fontFamily,fontSize,alignment,indentation,bold,italic,underline,strikethrough,superscript,subscript,color,blockquote,orderedList,unorderedList,link,format,formatPainter,insert</code></details></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row"><code>insert</code></th>
-                                            <td>插入菜单的功能及顺序。空值隐藏插入菜单；<code>custom</code> 中的独立插入按钮仍可使用。</td>
+                                            <th scope="row"><span>insert</span></th>
+                                            <td>插入菜单的功能及顺序，<code>custom</code> 中的独立插入按钮仍可使用。</td>
                                             <td><code>divider,table,image,video,attachment,audio,emoji,code</code></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row"><code>image</code></th>
-                                            <td>图片允许的插入方式及标签顺序：<code>upload</code> 上传文件、<code>url</code> 填写地址。空值禁用图片插入。</td>
+                                            <th scope="row"><span>image</span></th>
+                                            <td>图片允许的插入方式及标签顺序。</td>
                                             <td><code>upload,url</code></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row"><code>video</code></th>
-                                            <td>视频允许的插入方式及标签顺序，支持 <code>upload</code>、<code>url</code> 和第三方视频 <code>iframe</code>。空值禁用视频插入。</td>
+                                            <th scope="row"><span>video</span></th>
+                                            <td>视频允许的插入方式及标签顺序。</td>
                                             <td><code>upload,url,iframe</code></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row"><code>audio</code></th>
-                                            <td>音频允许的插入方式及标签顺序，支持 <code>upload</code>、<code>url</code>。空值禁用音频插入。</td>
+                                            <th scope="row"><span>audio</span></th>
+                                            <td>音频允许的插入方式及标签顺序。</td>
                                             <td><code>upload,url</code></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row"><code>attachment</code></th>
-                                            <td>附件允许的插入方式及标签顺序，支持 <code>upload</code>、<code>url</code>。空值禁用附件插入。</td>
+                                            <th scope="row"><span>attachment</span></th>
+                                            <td>附件允许的插入方式及标签顺序。</td>
                                             <td><code>upload,url</code></td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
-                            <p><code>custom</code> 控制工具栏是否显示某个功能；<code>heading</code>、<code>fontfamily</code>、<code>fontsize</code>、<code>alignment</code> 控制其下拉菜单的选项。移除属性可恢复默认值，运行时可通过 <code>editor.setAttribute('fontsize','16,24,36')</code> 调整配置。</p>
-                            <p>编辑器支持原生表单提交、重置和校验，使用 <code>new FormData(form).get('content')</code> 可读取 <code>name="content"</code> 的 HTML 内容。布尔属性存在即生效，取消时应移除属性，不能使用 <code>disabled="false"</code>。</p>
-                            <p>选择上传文件时，组件通过 <code>upload</code> 事件交给外部处理上传。上传接入示例见下方；完整的字体字段和工具栏字段请查看 <a href="https://github.com/mumuy/widget-editor#readme" target="_blank" rel="noopener noreferrer">使用文档</a>。</p>
                         </div>
                     </section>
                     <section class="module mod-upload" id="upload" aria-labelledby="upload-title">
                         <div class="hd"><span id="upload-title">upload 事件</span></div>
                         <div class="bd">
-                            <p>图片、视频、音频和附件选择文件并确认插入后，会触发 <code>upload</code> 事件。组件负责插入和显示进度，文件由你的页面上传；使用 URL 或 iframe 时不触发此事件。</p>
+                            <p>图片、视频、音频和附件选择文件并确认插入后，会触发 <code>upload</code> 事件。组件负责插入和显示进度，文件由你的页面上传。</p>
                             <div class="table-scroll" role="region" aria-labelledby="upload-title" tabindex="0">
                                 <table>
                                     <colgroup><col style="width:36%;"><col style="width:64%;"></colgroup>
                                     <thead><tr><th scope="col">event.detail</th><th scope="col">说明</th></tr></thead>
                                     <tbody>
-                                        <tr><th scope="row"><code>file</code></th><td>用户选择的原始 <code>File</code> 对象。</td></tr>
-                                        <tr><th scope="row"><code>type</code></th><td>文件类型：<code>image</code>、<code>video</code>、<code>audio</code> 或 <code>attachment</code>。</td></tr>
-                                        <tr><th scope="row"><code>onUploadComplete(url)</code></th><td>上传成功后传入文件地址，组件将其插入到原来的光标或选区位置。</td></tr>
-                                        <tr><th scope="row"><code>onUploadError(err)</code></th><td>上传失败时传入 <code>Error</code> 或错误消息，在弹框内显示，用户可重试。</td></tr>
-                                        <tr><th scope="row"><code>onProgress(percent)</code></th><td>更新上传进度，传入 0～100 的百分比。</td></tr>
+                                        <tr><th scope="row"><span>file</span></th><td>用户选择的原始 <code>File</code> 对象。</td></tr>
+                                        <tr><th scope="row"><span>type</span></th><td>文件类型：<code>image</code>、<code>video</code>、<code>audio</code> 或 <code>attachment</code>。</td></tr>
+                                        <tr><th scope="row"><span>onUploadComplete(url)</span></th><td>上传成功后传入文件地址，组件将其插入到原来的光标或选区位置。</td></tr>
+                                        <tr><th scope="row"><span>onUploadError(err)</span></th><td>上传失败时传入 <code>Error</code> 或错误消息，在弹框内显示，用户可重试。</td></tr>
+                                        <tr><th scope="row"><span>onProgress(percent)</span></th><td>更新上传进度，传入 0～100 的百分比。</td></tr>
                                     </tbody>
                                 </table>
                             </div>
-                            <p>下面使用原生 <code>XMLHttpRequest</code> 上传文件并报告进度。示例接口为 <code>/api/upload</code>，成功响应为 <code>{ "url": "https://example.com/uploads/file.png" }</code>，请按实际接口修改地址和响应字段。</p>
-                            <pre><code>let editor = document.querySelector('#editor');
+                            <p>下面使用原生 <code>XMLHttpRequest</code> 上传文件并报告进度。请按实际接口修改地址和响应字段。</p>
+                            <widget-code language="javascript">let editor = document.querySelector('#editor');
 editor.addEventListener('upload',function(event){
     let {file,type,onUploadComplete,onUploadError,onProgress} = event.detail;
     let request = new XMLHttpRequest();
@@ -257,12 +254,11 @@ editor.addEventListener('upload',function(event){
     data.append('file',file);
     data.append('type',type);
     request.send(data);
-});</code></pre>
-                            <p>成功时调用 <code>onUploadComplete(url)</code>，失败时调用 <code>onUploadError(err)</code>。取消弹框、切换源码或禁用插入功能后，旧回调不会再插入内容。</p>
+});</widget-code>
                         </div>
                     </section>
                     <section class="module mod-article">
-                        <div class="hd"><span>关于富文本编辑器组件</span></div>
+                        <div class="hd"><span>关于富文本编辑器</span></div>
                         <div class="bd">
                             <p>富文本编辑器可以在编辑文字时设置字体、颜色、大小和段落样式，并插入链接、图片和表格。通过标题、列表和段落对齐，让内容具有清晰的层次；通过格式刷复用文字样式，让排版保持一致。编辑器同时提供 HTML 源代码查看和编辑功能，适用于文章、公告和日常笔记等内容的编辑。</p>
                         </div>
@@ -283,6 +279,9 @@ editor.addEventListener('upload',function(event){
                         </div>
                     </div>
                 </section>
+                <div class="inner">
+                    <script type="text/javascript" src="https://passer-by.com/static/script/projects.js"></script>
+                </div>
             </div>
             <footer>
                 <div class="mod-fixedbar">
@@ -307,7 +306,11 @@ editor.addEventListener('upload',function(event){
                 </div>
             </footer>
         </div>
+        <script type="text/javascript" src="https://passer-by.com/widget-code/dist/widget-code.min.js?v=202401042300"></script>
         <script type="text/javascript" src="./dist/widget-editor.min.js"></script>
         <script type="text/javascript" src="static/script/index.js"></script>
+        <script async defer src="https://cdn.bootcdn.net/ajax/libs/github-buttons/2.21.1/buttons.min.js"></script>
+        <script type="text/javascript" src="https://passer-by.com/static/script/common.js"></script>
+        <script type="text/javascript" src="https://passer-by.com/static/script/stat.js"></script>
     </body>
 </html>
