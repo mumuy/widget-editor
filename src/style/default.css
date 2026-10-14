@@ -702,8 +702,8 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
 .upload-feedback{
     display: grid;
     align-items: center;
-    height: 40px;
-    margin-top: 8px;
+    height: 20px;
+    margin-top: 6px;
     overflow: auto;
 }
 .upload-feedback .upload-progress,.upload-feedback .dialog-notice{
