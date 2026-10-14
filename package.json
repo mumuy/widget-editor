@@ -44,7 +44,7 @@
         "build": "rollup -c",
         "watch": "rollup -wc"
     },
-    "homepage": "https://github.com/mumuy/widget-editor/",
+    "homepage": "https://passer-by.com/widget-editor/",
     "directories": {},
     "dependencies": {}
 }
