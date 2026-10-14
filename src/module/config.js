@@ -20,7 +20,7 @@ export const attributes = {
     custom: {
         default: [
             'heading', 'fontFamily', 'fontSize', 'alignment', 'indentation',
-            'bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'color',
+            'bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'color', 'backgroundColor',
             'blockquote', 'orderedList', 'unorderedList', 'link', 'format', 'formatPainter', 'insert'
         ], toolbar: true
     },

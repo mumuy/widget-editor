@@ -26,6 +26,7 @@ export default {
             'font-style':style.fontStyle,
             'font-size':style.fontSize,
             'color':style.color,
+            'background-color':editor.tools.get('backgroundColor').value(editor),
             'text-decoration':['underline','line-through'].filter(name=>decorations.includes(name)).join(' ')||'none'
         });
     },

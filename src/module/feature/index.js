@@ -14,9 +14,10 @@ import source from './source.js';
 import alignment from './alignment.js';
 import fontSize from './fontSize.js';
 import color from './color.js';
+import backgroundColor from './backgroundColor.js';
 import insert from './insert.js';
 import indentation from './indentation.js';
 import fontFamily from './fontFamily.js';
 import blockquote from './blockquote.js';
 
-export default [source,heading,fontFamily,fontSize,alignment,indentation,bold,italic,underline,strikethrough,superscript,subscript,color,blockquote,orderedList,unorderedList,link,format,formatPainter,insert];
+export default [source,heading,fontFamily,fontSize,alignment,indentation,bold,italic,underline,strikethrough,superscript,subscript,color,backgroundColor,blockquote,orderedList,unorderedList,link,format,formatPainter,insert];

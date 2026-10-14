@@ -51,6 +51,10 @@ export const color = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24
     <path d="m5 19 6-15h2l6 15M8 13h8"/>
 </svg>`;
 
+export const backgroundColor = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m14 3 7 7-9 9-7-7zM5 12l-2 6 3 3 6-2M10 7l7 7M3 21h5"/>
+</svg>`;
+
 export const format = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
     <path d="m16 3 5 5a2 2 0 0 1 0 3l-9 9H7l-4-4a2 2 0 0 1 0-3l10-10a2 2 0 0 1 3 0ZM8 8l9 9M12 20h9"/>
 </svg>`;
