@@ -20,7 +20,7 @@
 ```html
 <script src="./widget-editor.min.js" defer></script>
 
-<widget-editor id="editor" insert="table,image,emoji" placeholder="请输入内容…" height="420">
+<widget-editor id="editor" insert="table,image,emoji" placeholder="请输入内容…" height="480">
     <h2>开始编辑</h2>
     <p>选中文字后，可以使用工具栏调整格式。</p>
 </widget-editor>
@@ -37,7 +37,7 @@
 | `disabled` | 布尔属性，禁用编辑和操作，不参与提交及校验 | 不设置 |
 | `required` | 布尔属性，要求填写文字或插入图片等内容 | 不设置 |
 | `placeholder` | 空白编辑器中的提示文字 | `在这里开始写作…` |
-| `height` | 编辑区域高度，单位为 px，有效范围为 160～2000 | `420` |
+| `height` | 编辑区域高度，单位为 px，有效范围为 160～2000 | `480` |
 | `insert` | 插入菜单中的功能，以英文逗号分隔 | `divider,table,image,video,attachment,audio,emoji,code` |
 | `custom` | 工具栏功能及显示顺序，以英文逗号分隔 | 使用默认工具栏 |
 | `language` | 界面语言：`zh-CN`、`zh-HK` 或 `en-US` | `zh-CN` |

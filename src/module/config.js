@@ -6,7 +6,7 @@ export const attributes = {
     disabled: { default: false },
     required: { default: false },
     placeholder: { default: '在这里开始写作…', translate: true },
-    height: { default: 420, min: 160, max: 2000 },
+    height: { default: 480, min: 160, max: 2000 },
     language: { default: 'zh-CN' },
     heading: { default: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'], toolbar: true },
     fontfamily: {

@@ -98,86 +98,58 @@
     background: #e18309;
 }
 
-.mod-tabs{
+.mod-demo{
     margin-bottom: 25px;
     background: #fff;
     border: 1px solid #f0f0f099;
     border-radius: 8px;
     box-shadow: 1px 2px 12px rgba(0, 0, 0, 0.02);
 }
-.mod-tabs .hd {
-    padding: 10px 20px;
-    border-bottom: 1px solid #f4f4f4;
-    overflow-x: auto;
+.mod-demo .bd{
+    padding: 20px;
 }
-.mod-tabs .hd ul{
-    display: flex;
-    flex-wrap: nowrap;
-    height: 36px;
-}
-.mod-tabs .hd li{
-    line-height: 36px;
-}
-.mod-tabs .hd li a{
-    display: block;
-    padding: 0 20px;
-    text-decoration: none;
-    font-size: 16px;
+.mod-demo .insert-demo-note{
+    margin: 0;
+    padding: 0 20px 16px;
     color: #999;
-    cursor: pointer;
-}
-.mod-tabs .hd li.active a{
-    position: relative;
-    color: #333;
-}
-.mod-tabs .hd li.active a::after{
-    position: absolute;
-    left: 50%;
-    bottom: -3px;
-    display: block;
-    content: '';
-    width: 16px;
-    height: 5px;
-    margin-left: -8px;
-    background: #2095f2;
-    border-radius: 3px;
+    font-size: 12px;
+    line-height: 1.6;
 }
 
-
-.mod-params{
+.mod-params,.mod-upload{
     margin: 60px 0;
 }
-.mod-params .bd p{
+.mod-params .bd p,.mod-upload .bd p{
     margin: 12px 0;
     line-height: 26px;
 }
-.mod-params .table-scroll{
+.mod-params .table-scroll,.mod-upload .table-scroll{
     overflow-x: auto;
     border: 1px solid #eee;
     border-radius: 6px;
     outline: none;
 }
-.mod-params table{
+.mod-params table,.mod-upload table{
     width: 100%;
-    min-width: 760px;
+    min-width: 560px;
     table-layout: fixed;
     font-size: 14px;
     line-height: 24px;
 }
-.mod-params th,.mod-params td{
+.mod-params th,.mod-params td,.mod-upload th,.mod-upload td{
     padding: 12px;
     border-bottom: 1px solid #eee;
     text-align: left;
     vertical-align: top;
 }
-.mod-params thead th{
+.mod-params thead th,.mod-upload thead th{
     background: #f6f8fa;
     font-weight: bold;
 }
-.mod-params tbody tr:last-child th,.mod-params tbody tr:last-child td{
+.mod-params tbody tr:last-child th,.mod-params tbody tr:last-child td,.mod-upload tbody tr:last-child th,.mod-upload tbody tr:last-child td{
     border-bottom: 0;
 }
-.mod-params code{
+.mod-params code,.mod-upload code{
     font-family: Menlo,Monaco,Consolas,'Courier New',monospace;
     font-size: 13px;
     overflow-wrap: anywhere;
@@ -189,6 +161,16 @@
 .mod-params details code{
     display: block;
     margin-top: 6px;
+}
+
+.mod-upload pre{
+    margin: 16px 0;
+    padding: 18px 20px;
+    overflow: auto;
+    background: #f6f8fa;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    line-height: 22px;
 }
 
 .mod-article{
@@ -324,34 +306,8 @@
     .mod-poster .btn img{
         display: none;
     }
-
-    .mod-tabs .hd{
-        padding: 5px;
-    }
-    .mod-tabs .hd li{
-        line-height: 32px;
-    }
-    .mod-tabs .hd li a{
-        padding: 0 12px;
-    }
 }
 
-.mod-tabs .panel[hidden]{
-    display: none;
-}
-.mod-tabs .panel{
-    padding: 20px;
-}
-.mod-tabs widget-editor{
-    display: block;
-}
-.mod-tabs .insert-demo-note{
-    margin: 0;
-    padding: 0 20px 16px;
-    color: #999;
-    font-size: 12px;
-    line-height: 1.6;
-}
 .github-button{
     display: inline-flex;
     align-items: center;
@@ -371,14 +327,14 @@
     background: #e6ebf1;
     text-decoration: none;
 }
-.mod-tabs .hd li a:focus-visible,.mod-poster .btn:focus-visible{
+.mod-poster .btn:focus-visible{
     outline: none;
 }
 @media screen and (max-width: 640px) {
-    .mod-tabs .panel{
+    .mod-demo .bd{
         padding: 10px;
     }
-    .mod-tabs .insert-demo-note{
+    .mod-demo .insert-demo-note{
         padding: 0 10px 12px;
     }
 }
