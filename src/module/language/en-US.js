@@ -192,6 +192,8 @@ export default {
     '在这里开始写作…':'Start writing here…',
     '全屏':'Fullscreen',
     '退出全屏':'Exit fullscreen',
+    '手机预览':'Mobile preview',
+    '退出手机预览':'Exit mobile preview',
     '关闭':'Close',
     '取消':'Cancel',
     '确定':'Confirm',

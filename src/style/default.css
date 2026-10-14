@@ -606,7 +606,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     margin-left: auto;
     white-space: nowrap;
 }
-.fullscreen-button,.source-button{
+.fullscreen-button,.source-button,.preview-button{
     width: 24px;
     height: 24px;
 }
@@ -641,6 +641,30 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     min-height: 0;
     resize: none;
     overscroll-behavior: contain;
+}
+.mod-panel.mobile-preview{
+    background: var(--toolbar-background-color);
+}
+.mod-panel.mobile-preview .bd{
+    --editor-height: 667px;
+    --editor-padding-x: 16px;
+    --editor-padding-y: 18px;
+    flex: none;
+    width: 375px;
+    height: 667px;
+    min-height: 667px;
+    max-height: 667px;
+    margin: 16px auto;
+    zoom: var(--preview-scale,1);
+    background: var(--panel-background-color);
+    border-radius: 4px;
+    box-shadow: 0 0 0 1px var(--panel-border-color);
+}
+.mod-panel.fullscreen.mobile-preview .bd{
+    margin: auto;
+}
+.mobile-preview .editor-content [data-block-boundary]{
+    display: none;
 }
 .editor-dialog{
     width: min(420px,calc(100vw - 32px));

@@ -51,8 +51,8 @@ export default class EditorToolbar {
         let editor = this.editor;
         let name = feature.name;
         if(editor.formControl.disabled){return true;}
-        if(editor.source&&!['source','fullscreen'].includes(name)){return true;}
-        if(inCode&&!['undo','redo','source','fullscreen','format'].includes(name)){return true;}
+        if((editor.source||editor.preview?.active)&&!['source','fullscreen','preview'].includes(name)){return true;}
+        if(inCode&&!['undo','redo','source','fullscreen','preview','format'].includes(name)){return true;}
         if(name==='undo'){return !editor.history.canUndo;}
         if(name==='redo'){return !editor.history.canRedo;}
         return feature.type==='dropdown'&&!feature.options.length||!!feature.insertion&&!this.canInsert(name);

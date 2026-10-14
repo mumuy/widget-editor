@@ -14,7 +14,7 @@ import EditorDropdown from './module/dropdown.js';
 import EditorTooltip from './module/tooltip.js';
 import EditorFullscreen from './module/fullscreen.js';
 import EditorLanguage from './module/language/index.js';
-import {renderIcon,fullscreen as fullscreenIcon,source as sourceIcon} from './module/icon.js';
+import {renderIcon,fullscreen as fullscreenIcon,source as sourceIcon,preview as previewIcon} from './module/icon.js';
 import styleSheet from './style/default.css' with { type: 'css'};
 
 class WidgetEditor extends HTMLElement {
@@ -69,9 +69,11 @@ class WidgetEditor extends HTMLElement {
         this.codes.connect();
         this.tooltip.connect();
         this.fullscreen.connect();
+        this.preview.connect();
         document.addEventListener('selectionchange',this._onSelection);
     }
     disconnectedCallback(){
+        this.preview?.disconnect();
         this.fullscreen?.disconnect();
         this.dropdown?.disconnect();
         this.table?.disconnect();
@@ -151,6 +153,9 @@ class WidgetEditor extends HTMLElement {
     }
     get text(){
         return this.getText();
+    }
+    get readOnly(){
+        return this.formControl.disabled||!!this.preview?.active;
     }
     get name(){
         return this.getAttribute('name')||'';
@@ -250,8 +255,9 @@ class WidgetEditor extends HTMLElement {
                 <textarea class="editor-source" aria-label="HTML 源代码" spellcheck="false" hidden></textarea>
             </div>
             <div class="ft">
-                <button type="button" class="tool tool-button fullscreen-button" data-action="fullscreen" aria-label="全屏" aria-pressed="false">${renderIcon(fullscreenIcon)}</button>
                 <button type="button" class="tool tool-button source-button" data-action="source" aria-label="源代码" aria-pressed="false">${renderIcon(sourceIcon)}</button>
+                <button type="button" class="tool tool-button fullscreen-button" data-action="fullscreen" aria-label="全屏" aria-pressed="false">${renderIcon(fullscreenIcon)}</button>
+                <button type="button" class="tool tool-button preview-button" data-action="preview" aria-label="手机预览" aria-pressed="false">${renderIcon(previewIcon)}</button>
                 <span class="word-count">0 字</span>
             </div>
         </div>`;
@@ -288,7 +294,7 @@ class WidgetEditor extends HTMLElement {
             }
         });
         this.content.addEventListener('beforeinput',event=>{
-            if(this.formControl.disabled){event.preventDefault();return;}
+            if(this.readOnly){event.preventDefault();return;}
             if(!event.isComposing){this.history.record();}
             if(this.codes?.beforeInput(event)||this.blocks.beforeInput(event)){
                 if(event.defaultPrevented&&event.inputType?.startsWith('delete')){this.selection.ensureVisible();}
@@ -298,7 +304,7 @@ class WidgetEditor extends HTMLElement {
             document.execCommand('defaultParagraphSeparator',false,'p');
         });
         this.content.addEventListener('keydown',event=>{
-            if(this.formControl.disabled){return;}
+            if(this.readOnly){return;}
             this.blocks.keyDown(event);
             if(event.defaultPrevented&&['Backspace','Delete'].includes(event.key)){this.selection.ensureVisible();}
         },true);
@@ -327,7 +333,7 @@ class WidgetEditor extends HTMLElement {
         }));
         this.content.addEventListener('paste',event=>{
             event.preventDefault();
-            if(this.formControl.disabled){return;}
+            if(this.readOnly){return;}
             this.saveSelection();
             let html = event.clipboardData.getData('text/html');
             let text = event.clipboardData.getData('text/plain');
@@ -339,7 +345,7 @@ class WidgetEditor extends HTMLElement {
             if(event.key==='Escape'&&this.painter){
                 this.cancelPainter();
             }
-            if(this.formControl.disabled||event.target!==this.content||!(event.ctrlKey||event.metaKey)||event.altKey){
+            if(this.readOnly||event.target!==this.content||!(event.ctrlKey||event.metaKey)||event.altKey){
                 return;
             }
             let key = event.key.toLowerCase();
@@ -413,7 +419,7 @@ class WidgetEditor extends HTMLElement {
         return Array.from(this.content.querySelectorAll('p,div,h1,h2,h3,h4,h5,h6,li,td,th')).filter(node=>range?.intersectsNode(node));
     }
     command(name,value=null,css=true){
-        if(this.source||this.formControl.disabled){
+        if(this.source||this.readOnly){
             return;
         }
         this.restoreSelection();
@@ -430,7 +436,7 @@ class WidgetEditor extends HTMLElement {
         }
     }
     transaction(callback){
-        if(this.formControl.disabled){return;}
+        if(this.readOnly){return;}
         this.restoreSelection();
         // 原生命令可能触发 input，事务结束时统一保存和更新。
         this._transaction = true;
@@ -443,7 +449,7 @@ class WidgetEditor extends HTMLElement {
         this.update();
     }
     insertHTML(html){
-        if(this.formControl.disabled){return;}
+        if(this.readOnly){return;}
         let safe = sanitizeHTML(html);
         if(!safe){
             return;
@@ -476,6 +482,7 @@ class WidgetEditor extends HTMLElement {
     }
     toggleSource(){
         if(this.formControl.disabled){return;}
+        this.preview?.close();
         this._dialog?.dismiss();
         this.dropdown.close();
         this.cancelPainter();
@@ -546,6 +553,7 @@ class WidgetEditor extends HTMLElement {
         this.tools.update();
         this.updateLocale();
         this.fullscreen?.update(!!this.fullscreen.state);
+        this.preview?.update();
         this.tooltip?.refresh();
     }
     t(key,params){
@@ -568,7 +576,7 @@ class WidgetEditor extends HTMLElement {
         this.locale.set(this.wordCount,'{count} 字',{count:text.replace(/\s/g,'').length});
     }
     openDialog(options){
-        if(this.formControl.disabled){return;}
+        if(this.readOnly){return;}
         return openDialog(this,options);
     }
 }

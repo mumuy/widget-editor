@@ -24,7 +24,7 @@ export default class EditorHistory {
         this.index = this.entries.length-1;
     }
     move(offset){
-        if(this.editor.formControl.disabled){return;}
+        if(this.editor.readOnly){return;}
         let index = this.index+offset;
         if(index<0||index>=this.entries.length){
             return;

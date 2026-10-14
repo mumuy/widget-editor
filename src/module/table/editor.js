@@ -149,7 +149,7 @@ export default class TableEditor {
         this.editor.shadowRoot.removeEventListener('scroll',this.onScroll,true);
     }
     cell(node){
-        if(this.editor.formControl.disabled){return null;}
+        if(this.editor.readOnly){return null;}
         let cell = node?.closest?.('td,th');
         return cell&&this.editor.content.contains(cell)?cell:null;
     }
@@ -241,7 +241,7 @@ export default class TableEditor {
         this.toolbar.style.top = positions[0].top+'px';
     }
     refresh(){
-        if(this.editor.formControl.disabled){this.dismiss();return;}
+        if(this.editor.readOnly){this.dismiss();return;}
         if(this.editor.source||this.first&&!this.editor.content.contains(this.first)){
             this.clear();
         }

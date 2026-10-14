@@ -7,6 +7,10 @@ export const fullscreenExit = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="
     <path d="M3 8h5V3M21 8h-5V3M16 21v-5h5M3 16h5v5"/>
 </svg>`;
 
+export const preview = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 5h4M11 19h2"/>
+</svg>`;
+
 export const insert = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
     <path d="M12 4v16M4 12h16"/>
 </svg>`;
