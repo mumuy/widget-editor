@@ -145,6 +145,100 @@ console.log(editor.value);</code></pre>
                         <p class="insert-demo-note">文件在本地读取用于演示，不会上传到服务器。</p>
                         <noscript><p>请启用 JavaScript 以使用富文本编辑器。</p></noscript>
                     </section>
+                    <section class="module mod-params" id="parameters" aria-labelledby="parameters-title">
+                        <div class="hd"><span id="parameters-title">参数说明</span></div>
+                        <div class="bd">
+                            <p>在 <code>&lt;widget-editor&gt;</code> 标签上设置以下属性；未设置时使用默认值。列表使用英文逗号分隔，配置顺序就是显示顺序，重复值和不支持的值会被忽略。</p>
+                            <div class="table-scroll" role="region" aria-labelledby="parameters-title" tabindex="0">
+                                <table>
+                                    <colgroup><col style="width:14%;"><col style="width:26%;"><col style="width:26%;"><col style="width:34%;"></colgroup>
+                                    <thead><tr><th scope="col">属性</th><th scope="col">含义</th><th scope="col">默认值</th><th scope="col">用法示例</th></tr></thead>
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row"><code>placeholder</code></th>
+                                            <td>空白编辑器中的提示文字。未自定义时，提示会随界面语言变化。</td>
+                                            <td>在这里开始写作…</td>
+                                            <td><code>placeholder="请输入文章内容……"</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><code>height</code></th>
+                                            <td>编辑区域高度，单位为 px，允许 160～2000；填写数字即可。</td>
+                                            <td><code>420</code></td>
+                                            <td><code>height="360"</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><code>language</code></th>
+                                            <td>界面语言：<code>zh-CN</code> 简体中文、<code>zh-HK</code> 香港繁体中文、<code>en-US</code> 英语。</td>
+                                            <td><code>zh-CN</code></td>
+                                            <td><code>language="en-US"</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><code>heading</code></th>
+                                            <td>标题菜单的选项及顺序，<code>p</code> 为正文，<code>h1</code>～<code>h6</code> 为标题。空值隐藏菜单。</td>
+                                            <td><code>p,h1,h2,h3,h4,h5,h6</code></td>
+                                            <td><code>heading="p,h2,h3"</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><code>fontfamily</code></th>
+                                            <td>字体菜单的选项及顺序，例如 <code>yahei</code>（微软雅黑）、<code>simsun</code>（宋体）、<code>kaiti</code>（楷体）。空值隐藏菜单。</td>
+                                            <td><details><summary>全部 13 种预设字体</summary><code>default,yahei,simsun,simhei,kaiti,fangsong,pingfang,dengxian,stsong,stkaiti,stxihei,sourceSans,sourceSerif</code></details></td>
+                                            <td><code>fontfamily="yahei,simsun,kaiti"</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><code>fontsize</code></th>
+                                            <td>字号菜单的选项及顺序，只填写支持的数字，不加 <code>px</code>。空值隐藏菜单。</td>
+                                            <td><code>12,14,16,18,20,24,28,32,36,48</code></td>
+                                            <td><code>fontsize="14,16,24,36"</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><code>alignment</code></th>
+                                            <td>对齐菜单的选项及顺序：<code>left</code> 左对齐、<code>center</code> 居中、<code>right</code> 右对齐、<code>justify</code> 两端对齐。空值隐藏菜单。</td>
+                                            <td><code>left,center,right,justify</code></td>
+                                            <td><code>alignment="left,center,right"</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><code>custom</code></th>
+                                            <td>工具栏功能及顺序，可把图片、视频等插入功能直接放到工具栏。撤销和重做固定显示；空值仅保留这两个按钮。</td>
+                                            <td><details><summary>默认工具栏</summary><code>heading,fontFamily,fontSize,alignment,indentation,bold,italic,underline,strikethrough,superscript,subscript,color,blockquote,orderedList,unorderedList,link,format,formatPainter,insert</code></details></td>
+                                            <td><code>custom="heading,bold,italic,image,insert"</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><code>insert</code></th>
+                                            <td>插入菜单的功能及顺序。空值隐藏插入菜单；<code>custom</code> 中的独立插入按钮仍可使用。</td>
+                                            <td><code>divider,table,image,video,attachment,audio,emoji,code</code></td>
+                                            <td><code>insert="table,image,emoji"</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><code>image</code></th>
+                                            <td>图片允许的插入方式及标签顺序：<code>upload</code> 上传文件、<code>url</code> 填写地址。空值禁用图片插入。</td>
+                                            <td><code>upload,url</code></td>
+                                            <td><code>image="url"</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><code>video</code></th>
+                                            <td>视频允许的插入方式及标签顺序，支持 <code>upload</code>、<code>url</code> 和第三方视频 <code>iframe</code>。空值禁用视频插入。</td>
+                                            <td><code>upload,url,iframe</code></td>
+                                            <td><code>video="upload,url,iframe"</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><code>audio</code></th>
+                                            <td>音频允许的插入方式及标签顺序，支持 <code>upload</code>、<code>url</code>。空值禁用音频插入。</td>
+                                            <td><code>upload,url</code></td>
+                                            <td><code>audio="url,upload"</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><code>attachment</code></th>
+                                            <td>附件允许的插入方式及标签顺序，支持 <code>upload</code>、<code>url</code>。空值禁用附件插入。</td>
+                                            <td><code>upload,url</code></td>
+                                            <td><code>attachment="upload"</code></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p><code>custom</code> 控制工具栏是否显示某个功能；<code>heading</code>、<code>fontfamily</code>、<code>fontsize</code>、<code>alignment</code> 控制其下拉菜单的选项。移除属性可恢复默认值，运行时可通过 <code>editor.setAttribute('fontsize','16,24,36')</code> 调整配置。</p>
+                            <p>选择上传文件时，组件通过 <code>upload</code> 事件交给外部处理上传。完整的字体字段、工具栏字段和上传接入示例请查看 <a href="https://github.com/mumuy/widget-editor#readme" target="_blank" rel="noopener noreferrer">使用文档</a>。</p>
+                        </div>
+                    </section>
                     <section class="module mod-article">
                         <div class="hd"><span>关于富文本编辑器组件</span></div>
                         <div class="bd">

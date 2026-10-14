@@ -144,6 +144,53 @@
 }
 
 
+.mod-params{
+    margin: 60px 0;
+}
+.mod-params .bd p{
+    margin: 12px 0;
+    line-height: 26px;
+}
+.mod-params .table-scroll{
+    overflow-x: auto;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    outline: none;
+}
+.mod-params table{
+    width: 100%;
+    min-width: 760px;
+    table-layout: fixed;
+    font-size: 14px;
+    line-height: 24px;
+}
+.mod-params th,.mod-params td{
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+    vertical-align: top;
+}
+.mod-params thead th{
+    background: #f6f8fa;
+    font-weight: bold;
+}
+.mod-params tbody tr:last-child th,.mod-params tbody tr:last-child td{
+    border-bottom: 0;
+}
+.mod-params code{
+    font-family: Menlo,Monaco,Consolas,'Courier New',monospace;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+.mod-params summary{
+    color: #2095f2;
+    cursor: pointer;
+}
+.mod-params details code{
+    display: block;
+    margin-top: 6px;
+}
+
 .mod-article{
     margin-bottom: 65px;
 }
