@@ -10,11 +10,15 @@ export default function openUpload(editor,options){
     let busy = false;
     let cancelUpload = null;
     let progress;
+    let description;
     let dialog;
     let current = ()=>editor.isConnected&&!editor.source&&editor._dialog===dialog&&dialog.isConnected&&dialog.open;
     let setMode = function(value,focus=false){
         if(!modes.includes(value)){return;}
         mode = value;
+        if(description&&mode!=='iframe'){
+            dialog.querySelector('[data-insert-panel="'+mode+'"]').appendChild(description);
+        }
         dialog.querySelectorAll('[data-insert-tab]').forEach(button=>{
             let active = button.dataset.insertTab===mode;
             button.setAttribute('aria-selected',String(active));
@@ -29,11 +33,6 @@ export default function openUpload(editor,options){
             panel.inert = !active;
             panel.querySelectorAll('input,textarea').forEach(input=>input.disabled=!active||busy);
         });
-        if(options.iframe){
-            let input = dialog.querySelector('[name="'+options.field.name+'"]');
-            editor.locale.set(input,mode==='iframe'?'留空时使用原始标题':options.field.placeholder,{},'placeholder');
-            editor.locale.set(input.closest('.field').querySelector('span'),mode==='iframe'?(options.field.iframeLabel||options.field.label):options.field.label,options.field.params);
-        }
     };
     let setBusy = function(value){
         busy = value;
@@ -104,7 +103,7 @@ export default function openUpload(editor,options){
     dialog = editor.openDialog({
         'title':'插入'+options.name,
         'keepOpen':true,
-        'fields':[...modes.map(name=>fields[name]),options.field],
+        'fields':[...modes.map(name=>fields[name]),...(modes.some(name=>name!=='iframe')?[options.field]:[])],
         'submitLabel':'插入'+options.name,
         mount(node){
             dialog = node;
@@ -129,6 +128,10 @@ export default function openUpload(editor,options){
                 panels.appendChild(panel);
                 panel.appendChild(field);
             });
+            description = dialog.querySelector('[name="'+options.field.name+'"]')?.closest('.field');
+            if(description){
+                panels.querySelector('[data-insert-panel]:not([data-insert-panel="iframe"])').appendChild(description);
+            }
             tabs.addEventListener('click',event=>{
                 let button = event.target.closest('[data-insert-tab]');
                 if(button&&!busy){
@@ -169,7 +172,7 @@ export default function openUpload(editor,options){
         },
         async onSubmit(values){
             if(mode==='iframe'){
-                let html = options.iframe(values.iframe,values);
+                let html = options.iframe(values.iframe);
                 if(!html){
                     dialog.message('请输入有效的 iframe 嵌入代码');
                     return false;

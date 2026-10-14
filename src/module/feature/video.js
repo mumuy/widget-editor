@@ -16,14 +16,13 @@ export default {
             'types':videoTypes,
             'accept':'video/mp4,video/webm,video/ogg,.m4v,.ogv',
             'error':'请选择 MP4、WebM 或 Ogg 视频',
-            'field':{'name':'title','label':'视频描述','iframeLabel':'视频标题','type':'text','placeholder':'留空时使用文件名'},
-            iframe(value,values){
+            'field':{'name':'title','label':'视频描述','type':'text','placeholder':'留空时使用文件名'},
+            iframe(value){
                 let template = document.createElement('template');
                 template.innerHTML = value;
                 let frames = template.content.querySelectorAll('iframe');
                 if(frames.length!==1){return '';}
                 let frame = frames[0];
-                if(values.title.trim()){frame.setAttribute('title',values.title.trim());}
                 return sanitizeHTML(frame.outerHTML);
             },
             html(source,values){

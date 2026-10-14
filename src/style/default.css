@@ -688,12 +688,15 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     display: grid;
 }
 .insert-panel{
+    display: grid;
     grid-area: 1 / 1;
+    align-content: start;
+    gap: 16px;
     min-width: 0;
 }
 /* 隐藏的标签页仍参与高度计算，同时保留隐藏和禁用状态。 */
 .insert-panel[hidden]{
-    display: block !important;
+    display: grid !important;
     visibility: hidden;
 }
 .upload-feedback{
