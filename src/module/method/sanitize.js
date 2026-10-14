@@ -24,6 +24,15 @@ export function escapeHTML(value){
     });
 }
 
+export function setLinkTarget(link,newWindow=link.getAttribute('target')?.toLowerCase()!=='_self'){
+    link.setAttribute('target',newWindow?'_blank':'_self');
+    if(newWindow){
+        link.setAttribute('rel','noopener noreferrer');
+    }else{
+        link.removeAttribute('rel');
+    }
+}
+
 export function safeURL(value,kind=false){
     value = String(value||'').trim();
     if(!value||/[\u0000-\u0020\u007f]/.test(value)){
@@ -117,8 +126,9 @@ export default function sanitizeHTML(html){
                     if(download){
                         attributes.download = fileName(node.getAttribute('download'));
                     }else{
-                        attributes.target = '_blank';
-                        attributes.rel = 'noopener noreferrer';
+                        setLinkTarget(node);
+                        attributes.target = node.getAttribute('target');
+                        if(node.hasAttribute('rel')){attributes.rel = node.getAttribute('rel');}
                     }
                 }
             }

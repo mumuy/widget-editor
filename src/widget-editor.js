@@ -1,5 +1,5 @@
 import EditorSelection from './module/method/selection.js';
-import sanitizeHTML,{escapeHTML} from './module/method/sanitize.js';
+import sanitizeHTML,{escapeHTML,setLinkTarget} from './module/method/sanitize.js';
 import formatHTML from './module/method/formatHTML.js';
 import applyStyle from './module/method/applyStyle.js';
 import normalizeParagraphs from './module/method/normalizeParagraphs.js';
@@ -516,8 +516,7 @@ class WidgetEditor extends HTMLElement {
         }
         this.content.querySelectorAll('a[href]').forEach(link=>{
             if(!link.hasAttribute('download')){
-                link.setAttribute('target','_blank');
-                link.setAttribute('rel','noopener noreferrer');
+                setLinkTarget(link);
             }
         });
         // 自动排版输出及源码，保留编辑节点和当前选区。

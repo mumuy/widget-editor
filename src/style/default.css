@@ -473,8 +473,21 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
 .table-toolbar{
     width: 480px;
 }
-.link-toolbar,.code-toolbar{
+.code-toolbar{
     padding: 5px;
+}
+.link-toolbar{
+    width: 320px;
+    padding: 14px;
+}
+.link-form .dialog-fields{
+    gap: 10px;
+}
+.link-actions{
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 14px;
 }
 .table-actions{
     display: grid;
@@ -829,11 +842,12 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
 .table-grid-cell:focus-visible{
     border-color: var(--button-active-color);
 }
-.table-dialog .dialog-fields .field{
+.dialog-fields .field.field-checkbox{
     display: flex;
     align-items: center;
     flex-direction: row-reverse;
     justify-content: flex-end;
+    gap: 8px;
 }
 .dialog-fields{
     display: grid;
@@ -909,7 +923,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
 .dialog-notice:empty{
     display: none;
 }
-.dialog-foot .btn{
+.dialog-foot .btn,.link-actions .btn{
     min-width: 72px;
     height: 36px;
     padding: 0 16px;
@@ -918,15 +932,15 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     border: 1px solid var(--panel-border-color);
     border-radius: 4px;
 }
-.dialog-foot .btn:hover{
+.dialog-foot .btn:hover,.link-actions .btn:hover{
     background: var(--button-background-color);
 }
-.dialog-foot .btn-primary{
+.dialog-foot .btn-primary,.link-actions .btn-primary{
     background: var(--button-active-color);
     color: #fff;
     border-color: var(--button-active-color);
 }
-.dialog-foot .btn-primary:hover{
+.dialog-foot .btn-primary:hover,.link-actions .btn-primary:hover{
     background: var(--button-active-color);
     filter: brightness(.95);
 }

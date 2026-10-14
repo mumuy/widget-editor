@@ -36,7 +36,7 @@ export default function openDialog(editor,options){
     let inputs = new Map();
     fields.forEach(function(field){
         let label = document.createElement('label');
-        label.className = 'field';
+        label.className = 'field'+(field.type==='checkbox'?' field-checkbox':'');
         let caption = document.createElement('span');
         editor.locale.set(caption,field.label,field.params);
         let input = document.createElement(['select','textarea'].includes(field.type)?field.type:'input');

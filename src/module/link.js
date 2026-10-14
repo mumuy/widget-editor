@@ -1,4 +1,5 @@
 import {unlink,renderIcon} from './icon.js';
+import {safeURL,escapeHTML,setLinkTarget} from './method/sanitize.js';
 
 // 链接操作使用独立浮层，不向编辑内容添加节点。
 export default class EditorLink {
@@ -13,12 +14,26 @@ export default class EditorLink {
         this.toolbar.className = 'link-toolbar';
         this.toolbar.hidden = true;
         this.toolbar.setAttribute('popover','manual');
-        this.toolbar.setAttribute('role','toolbar');
-        this.toolbar.setAttribute('aria-label','超链接');
-        this.toolbar.innerHTML = `<button type="button" data-link-action="unlink" aria-label="取消超链接">${renderIcon(unlink)}<span>取消超链接</span></button>`;
+        this.toolbar.setAttribute('role','dialog');
+        this.toolbar.setAttribute('aria-label','编辑超链接');
+        this.toolbar.innerHTML = `<form class="link-form">
+            <div class="dialog-fields">
+                <label class="field"><span>链接地址</span><input type="text" name="url" required placeholder="https://example.com"></label>
+                <label class="field"><span>显示文字</span><input type="text" name="text" placeholder="留空时使用链接地址"></label>
+                <label class="field field-checkbox"><span>在新窗口打开</span><input type="checkbox" name="newWindow"></label>
+            </div>
+            <p class="dialog-notice" role="status" aria-live="polite"></p>
+            <div class="link-actions">
+                <button type="button" class="btn" data-link-action="unlink">${renderIcon(unlink)}<span>取消超链接</span></button>
+                <button type="submit" class="btn btn-primary">保存</button>
+            </div>
+        </form>`;
+        this.form = this.toolbar.querySelector('form');
+        this.notice = this.toolbar.querySelector('.dialog-notice');
         editor.shadowRoot.appendChild(this.toolbar);
         editor.locale.apply(this.toolbar);
         this.onHover = event=>{
+            if(this.focused()){return;}
             let link = this.link(event.target);
             if(!link||event.buttons===1){
                 return;
@@ -37,6 +52,7 @@ export default class EditorLink {
             clearTimeout(this.timer);
             // 留出从链接移动到浮层的时间。
             this.timer = setTimeout(()=>{
+                if(this.focused()){return;}
                 this.hover = null;
                 this.point = null;
                 this.refresh();
@@ -44,7 +60,7 @@ export default class EditorLink {
         };
         this.onEnter = ()=>clearTimeout(this.timer);
         this.onSelect = event=>{
-            if(event.key==='Escape'){
+            if(event.key==='Escape'||event.key==='Enter'&&this.blocked){
                 return;
             }
             this.hover = null;
@@ -83,19 +99,28 @@ export default class EditorLink {
         this.onKey = event=>{
             if(event.key==='Escape'&&!this.toolbar.hidden){
                 event.preventDefault();
-                this.dismiss();
                 if(this.toolbar.contains(event.target)){
                     editor.restoreSelection();
                 }
+                this.dismiss();
             }
         };
         this.toolbar.addEventListener('pointerdown',event=>{
-            editor.saveSelection();
-            event.preventDefault();
+            if(!this.focused()){editor.saveSelection();}
+            if(event.target.closest('button')){event.preventDefault();}
         });
         this.toolbar.addEventListener('click',event=>{
-            if(event.target.closest('button')){
+            if(event.target.closest('[data-link-action="unlink"]')){
                 this.unlink();
+            }
+        });
+        this.form.addEventListener('input',()=>editor.locale.set(this.notice,''));
+        this.form.addEventListener('submit',event=>{
+            event.preventDefault();
+            if(this.toolbar.hidden||!this.link(this.target)||!this.form.reportValidity()){return;}
+            if(!this.apply({url:this.form.elements.url.value,text:this.form.elements.text.value,
+                newWindow:this.form.elements.newWindow.checked},this.target)){
+                editor.locale.set(this.notice,'请输入有效的链接地址');
             }
         });
     }
@@ -134,16 +159,78 @@ export default class EditorLink {
         return link&&this.editor.content.contains(link)?link:null;
     }
     selected(){
-        let range = this.editor.selection.current();
+        let range = this.focused()?this.editor.selection.range:this.editor.selection.current();
         if(!range){
             return null;
         }
         let first = this.link(range.startContainer);
         return first&&first===this.link(range.endContainer)?first:null;
     }
+    focused(){
+        return this.toolbar.contains(this.editor.shadowRoot.activeElement);
+    }
+    openDialog(){
+        let editor = this.editor;
+        let range = editor.getRange();
+        let link = this.link(editor.selectedElement());
+        if(link&&range&&!range.collapsed&&this.link(range.endContainer)!==link){link = null;}
+        editor.openDialog({
+            title:link?'编辑超链接':'超链接',
+            fields:[
+                {name:'url',label:'链接地址',type:'text',value:link?.getAttribute('href')||'',
+                    required:true,placeholder:'https://example.com'},
+                {name:'text',label:'显示文字',type:'text',value:link?link.textContent:range?.toString()||'',
+                    placeholder:'留空时使用链接地址'},
+                {name:'newWindow',label:'在新窗口打开',type:'checkbox',value:link?.getAttribute('target')!=='_self'}
+            ],
+            submitLabel:'确定',
+            onSubmit:(values,dialog)=>{
+                if(!this.apply(values,link,range)){
+                    dialog.message('请输入有效的链接地址');
+                    return false;
+                }
+                return true;
+            }
+        });
+    }
+    apply(values,link=null,range=this.editor.getRange()){
+        let editor = this.editor;
+        let url = safeURL(String(values.url||'').trim());
+        if(!url||editor.source||editor.formControl.disabled||link&&!this.link(link)){return false;}
+        let text = String(values.text||'').trim()||url;
+        editor.history.record();
+        if(link){
+            editor.transaction(()=>{
+                link.setAttribute('href',url);
+                setLinkTarget(link,values.newWindow);
+                if(text!==link.textContent){
+                    link.textContent = text;
+                    let selection = document.createRange();
+                    selection.selectNodeContents(link);
+                    selection.collapse(false);
+                    editor.selection.range = selection;
+                    editor.restoreSelection();
+                }
+                this.dismiss();
+            });
+        }else if(range&&!range.collapsed&&text===range.toString()){
+            editor.transaction(()=>{
+                document.execCommand('createLink',false,url);
+                let selected = editor.selection.current();
+                editor.content.querySelectorAll('a[href]:not([download])').forEach(node=>{
+                    if(selected?.intersectsNode(node)){setLinkTarget(node,values.newWindow);}
+                });
+                this.dismiss();
+            });
+        }else{
+            editor.insertHTML('<a href="'+escapeHTML(url)+'" target="'+(values.newWindow?'_blank':'_self')+'">'+escapeHTML(text)+'</a>');
+        }
+        return true;
+    }
     dismiss(){
         clearTimeout(this.timer);
-        this.blocked = this.selected()?this.editor.selection.current().cloneRange():null;
+        let range = this.focused()?this.editor.selection.range:this.editor.selection.current();
+        this.blocked = this.selected()&&range?range.cloneRange():null;
         this.hover = null;
         this.target = null;
         this.point = null;
@@ -156,11 +243,11 @@ export default class EditorLink {
         if(this.editor.formControl.disabled){this.dismiss();return;}
         let editor = this.editor;
         let selected = this.selected();
-        let current = editor.selection.current();
+        let current = this.focused()?editor.selection.range:editor.selection.current();
         if(!selected||this.blocked&&(current.startContainer!==this.blocked.startContainer||current.startOffset!==this.blocked.startOffset||current.endContainer!==this.blocked.endContainer||current.endOffset!==this.blocked.endOffset)){
             this.blocked = null;
         }
-        let link = this.link(this.hover)||selected;
+        let link = this.focused()?this.link(this.target):this.link(this.hover)||selected;
         if(!editor.isConnected||editor.source||editor.painter||editor._dialog?.open||editor.dropdown.opened||this.dragging||editor.table?.dragging||editor.table?.bounds()?.area.items.length>1||!link||this.blocked){
             this.dismiss();
             return;
@@ -176,12 +263,19 @@ export default class EditorLink {
             this.dismiss();
             return;
         }
+        if(this.target!==link){
+            this.form.elements.url.value = link.getAttribute('href');
+            this.form.elements.text.value = link.textContent;
+            this.form.elements.newWindow.checked = link.getAttribute('target')!=='_self';
+            editor.locale.set(this.notice,'');
+        }
         this.target = link;
         editor.table?.hide();
         this.toolbar.hidden = false;
         if(this.toolbar.showPopover&&!this.toolbar.matches(':popover-open')){
             this.toolbar.showPopover();
         }
+        if(this.focused()){return;}
         let size = this.toolbar.getBoundingClientRect();
         let top = rect.bottom+8;
         if(top+size.height>height-8){
@@ -193,11 +287,11 @@ export default class EditorLink {
     unlink(){
         let editor = this.editor;
         let link = this.link(this.target);
-        if(!link||editor.source){
+        if(!link||editor.source||editor.formControl.disabled){
             this.dismiss();
             return;
         }
-        editor.saveSelection();
+        if(!this.focused()){editor.saveSelection();}
         editor.history.record();
         editor.transaction(()=>{
             let range = editor.getRange().cloneRange();

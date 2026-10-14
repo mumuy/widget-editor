@@ -48,6 +48,8 @@ export default {
     '无序列表':'Unordered list',
     '超链接':'Hyperlink',
     '编辑超链接':'Edit hyperlink',
+    '在新窗口打开':'Open in a new window',
+    '保存':'Save',
     '取消超链接':'Remove link',
     '链接地址':'Link URL',
     '显示文字':'Display text',
