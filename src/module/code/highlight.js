@@ -41,15 +41,15 @@ export default function highlight(source,language){
         highlight(source.slice(index),'html').forEach(token=>add(token.text,token.type));
     }else if(language==='markdown'){
         markdown(source,add,highlight);
-    }else if(language==='html'){
-        html(source,add);
+    }else if(['html','xml'].includes(language)){
+        markup(source,add,language==='xml');
     }else{
         scan(source,language,add);
     }
     return tokens;
 }
 
-function html(source,add){
+function markup(source,add,xml=false){
     let index = 0;
     while(index<source.length){
         let rest = source.slice(index);
@@ -60,7 +60,15 @@ function html(source,add){
             index = end;
             continue;
         }
-        let opening = rest.match(/^<(\/?)([a-z][\w:-]*)\b/i);
+        if(xml&&rest.startsWith('<![CDATA[')){
+            let end = source.indexOf(']]>',index+9);
+            add('<![CDATA[','punctuation');
+            add(source.slice(index+9,end<0?source.length:end),'string');
+            if(end>=0){add(']]>','punctuation');}
+            index = end<0?source.length:end+3;
+            continue;
+        }
+        let opening = rest.match(xml?/^<([/?]?)([a-z_][\w:.-]*)/i:/^<(\/?)([a-z][\w:-]*)\b/i);
         if(opening){
             add('<'+opening[1],'punctuation');
             add(opening[2],'tag');
@@ -69,7 +77,7 @@ function html(source,add){
             let selfClosing = false;
             while(index<source.length){
                 rest = source.slice(index);
-                let end = rest.match(/^\/?\s*>/);
+                let end = rest.match(xml?/^[/?]?\s*>/:/^\/?\s*>/);
                 if(end){
                     add(end[0],'punctuation');
                     selfClosing = end[0].startsWith('/');
@@ -94,14 +102,14 @@ function html(source,add){
                         index += value[0].length;
                     }
                 }else{
-                    let name = rest.match(/^[\w:-]+/);
+                    let name = rest.match(xml?/^[\w:.-]+/:/^[\w:-]+/);
                     let text = name?name[0]:source[index];
                     add(text,name?'attribute':'punctuation');
                     index += text.length;
                 }
             }
             let tag = opening[2].toLowerCase();
-            if(closed&&!opening[1]&&!selfClosing&&(tag==='script'||tag==='style')){
+            if(!xml&&closed&&!opening[1]&&!selfClosing&&(tag==='script'||tag==='style')){
                 let closing = new RegExp('</'+tag+'\\s*>','i');
                 let match = closing.exec(source.slice(index));
                 let end = match?index+match.index:source.length;
@@ -186,9 +194,12 @@ function scan(source,language,add,phpBlock=false){
             continue;
         }
         let special = language==='visual-basic'?rest.match(/^&(?:H[\da-f]+|B[01]+|O[0-7]+)/i):
-            language==='ruby'?rest.match(/^(?:@@?\w+|\$[a-z_]\w*|:[a-z_]\w*[!?]?)/i):null;
+            language==='ruby'?rest.match(/^(?:@@?\w+|\$[a-z_]\w*|:[a-z_]\w*[!?]?)/i):
+            language==='rust'?rest.match(/^'[a-z_]\w*/i):
+            language==='kotlin'?rest.match(/^(?:@[a-z_][\w.]*|`[^`\r\n]*(?:`|$))/i):null;
         if(special){emit(special[0],language==='visual-basic'?'number':'property');continue;}
-        let number = rest.match(/^(?:0[xX][\da-fA-F_]+|0[bB][01_]+|0[oO][0-7_]+|(?:\d[\d_]*(?:\.[\d_]*)?|\.\d[\d_]*)(?:[eE][+-]?\d[\d_]*)?)(?:[uU](?:ll|LL|[lL])?|(?:ll|LL|[lL])[uU]?|[fFdDmM]|n)?(?!\w)/);
+        let number = ['rust','kotlin'].includes(language)?rest.match(/^(?:0[xX][\da-fA-F_]+|0[bB][01_]+|0[oO][0-7_]+|\d[\d_]*(?:\.(?!\.)[\d_]*)?(?:[eE][+-]?\d[\d_]*)?)(?:[iu](?:8|16|32|64|128|size)|f(?:32|64)|[lLfF])?(?!\w)/):
+            rest.match(/^(?:0[xX][\da-fA-F_]+|0[bB][01_]+|0[oO][0-7_]+|(?:\d[\d_]*(?:\.[\d_]*)?|\.\d[\d_]*)(?:[eE][+-]?\d[\d_]*)?)(?:[uU](?:ll|LL|[lL])?|(?:ll|LL|[lL])[uU]?|[fFdDmM]|n)?(?!\w)/);
         let selector = language==='css'&&depth===0?rest.match(/^[#.][\w-]+/):null;
         if(selector){
             emit(selector[0],'tag');
@@ -211,7 +222,7 @@ function scan(source,language,add,phpBlock=false){
             let text = word[0];
             let after = source.slice(index+text.length);
             let key = ['sql','php','visual-basic'].includes(language)?text.toLowerCase():text;
-            let type = profiles[language]?.has(key)?'keyword':/^\s*\(/.test(after)?'function':['.','?.'].includes(previous)||/^\s*:/.test(after)?'property':'text';
+            let type = profiles[language]?.has(key)?'keyword':/^\s*\(/.test(after)||language==='rust'&&/^!\s*[[({]/.test(after)?'function':['.','?.'].includes(previous)||/^\s*:/.test(after)?'property':'text';
             if(language==='css'&&type!=='function'){
                 type = depth===0?'tag':/^\s*:/.test(after)?'property':'string';
             }

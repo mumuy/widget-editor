@@ -2,13 +2,13 @@ export const languages = [
     ['text','纯文本'],['html','HTML'],['javascript','JavaScript'],['css','CSS'],['java','Java'],
     ['typescript','TypeScript'],['php','PHP'],['python','Python'],['go','Go'],['json','JSON'],['sql','SQL'],['bash','Bash'],
     ['cpp','C++'],['c','C'],['csharp','C#'],['jsx','JSX'],['visual-basic','Visual Basic'],['ruby','Ruby'],
-    ['swift','Swift'],['lua','Lua'],['markdown','Markdown']
+    ['swift','Swift'],['lua','Lua'],['markdown','Markdown'],['kotlin','Kotlin'],['xml','XML'],['rust','Rust']
 ];
 
 const aliases = {
-    js:'javascript',ts:'typescript',xml:'html',py:'python',golang:'go',sh:'bash',shell:'bash',plaintext:'text',txt:'text',
+    js:'javascript',ts:'typescript',py:'python',golang:'go',sh:'bash',shell:'bash',plaintext:'text',txt:'text',
     'c++':'cpp',cplusplus:'cpp','c#':'csharp',cs:'csharp',vb:'visual-basic',vbnet:'visual-basic',
-    'visual basic':'visual-basic',visualbasic:'visual-basic',rb:'ruby',md:'markdown'
+    'visual basic':'visual-basic',visualbasic:'visual-basic',rb:'ruby',md:'markdown',kt:'kotlin',kts:'kotlin',rs:'rust'
 };
 
 export function languageName(value){
@@ -33,7 +33,9 @@ const keywords = {
     'visual-basic':'addhandler addressof alias and andalso as async await boolean byref byte byval call case catch cbool cbyte cchar cdate cdec cdbl char cint class clng cobj const continue csbyte cshort csng cstr ctype cuint culng cushort date decimal declare default delegate dim directcast do double each else elseif end enum erase error event exit false finally for friend function get gettype global gosub goto handles if implements imports in inherits integer interface is isnot let lib like long loop me mod module mustinherit mustoverride mybase myclass namespace narrowing new next not nothing notinheritable notoverridable object of on operator optional or orelse out overloads overridable overrides paramarray partial private property protected public raiseevent readonly redim rem removehandler resume return sbyte select set shadows shared short single static step stop string structure sub synclock then throw to true try trycast typeof uinteger ulong ushort using when while widening with withevents writeonly xor yield',
     ruby:'alias and begin BEGIN break case class def defined? do else elsif end END ensure false for if in module next nil not or redo rescue retry return self super then true undef unless until when while yield',
     swift:'actor any as associatedtype async await borrowing break case catch class consuming continue convenience default defer deinit didSet distributed do dynamic else enum extension fallthrough false fileprivate final for func get guard if import in indirect infix init inout internal is isolated lazy let mutating nil nonisolated nonmutating open operator optional override package postfix precedencegroup prefix private protocol public repeat required rethrows return self Self set some static struct subscript super switch throw throws true try typealias unowned var weak where while willSet Bool Character Double Float Int String',
-    lua:'and break do else elseif end false for function goto if in local nil not or repeat return then true until while'
+    lua:'and break do else elseif end false for function goto if in local nil not or repeat return then true until while',
+    kotlin:'as break class continue do else false for fun if in interface is null object package return super this throw true try typealias typeof val var when while by catch constructor delegate dynamic field file finally get import init param property receiver set setparam where actual abstract annotation companion const context crossinline data enum expect external final infix inline inner internal lateinit noinline open operator out override private protected public reified sealed suspend tailrec value vararg Any Array Boolean Byte Char Double Float Int Long Nothing Short String Unit List Map Set',
+    rust:'as async await break const continue crate dyn else enum extern false fn for if impl in let loop match mod move mut pub ref return self Self static struct super trait true type unsafe use where while abstract become box do final macro override priv try typeof unsized virtual yield bool char str i8 i16 i32 i64 i128 isize u8 u16 u32 u64 u128 usize f32 f64 String Vec Option Result Some None Ok Err'
 };
 
 export const profiles = Object.fromEntries(Object.entries(keywords).map(([name,words])=>[name,new Set(words.split(' '))]));

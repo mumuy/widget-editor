@@ -355,7 +355,7 @@ HTML 输出中，纯文本单元格保持在一行，例如 `<td>文字</td>`；
 
 **分割线与代码块**：通过 `insert="divider,code"` 放入插入菜单，也可以通过 `custom="bold,divider,code"` 直接放入工具栏。分割线输出为 `hr`；代码块使用 `pre` 和 `code`，选中的文字可直接转换为代码块。
 
-光标进入代码块时，右上方会显示固定在代码块上的自定义语言下拉框，支持 HTML、JavaScript、CSS、Java、TypeScript、PHP、Python、Go、JSON、SQL、Bash、C++、C、C#、JSX、Visual Basic、Ruby、Swift、Lua、Markdown 和纯文本。切换语言会重新高亮，保留文字和选区，支持撤销。HTML 中的 `script`、`style` 内容分别按 JavaScript、CSS 高亮；JSX 的标签与表达式分别识别，Markdown 围栏代码按指定语言高亮。
+光标进入代码块时，右上方会显示固定在代码块上的自定义语言下拉框，支持 HTML、JavaScript、CSS、Java、TypeScript、PHP、Python、Go、JSON、SQL、Bash、C++、C、C#、JSX、Visual Basic、Ruby、Swift、Lua、Markdown、Kotlin、XML、Rust 和纯文本。切换语言会重新高亮，保留文字和选区，支持撤销。HTML 中的 `script`、`style` 内容分别按 JavaScript、CSS 高亮；XML 支持声明、标签、属性、注释和 CDATA；JSX 的标签与表达式分别识别，Markdown 围栏代码按指定语言高亮。Kotlin 支持三引号字符串，Rust 支持原始字符串、字符和生命周期标注，两者均支持嵌套块注释。
 
 初始内容通过 `code` 的 `data-language` 指定语言。新增语言的代码依次为 `cpp`、`c`、`csharp`、`jsx`、`visual-basic`、`ruby`、`swift`、`lua`、`markdown`；也兼容 `c++`、`c#`、`cs`、`vb`、`vbnet`、`rb`、`md` 等常见别名。语言下拉框可以通过 `::part(code-language-trigger)`、`::part(code-language-menu)` 和 `::part(dropdown-option)` 调整样式。
 

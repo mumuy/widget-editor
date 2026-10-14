@@ -41,7 +41,7 @@ export function comment(source,index,language){
         !['css','json','lua'].includes(language)&&rest.startsWith('//')||language==='php'&&rest[0]==='#';
     if(line){return rest.match(/^[^\n]*/)[0];}
     if(!['python','ruby','bash','json','visual-basic','lua'].includes(language)&&rest.startsWith('/*')){
-        if(language==='swift'){
+        if(['swift','kotlin','rust'].includes(language)){
             let depth = 1;
             let end = 2;
             while(end<rest.length&&depth){
@@ -70,6 +70,10 @@ export function literal(source,index,language){
         let raw = rest.match(/^(#+)("""|")/);
         if(raw){return {text:delimited(rest,raw[0],raw[2]+raw[1]),type:'string'};}
     }
+    if(language==='rust'){
+        let raw = rest.match(/^(?:br|cr|r)(#{0,255})"/);
+        if(raw){return {text:delimited(rest,raw[0],'"'+raw[1]),type:'string'};}
+    }
     if(language==='csharp'){
         let raw = rest.match(/^(?:\$+)?("{3,})/);
         if(raw){return {text:delimited(rest,raw[0],raw[1]),type:'string'};}
@@ -93,12 +97,15 @@ export function literal(source,index,language){
     }
     let prefix = language==='python'?rest.match(/^(?:fr|rf|br|rb|[frbu])(?=["'])/i)?.[0]||'':
         language==='csharp'?rest.match(/^(?:\$@|@\$|@|\$)(?=")/)?.[0]||'':
-        ['c','cpp'].includes(language)?rest.match(/^(?:u8|[uUL])(?=["'])/)?.[0]||'':'';
+        ['c','cpp'].includes(language)?rest.match(/^(?:u8|[uUL])(?=["'])/)?.[0]||'':
+        language==='rust'?rest.match(/^(?:b(?=["'])|c(?="))/)?.[0]||'':'';
     let quote = source[index+prefix.length];
     let backtick = quote===String.fromCharCode(96)&&['javascript','typescript','jsx','go','bash','ruby'].includes(language);
     if(quote!=='"'&&quote!=="'"&&!backtick){return null;}
-    let triple = ['python','java','swift'].includes(language)&&source.startsWith(quote.repeat(3),index+prefix.length);
-    let raw = ['sql','visual-basic'].includes(language)||language==='csharp'&&prefix.includes('@')||language==='go'&&backtick||language==='bash'&&quote==="'";
+    // Rust 的生命周期（如 'a、'static）不是字符字面量。
+    if(language==='rust'&&quote==="'"&&!/^'(?:\\(?:u\{[\da-f_]+\}|x[\da-f]{2}|[^\r\n])|[^'\\\r\n])'/iu.test(rest.slice(prefix.length))){return null;}
+    let triple = ['python','java','swift','kotlin'].includes(language)&&source.startsWith(quote.repeat(3),index+prefix.length);
+    let raw = ['sql','visual-basic'].includes(language)||language==='csharp'&&prefix.includes('@')||language==='go'&&backtick||language==='bash'&&quote==="'"||language==='kotlin'&&triple;
     let multiline = triple||backtick||['php','sql','bash','ruby'].includes(language)||language==='csharp'&&raw;
     let end = quoted(source,index+prefix.length,quote,triple,raw,multiline);
     return {text:source.slice(index,end),type:language==='json'&&/^\s*:/.test(source.slice(end))?'property':'string'};
