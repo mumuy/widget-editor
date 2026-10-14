@@ -13,7 +13,7 @@ export default class EditorFullscreen {
             editor.saveSelection();
             event.preventDefault();
         });
-        this.button.addEventListener('click',()=>this.state?this.close():this.open());
+        this.button.addEventListener('click',()=>editor.execute('fullscreen'));
         this.onKey = event=>{
             if(event.key==='Escape'&&this.state&&!editor._dialog?.open&&!editor.dropdown.opened&&editor.table?.toolbar.hidden!==false&&editor.links.toolbar.hidden&&editor.codes.toolbar.hidden&&!editor.painter){
                 event.preventDefault();
@@ -30,7 +30,7 @@ export default class EditorFullscreen {
         this.editor.shadowRoot.removeEventListener('keydown',this.onKey,true);
     }
     open(){
-        if(this.state||!this.editor.isConnected){
+        if(this.state||!this.editor.isConnected||this.editor.formControl.disabled||!this.editor.tools.canView('fullscreen')){
             return;
         }
         active?.close();

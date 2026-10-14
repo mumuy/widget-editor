@@ -40,6 +40,7 @@
 | `height` | 编辑区域高度，单位为 px，有效范围为 160～2000 | `480` |
 | `insert` | 插入菜单中的功能，以英文逗号分隔 | `divider,table,image,video,attachment,audio,emoji,code` |
 | `custom` | 工具栏功能及显示顺序，以英文逗号分隔 | 使用默认工具栏 |
+| `view` | 底部源码、全屏和手机预览按钮及显示顺序 | `source,fullscreen,preview` |
 | `language` | 界面语言：`zh-CN`、`zh-HK` 或 `en-US` | `zh-CN` |
 | `heading` | 标题下拉菜单的选项及顺序 | `p,h1,h2,h3,h4,h5,h6` |
 | `fontfamily` | 字体下拉菜单的选项及顺序 | 下方列出的全部字体 |
@@ -172,13 +173,32 @@ editor.removeAttribute('fontsize'); // 恢复全局默认字号选项
 <widget-editor custom="bold,italic,image,insert" insert="table,video,emoji"></widget-editor>
 ```
 
-字段不区分大小写，重复字段只显示一次，未知字段会被忽略。`custom=""` 只显示撤销和重做；不设置或移除 `custom` 则恢复默认工具栏。底部的源码、全屏、手机预览按钮及字数统计保留，配置 `source`、`fullscreen` 或 `preview` 时，也会在工具栏中提供对应按钮。
+字段不区分大小写，重复字段只显示一次，未知字段会被忽略。`custom=""` 只显示撤销和重做；不设置或移除 `custom` 则恢复默认工具栏。底部的源码、全屏和手机预览按钮由 `view` 控制，字数统计保留；配置 `source`、`fullscreen` 或 `preview` 时，也会在工具栏中提供对应按钮。
 
 支持运行时修改，不会清空内容、选区或撤销记录：
 
 ```javascript
 editor.setAttribute('custom','heading,bold,link,image');
 editor.removeAttribute('custom');
+```
+
+### 底部操作配置
+
+`view` 使用英文逗号分隔，支持 `source`（源码）、`fullscreen`（全屏）、`preview`（手机预览），字段顺序就是按钮顺序：
+
+```html
+<widget-editor view="fullscreen,source"></widget-editor>
+<widget-editor view="preview"></widget-editor>
+<widget-editor view=""></widget-editor>
+```
+
+不设置或移除 `view` 时，使用配置文件中的默认值 `source,fullscreen,preview`。忽略大小写、重复项及无效字段；设为空隐藏底部操作按钮，字数统计保留。通过 `custom` 配置的同名工具栏按钮仍可使用，例如 `custom="bold,source" view=""` 只在工具栏提供源码功能。
+
+运行时修改立即生效；如果正在使用的模式在底部和工具栏中均不再开放，会自动退出，源码中的修改会整理并保留。
+
+```javascript
+editor.setAttribute('view','preview,fullscreen');
+editor.removeAttribute('view'); // 恢复默认底部按钮及顺序
 ```
 
 ### 界面语言

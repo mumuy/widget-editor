@@ -14,7 +14,6 @@ import EditorDropdown from './module/dropdown.js';
 import EditorTooltip from './module/tooltip.js';
 import EditorFullscreen from './module/fullscreen.js';
 import EditorLanguage from './module/language/index.js';
-import {renderIcon,fullscreen as fullscreenIcon,source as sourceIcon,preview as previewIcon} from './module/icon.js';
 import styleSheet from './style/default.css' with { type: 'css'};
 
 class WidgetEditor extends HTMLElement {
@@ -125,6 +124,9 @@ class WidgetEditor extends HTMLElement {
                 this._dialog.dismiss();
             }
             this.updateToolbar();
+        }
+        if(!name||toolbarAttributes.includes(name)){
+            this.tools.updateView();
         }
         this.updatePlaceholder();
         this.style.setProperty('--editor-height',this.config.get('height')+'px');
@@ -252,9 +254,7 @@ class WidgetEditor extends HTMLElement {
                 <textarea class="editor-source" aria-label="HTML 源代码" spellcheck="false" hidden></textarea>
             </div>
             <div class="ft">
-                <button type="button" class="tool tool-button source-button" data-action="source" aria-label="源代码" aria-pressed="false">${renderIcon(sourceIcon)}</button>
-                <button type="button" class="tool tool-button fullscreen-button" data-action="fullscreen" aria-label="全屏" aria-pressed="false">${renderIcon(fullscreenIcon)}</button>
-                <button type="button" class="tool tool-button preview-button" data-action="preview" aria-label="手机预览" aria-pressed="false">${renderIcon(previewIcon)}</button>
+                ${this.tools.renderView()}
                 <span class="word-count">0 字</span>
             </div>
         </div>`;
@@ -478,7 +478,7 @@ class WidgetEditor extends HTMLElement {
         }
     }
     toggleSource(){
-        if(this.formControl.disabled){return;}
+        if(!this.source&&(this.formControl.disabled||!this.tools.canView('source'))){return;}
         this.preview?.close();
         this._dialog?.dismiss();
         this.dropdown.close();
@@ -491,7 +491,7 @@ class WidgetEditor extends HTMLElement {
             this.source = false;
             this.content.hidden = false;
             this.sourceArea.hidden = true;
-            this.restoreSelection();
+            if(!this.formControl.disabled){this.restoreSelection();}
             this.update();
         }else{
             this.saveSelection();

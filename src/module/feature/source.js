@@ -5,6 +5,7 @@ export default {
     'icon':icon,
     'label':'源代码',
     'type':'button',
+    view:true,
     bind(editor){
         editor.sourceButton.addEventListener('pointerdown',event=>{
             editor.saveSelection();

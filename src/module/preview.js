@@ -35,7 +35,7 @@ export default class EditorPreview {
     }
     open(){
         let editor = this.editor;
-        if(this.active||editor.formControl.disabled||!editor.isConnected){return;}
+        if(this.active||editor.formControl.disabled||!editor.isConnected||!editor.tools.canView('preview')){return;}
         if(editor.source){editor.toggleSource();}
         editor._dialog?.dismiss();
         editor.dropdown.close();

@@ -7,7 +7,7 @@ const controls = [
     {name:'undo',label:'撤销',icon:undo,execute:editor=>editor.history.move(-1)},
     {name:'redo',label:'重做',icon:redo,execute:editor=>editor.history.move(1)},
     ...features,
-    {name:'fullscreen',label:'全屏',icon:fullscreen,type:'button',
+    {name:'fullscreen',label:'全屏',icon:fullscreen,type:'button',view:true,
         execute:editor=>editor.fullscreen.state?editor.fullscreen.close():editor.fullscreen.open(),
         active:editor=>!!editor.fullscreen?.state},
     ...insertFeatures.map(feature=>({...feature,insertion:true}))
@@ -36,8 +36,31 @@ export default class EditorToolbar {
             if(feature.type==='color'){
                 return feature.render();
             }
-            return `<button type="button" class="tool tool-button" data-action="${feature.name}" aria-label="${feature.label}">${renderIcon(feature.icon)}</button>`;
+            return this.renderButton(feature);
         }).join('');
+    }
+    renderButton(feature,className=''){
+        return `<button type="button" class="tool tool-button ${className}" data-action="${feature.name}" aria-label="${feature.label}">${renderIcon(feature.icon)}</button>`;
+    }
+    renderView(){
+        return Array.from(this.features.values()).filter(feature=>feature.view).map(feature=>this.renderButton(feature,feature.name+'-button')).join('');
+    }
+    get views(){
+        return this.editor.config.list('view').map(name=>this.get(name)).filter(feature=>feature?.view);
+    }
+    canView(name){
+        return this.views.some(feature=>feature.name===name)||this.items.some(feature=>feature.name===name);
+    }
+    updateView(){
+        let editor = this.editor;
+        let names = this.views.map(feature=>feature.name);
+        editor.footer.querySelectorAll('[data-action]').forEach(button=>{
+            button.hidden = !names.includes(button.dataset.action);
+        });
+        names.forEach(name=>editor.wordCount.before(editor.footer.querySelector('[data-action="'+name+'"]')));
+        if(!this.canView('preview')){editor.preview?.close();}
+        if(!this.canView('fullscreen')){editor.fullscreen?.close();}
+        if(editor.source&&!this.canView('source')){editor.toggleSource();}
     }
     canInsert(name){
         let feature = this.get(name);
@@ -51,6 +74,7 @@ export default class EditorToolbar {
         let editor = this.editor;
         let name = feature.name;
         if(editor.formControl.disabled){return true;}
+        if(feature.view&&!this.canView(name)){return true;}
         if(editor.source&&!['source','fullscreen','preview'].includes(name)){return true;}
         if(inCode&&!['undo','redo','source','fullscreen','preview','format'].includes(name)){return true;}
         if(name==='undo'){return !editor.history.canUndo;}
