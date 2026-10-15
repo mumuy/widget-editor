@@ -274,31 +274,38 @@ console.log(editor.value);</code></pre>
                                 </table>
                             </div>
                             <p>下面使用原生 <code>XMLHttpRequest</code> 上传文件并报告进度。请按实际接口修改地址和响应字段。</p>
-                            <widget-code language="javascript">let editor = document.querySelector('#editor');
-editor.addEventListener('upload',function(event){
+                            <widget-code language="javascript">$editor.addEventListener('upload',async function(event){
     let {files,type,onUploadComplete,onUploadError,onProgress} = event.detail;
-    let request = new XMLHttpRequest();
-    request.open('POST','/api/upload');
-    request.responseType = 'json';
-    request.upload.onprogress = function(event){
-        if(event.lengthComputable){
-            onProgress(event.loaded/event.total*100);
+    let total = files.reduce((sum,file)=>sum+file.size,0);
+    let loaded = 0;
+    let sources = [];
+    try{
+        for(let file of files){
+            sources.push(await new Promise((resolve,reject)=>{
+                let reader = new FileReader();
+                reader.onprogress = event=>{
+                    if(event.lengthComputable){onProgress(total?(loaded+event.loaded)/total*100:100);}
+                };
+                reader.onload = ()=>{
+                    let source = String(reader.result);
+                    if(type==='attachment'){
+                        source = source.replace(/^data:[^,]*;base64,/, 'data:application/octet-stream;base64,');
+                    }else if(type==='audio'&&file.type==='audio/x-wav'){
+                        source = source.replace(/^data:[^,]*;base64,/, 'data:audio/wav;base64,');
+                    }
+                    loaded += file.size;
+                    onProgress(total?loaded/total*100:100);
+                    resolve(source);
+                };
+                reader.onerror = ()=>reject('文件读取失败，请重试');
+                reader.onabort = ()=>reject('文件读取已取消');
+                reader.readAsDataURL(file);
+            }));
         }
-    };
-    request.onload = function(){
-        if(request.status&gt;=200&amp;&amp;request.status&lt;300&amp;&amp;Array.isArray(request.response?.urls)){
-            onUploadComplete(request.response.urls);
-        }else{
-            onUploadError(request.response?.message||'上传失败，请重试');
-        }
-    };
-    request.onerror = ()=&gt;onUploadError('网络错误，请重试');
-    request.onabort = ()=&gt;onUploadError('上传已取消');
-
-    let data = new FormData();
-    files.forEach(file=&gt;data.append('files',file));
-    data.append('type',type);
-    request.send(data);
+        onUploadComplete(sources);
+    }catch(error){
+        onUploadError(error);
+    }
 });</widget-code>
                         </div>
                     </section>
