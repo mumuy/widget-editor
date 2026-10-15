@@ -17,7 +17,8 @@ export default function openMedia(editor,options,initialMode){
     let materials;
     let addButton;
     let addInput;
-    let selectionCount;
+    let selectedCount = 0;
+    let noticeMessage = [''];
     let uploaded = null;
     let progress;
     let description;
@@ -27,6 +28,15 @@ export default function openMedia(editor,options,initialMode){
     let tabs;
     let panels = new Map();
     let current = ()=>editor.isConnected&&!editor.source&&editor._dialog===dialog&&dialog.isConnected&&dialog.open;
+    let updateNotice = function(){
+        let count = mode==='resource'&&!noticeMessage[0];
+        notice.toggleAttribute('data-count',count);
+        if(count){editor.locale.set(notice,'已选 {count} 项',{count:selectedCount});}
+        else{
+            let [message,params,literal] = noticeMessage;
+            editor.locale.set(notice,message,params,'textContent',literal);
+        }
+    };
     let setMode = function(value,focus=false){
         if(!modes.includes(value)){return;}
         mode = value;
@@ -46,8 +56,9 @@ export default function openMedia(editor,options,initialMode){
             panel.element.inert = !active;
             panel.element.querySelectorAll('input,textarea').forEach(input=>input.disabled=!active||busy);
         });
-        (activePanel.feedback||activePanel.element).appendChild(notice);
-        selectionCount.hidden = mode!=='resource';
+        if(mode==='resource'){dialog.querySelector('.dialog-foot').prepend(notice);}
+        else{(activePanel.feedback||activePanel.element).appendChild(notice);}
+        updateNotice();
         addButton.hidden = mode!=='resource';
         addButton.disabled = busy;
         addInput.disabled = busy||mode!=='resource';
@@ -207,6 +218,7 @@ export default function openMedia(editor,options,initialMode){
             dialog.dataset.insert = options.kind;
             submit = dialog.querySelector('[type="submit"]');
             notice = dialog.querySelector('.dialog-notice');
+            dialog.message = (...args)=>{noticeMessage = args;updateNotice();};
             dialog.querySelector('.dialog-cancel').remove();
             addButton = document.createElement('button');
             addButton.type = 'button';
@@ -221,12 +233,7 @@ export default function openMedia(editor,options,initialMode){
             addInput.dataset.materialUpload = '';
             addInput.onchange = ()=>uploadFiles('add',addInput);
             addButton.onclick = ()=>addInput.click();
-            selectionCount = document.createElement('span');
-            selectionCount.className = 'material-count';
-            selectionCount.setAttribute('role','status');
-            selectionCount.setAttribute('aria-live','polite');
-            editor.locale.set(selectionCount,'已选 {count} 项',{count:0});
-            dialog.querySelector('.dialog-foot').prepend(selectionCount,addButton,addInput);
+            dialog.querySelector('.dialog-foot').prepend(addButton,addInput);
             tabs = document.createElement('div');
             tabs.className = 'media-tabs';
             tabs.setAttribute('role','tablist');
@@ -253,7 +260,7 @@ export default function openMedia(editor,options,initialMode){
                 if(name==='resource'){
                     materials = createMaterials(editor,{
                         ...options,limit:batch,
-                        onSelectionChange:count=>editor.locale.set(selectionCount,'已选 {count} 项',{count}),
+                        onSelectionChange:count=>{selectedCount = count;updateNotice();},
                         message:(...args)=>dialog.message(...args),
                         remove:url=>resolveResources('remove',[],url)
                     });

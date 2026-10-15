@@ -847,12 +847,20 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog
     overflow: auto;
     overscroll-behavior: contain;
 }
-.material-count{
+.media-dialog .dialog-foot > .dialog-notice{
     align-self: center;
-    margin-right: auto;
-    color: var(--muted-text-color);
+    flex: 1;
+    min-width: 0;
+    max-height: 40px;
+    margin: 0 auto 0 0;
+    overflow: auto;
     font-size: 13px;
-    white-space: nowrap;
+}
+.media-dialog .dialog-notice[data-count]{
+    color: var(--muted-text-color);
+}
+.media-dialog .dialog-foot .btn{
+    flex-shrink: 0;
 }
 .material-item{
     position: relative;
