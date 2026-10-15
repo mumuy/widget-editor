@@ -808,14 +808,14 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
 .resource-button{
     justify-self: start;
 }
-.upload-feedback{
+.insert-feedback{
     display: grid;
     align-items: center;
     height: 20px;
-    margin-top: 6px;
+    margin-top: -10px;
     overflow: auto;
 }
-.upload-feedback .upload-progress,.upload-feedback .dialog-notice{
+.insert-feedback .upload-progress,.insert-feedback .dialog-notice{
     margin: 0;
 }
 .upload-dialog .dialog-foot{
