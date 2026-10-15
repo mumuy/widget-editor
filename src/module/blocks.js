@@ -81,7 +81,7 @@ export default class EditorBlocks {
             this.dismiss();
         });
     }
-    remove(block,paragraph){
+    remove(block,paragraph,end=false){
         let editor = this.editor;
         let range = editor.getRange()?.cloneRange();
         editor.history.record();
@@ -97,7 +97,7 @@ export default class EditorBlocks {
             if(range&&paragraph.contains(range.commonAncestorContainer)){
                 this.select(range);
             }else{
-                this.focus(paragraph);
+                this.focus(paragraph,end);
             }
             this.dismiss();
         });
@@ -187,8 +187,14 @@ export default class EditorBlocks {
             block = node.childNodes[range.startOffset-(backward?1:0)];
         }
         if(!this.block(block)&&!(backward&&block?.matches('blockquote')&&this.empty(block))){return false;}
+        // 同一段落中的多张图片仍是独立内容，边界删除只移除最近的媒体。
+        let media = block.matches(paragraphTags)?block.querySelectorAll(mediaTags):[];
+        if(media.length>1){
+            paragraph ||= block;
+            block = media[backward?media.length-1:0];
+        }
         event.preventDefault();
-        this.remove(block,paragraph);
+        this.remove(block,paragraph,backward&&block.matches(mediaTags));
         return true;
     }
     keyDown(event){
