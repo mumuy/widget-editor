@@ -1,3 +1,4 @@
+html{color:#000;background:#FFF}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0}table{border-collapse:collapse;border-spacing:0}fieldset,img{border:0}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal}ol,ul{list-style:none}caption,th{text-align:left}h1,h3,h3,h4,h5,h6{font-size:100%;font-weight:normal}q:before,q:after{content:''}abbr,acronym{border:0;font-variant:normal}sup{vertical-align:text-top}sub{vertical-align:text-bottom}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}legend{color:#000}
 :host {
     display: block;
     font-family: Arial,Helvetica,"Microsoft Yahei",sans-serif;
@@ -102,7 +103,6 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     position: relative;
     width: 32px;
     height: 32px;
-    padding: 0;
     background: transparent;
     color: var(--button-text-color);
     line-height: 1;
@@ -722,7 +722,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     margin-top: 0;
 }
 .editor-dialog{
-    width: min(420px,calc(100vw - 32px));
+    width: min(480px,calc(100vw - 32px));
     max-height: calc(100vh - 32px);
     padding: 0;
     background: var(--panel-background-color);
@@ -737,8 +737,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
 }
-.dialog-form{
-    margin: 0;
+.dialog-panel{
     padding: 20px;
 }
 .dialog-head{
@@ -746,10 +745,10 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    margin-bottom: 22px;
+    margin-bottom: 10px;
+    line-height: 24px;
 }
 .dialog-head h3{
-    margin: 0;
     font-size: 18px;
     font-weight: 600;
 }
@@ -772,16 +771,17 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
 }
 .insert-tabs{
     display: flex;
-    gap: 20px;
+    gap: 10px;
     margin-bottom: 18px;
     border-bottom: 1px solid var(--panel-border-color);
 }
 .insert-tabs button{
-    padding: 8px 0;
+    padding: 0 10px;
     background: transparent;
     color: var(--button-text-color);
     border: 0;
     border-bottom: 2px solid transparent;
+    line-height: 32px;
 }
 .insert-tabs button[aria-selected="true"]{
     color: var(--button-active-color);
@@ -1066,7 +1066,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
         gap: 4px 10px;
         padding: 6px 10px;
     }
-    .dialog-form{
+    .dialog-panel{
         padding: 20px;
     }
 }

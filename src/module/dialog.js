@@ -12,7 +12,7 @@ export default function openDialog(editor,options){
     dialog.className = 'editor-dialog';
     let titleId = 'editor-dialog-title';
     dialog.setAttribute('aria-labelledby',titleId);
-    dialog.innerHTML = `<form class="dialog-form">
+    dialog.innerHTML = `<form class="dialog-panel">
         <div class="dialog-head">
             <h3 id="${titleId}"></h3>
             <button type="button" class="dialog-close" aria-label="关闭">${renderIcon(closeIcon)}</button>
