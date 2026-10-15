@@ -9,7 +9,6 @@ import EditorHistory from './module/history.js';
 import EditorForm from './module/form.js';
 import EditorBlocks from './module/blocks.js';
 import EditorToolbar from './module/toolbar.js';
-import EditorBindings from './module/bindings.js';
 import openDialog from './module/dialog.js';
 import EditorDropdown from './module/dropdown.js';
 import EditorTooltip from './module/tooltip.js';
@@ -23,7 +22,6 @@ class WidgetEditor extends HTMLElement {
         this.attachShadow({mode:'open'});
         this.formControl = new EditorForm(this);
         this.config = new EditorConfig(this);
-        this.bindings = new EditorBindings(this);
         this.tools = new EditorToolbar(this);
         this.locale = new EditorLanguage(this);
         this.source = false;
@@ -71,11 +69,9 @@ class WidgetEditor extends HTMLElement {
         this.tooltip.connect();
         this.fullscreen.connect();
         this.mobile.connect();
-        this.bindings.connect();
         document.addEventListener('selectionchange',this._onSelection);
     }
     disconnectedCallback(){
-        this.bindings.disconnect();
         this.mobile?.disconnect();
         this.fullscreen?.disconnect();
         this.dropdown?.disconnect();
@@ -118,19 +114,17 @@ class WidgetEditor extends HTMLElement {
             if(this._dialog?.dataset.insert===name.slice(0,-6)){this._dialog.dismiss();}
             return;
         }
-        if((toolbarAttributes.includes(name)||name?.endsWith('-bind'))&&this.dropdown){
+        if(toolbarAttributes.includes(name)&&this.dropdown){
             this.saveSelection();
             this.dropdown.close();
             this.tooltip?.hide();
             if(mediaAttributes.includes(name)&&this._dialog?.dataset.insert===name){
                 this._dialog.dismiss();
             }
-            if(toolbarAttributes.includes(name)){
-                this.toolbar.innerHTML = this.tools.render();
-                this.tools.items.forEach(feature=>feature.bindToolbar?.(this));
-                this.locale.apply(this.toolbar);
-            }
-            if(this._dialog?.dataset.insert&&!this.canInsert(this._dialog.dataset.insert)){
+            this.toolbar.innerHTML = this.tools.render();
+            this.tools.items.forEach(feature=>feature.bindToolbar?.(this));
+            this.locale.apply(this.toolbar);
+            if(this._dialog?.dataset.insert&&this._dialog.dataset.insertSource!=='api'&&!this.canInsert(this._dialog.dataset.insert)){
                 this._dialog.dismiss();
             }
             this.updateToolbar();
@@ -383,6 +377,22 @@ class WidgetEditor extends HTMLElement {
             this._dialog.dataset.insert = feature.name;
         }
         this.updateToolbar();
+    }
+    openInsertDialog(type,mode){
+        if(!this.isConnected||!this._initialized||this.formControl.disabled||this.source||this.codes?.selected()){
+            return null;
+        }
+        type = String(type??'').trim().toLowerCase();
+        if(!mediaAttributes.includes(type)){return null;}
+        let modes = this.config.methods(type);
+        if(mode!==undefined){mode = String(mode).trim().toLowerCase();}
+        if(!modes.length||mode!==undefined&&!modes.includes(mode)){return null;}
+        this.saveSelection();
+        let dialog = this.tools.get(type).execute(this,mode);
+        if(!dialog?.isConnected){return null;}
+        dialog.dataset.insertSource = 'api';
+        this.updateToolbar();
+        return dialog;
     }
     canInsert(name){
         return this.tools.canInsert(name);

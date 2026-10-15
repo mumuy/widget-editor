@@ -46,14 +46,10 @@
 | `fontfamily` | 字体下拉菜单的选项及顺序 | 下方列出的全部字体 |
 | `fontsize` | 字号下拉菜单的选项及顺序，单位为 px | `12,14,16,18,20,24,28,32,36,48` |
 | `alignment` | 对齐下拉菜单的选项及顺序 | `left,center,right,justify` |
-| `image` | 图片允许的插入方式 | `upload,url,request` |
-| `video` | 视频允许的插入方式 | `upload,url,iframe,request` |
-| `audio` | 音频允许的插入方式 | `upload,url,request` |
-| `attachment` | 附件允许的插入方式 | `upload,url,request` |
-| `image-bind` | 唤起图片插入弹框的外部节点 ID | 空字符串 |
-| `video-bind` | 唤起视频插入弹框的外部节点 ID | 空字符串 |
-| `attachment-bind` | 唤起附件插入弹框的外部节点 ID | 空字符串 |
-| `audio-bind` | 唤起音频插入弹框的外部节点 ID | 空字符串 |
+| `image` | 图片允许的插入方式 | `upload,url,resource` |
+| `video` | 视频允许的插入方式 | `upload,url,iframe,resource` |
+| `audio` | 音频允许的插入方式 | `upload,url,resource` |
+| `attachment` | 附件允许的插入方式 | `upload,url,resource` |
 | `image-batch` | 每次上传或选择图片数量上限；空值表示不限数量 | `1` |
 | `video-batch` | 每次上传或选择视频数量上限；空值表示不限数量 | `1` |
 | `attachment-batch` | 每次上传或选择附件数量上限；空值表示不限数量 | `1` |
@@ -331,11 +327,11 @@ customElements.whenDefined('widget-editor').then(function(){
 默认插入菜单已包含图片、视频、音频和附件，点击对应选项即可插入。未配置插入方式属性时，开放该类型的全部方式，默认打开「上传文件」：
 
 - **上传文件**：选择本地文件即触发 `upload` 事件，由你的页面负责上传，成功后点击插入。
-- **素材库**：切换标签时触发 `request` 事件，返回素材列表后在弹框内选择，点击插入。默认每行四个，每个至少 120px，窄屏自动减少列数素材，超出列表高度时滚动显示。
-- **URL**：填写文件地址，点击插入即可使用，支持 HTTP、HTTPS 或相对地址。
+- **素材库**：切换标签时触发 `request` 事件，返回素材列表后在弹框内选择，点击插入。默认每行四个，每个至少 120px，窄屏自动减少列数，超出列表高度时滚动显示。
+- **网络地址**：填写文件地址，点击插入即可使用，支持 HTTP、HTTPS 或相对地址。
 - **嵌入 iframe**（仅视频）：仅需粘贴第三方视频网站提供的 iframe 代码，再点击「插入视频」，保留代码中原有的 `title`。组件自动写入 `width: 100%`、`height: auto`、`max-width: 100%` 和 `aspect-ratio: 16 / 9`，高度随容器宽度按比例变化；嵌入地址须使用 HTTP、HTTPS 或相对地址。插入的 iframe 支持源码往返、删除及撤销。
 
-分别设置 `image`、`video`、`audio`、`attachment` 属性，可以限制插入方式。使用 `upload` 表示上传文件，`url` 表示填写地址，`request` 表示素材库，`iframe` 仅适用于视频；tabs 按配置顺序显示，默认打开第一项：
+分别设置 `image`、`video`、`audio`、`attachment` 属性，可以限制插入方式。使用 `upload` 表示上传文件，`url` 表示填写地址，`resource` 表示素材库，`iframe` 仅适用于视频；tabs 按配置顺序显示，默认打开第一项：
 
 ```html
 <widget-editor
@@ -347,34 +343,35 @@ customElements.whenDefined('widget-editor').then(function(){
 </widget-editor>
 ```
 
-不设置属性时全开放；设置为空（例如 `video=""`）则禁用该类型的插入功能。无效字段会忽略，重复字段仅保留一次。这些属性只配置插入方式；自定义工具栏时，通过 `custom` 加入插入菜单或对应的独立按钮，也可使用下面的外部节点绑定。运行时修改属性会立即生效，并关闭该类型已打开的弹框；未完成的旧上传回调也会失效。
+不设置属性时全开放；设置为空（例如 `video=""`）则禁用该类型的插入功能。无效字段会忽略，重复字段仅保留一次。这些属性只配置插入方式；自定义工具栏时，通过 `custom` 加入插入菜单或对应的独立按钮，也可调用下面的组件方法。运行时修改属性会立即生效，并关闭该类型已打开的弹框；未完成的旧上传回调也会失效。
 
-### 绑定外部插入按钮
+### 通过方法打开插入弹框
 
-`image-bind`、`video-bind`、`attachment-bind` 和 `audio-bind` 分别绑定一个外部节点的 ID，填写 ID 本身，不加 `#`，保留大小写：
+使用 `editor.openInsertDialog(type,mode)`，可自行绑定外部按钮，无需配置节点 ID：
 
 ```html
-<button type="button" id="imageElement">插入图片</button>
-<button type="button" id="videoElement">插入视频</button>
-<button type="button" id="attachmentElement">插入附件</button>
-<button type="button" id="audioElement">插入音频</button>
-
-<widget-editor
-    image-bind="imageElement"
-    video-bind="videoElement"
-    attachment-bind="attachmentElement"
-    audio-bind="audioElement">
-</widget-editor>
+<button type="button" id="insertImage">插入图片</button>
+<widget-editor id="editor" image="upload,url,resource"></widget-editor>
+<script>
+    let editor = document.querySelector('#editor');
+    document.querySelector('#insertImage').addEventListener('click',function(){
+        editor.openInsertDialog('image','upload');
+    });
+</script>
 ```
 
-点击绑定节点或其子节点，会打开对应的插入弹框；原生按钮也支持 Enter、空格键触发。外部入口不要求工具栏显示该功能，即使设置 `custom="" insert=""` 仍可使用，但继续遵守各媒体类型的插入方式限制、组件禁用状态及源码、代码块的编辑限制。弹框、`upload` 事件和回调与组件内的插入功能一致，内容插入到原来的光标或选区；未设置光标时插入到文档末尾。
-
-节点与编辑器需位于同一文档或同一个 ShadowRoot，ID 应唯一。绑定支持后续添加、替换节点和运行时修改属性；设为空可取消绑定，移除属性恢复配置文件中的默认值（默认为空），组件移除后自动解绑。若移除绑定后，工具栏也未开放对应插入功能，会关闭已打开的弹框并使未完成的上传回调失效。
+`type` 支持 `image`、`video`、`audio`、`attachment`；`mode` 支持 `upload`、`url`、`iframe`、`resource`，其中 `iframe` 仅适用于视频。省略 `mode` 时打开该类型配置的第一项；指定方式须已在对应属性中开放。例如 `video="url,resource"` 时，不能通过方法打开视频上传或 iframe。
 
 ```javascript
-editor.setAttribute('image-bind','anotherImageButton');
-editor.removeAttribute('image-bind');
+editor.openInsertDialog('image','resource'); // 素材库，触发 request 事件
+editor.openInsertDialog('video','iframe');
+editor.openInsertDialog('audio','url');      // 网络地址
+editor.openInsertDialog('attachment');       // 配置中的第一项
 ```
+
+方法返回打开的弹框，参数无效、组件未连接或尚未初始化、组件被禁用、正在编辑源码或代码块时返回 `null`，不打开弹框。此入口不依赖工具栏是否显示对应功能，即使设置 `custom="" insert=""` 也可调用，但仍遵守媒体类型的方式权限。插入沿用原来的光标或选区，无选区时插入文档末尾。
+
+`image-bind`、`video-bind`、`audio-bind`、`attachment-bind` 已移除，外部按钮请改为自行调用此方法。素材库的配置值现为 `resource`，加载素材的事件名仍为 `request`。
 
 ### 处理上传
 
@@ -449,7 +446,7 @@ customElements.whenDefined('widget-editor').then(function(){
 
 ### 接入素材库
 
-四种媒体都支持 `request`，例如 `image="upload,url,request"` 或 `video="request"`。切换到「素材库」时触发 `request` 事件；若素材库是配置的第一项，打开弹框就会请求。再次点击该标签也可重新加载。
+四种媒体都支持 `resource`，例如 `image="upload,url,resource"` 或 `video="resource"`。切换到「素材库」时触发 `request` 事件；若素材库是配置的第一项，打开弹框就会请求。再次点击该标签也可重新加载。
 
 `request` 的 `event.detail` 包含：
 

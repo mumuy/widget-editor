@@ -194,42 +194,22 @@ console.log(editor.value);</code></pre>
                                         <tr>
                                             <th scope="row"><span>image</span></th>
                                             <td>图片允许的插入方式及标签顺序。</td>
-                                            <td><code>upload,url,request</code></td>
+                                            <td><code>upload,url,resource</code></td>
                                         </tr>
                                         <tr>
                                             <th scope="row"><span>video</span></th>
                                             <td>视频允许的插入方式及标签顺序。</td>
-                                            <td><code>upload,url,iframe,request</code></td>
+                                            <td><code>upload,url,iframe,resource</code></td>
                                         </tr>
                                         <tr>
                                             <th scope="row"><span>audio</span></th>
                                             <td>音频允许的插入方式及标签顺序。</td>
-                                            <td><code>upload,url,request</code></td>
+                                            <td><code>upload,url,resource</code></td>
                                         </tr>
                                         <tr>
                                             <th scope="row"><span>attachment</span></th>
                                             <td>附件允许的插入方式及标签顺序。</td>
-                                            <td><code>upload,url,request</code></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>image-bind</span></th>
-                                            <td>点击该 ID 的外部节点唤起图片插入弹框，不加 <code>#</code>。</td>
-                                            <td>空字符串</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>video-bind</span></th>
-                                            <td>点击该 ID 的外部节点唤起视频插入弹框，不加 <code>#</code>。</td>
-                                            <td>空字符串</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>attachment-bind</span></th>
-                                            <td>点击该 ID 的外部节点唤起附件插入弹框，不加 <code>#</code>。</td>
-                                            <td>空字符串</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>audio-bind</span></th>
-                                            <td>点击该 ID 的外部节点唤起音频插入弹框，不加 <code>#</code>。</td>
-                                            <td>空字符串</td>
+                                            <td><code>upload,url,resource</code></td>
                                         </tr>
                                         <tr>
                                             <th scope="row"><span>image-batch</span></th>
@@ -254,6 +234,13 @@ console.log(editor.value);</code></pre>
                                     </tbody>
                                 </table>
                             </div>
+                            <p>通过组件方法 <code>openInsertDialog(type,mode)</code> 可从外部打开资源插入弹框，替代原来的 <code>*-bind</code> 属性。<code>type</code> 支持 <code>image</code>、<code>video</code>、<code>audio</code>、<code>attachment</code>；<code>mode</code> 支持 <code>upload</code>、<code>url</code>、<code>iframe</code>、<code>resource</code>，省略时使用该类型配置的第一项。<code>iframe</code> 仅适用于视频。</p>
+                            <widget-code language="javascript">let editor = document.querySelector('#editor');
+editor.openInsertDialog('image','resource'); // 素材库，触发 request 事件
+editor.openInsertDialog('video','iframe');
+editor.openInsertDialog('audio','url');      // 网络地址
+editor.openInsertDialog('attachment');</widget-code>
+                            <p>方法不依赖工具栏显示，但须遵守对应资源的方式权限、禁用状态和源码/代码块编辑限制；无法打开时返回 <code>null</code>，成功返回弹框。素材库配置值改为 <code>resource</code>，加载事件仍为 <code>request</code>。</p>
                         </div>
                     </section>
                     <section class="module mod-upload" id="upload" aria-labelledby="upload-title">
@@ -309,7 +296,7 @@ editor.addEventListener('upload',async function(event){
         onError(error);
     }
 });</widget-code>
-                            <p>使用 <code>image="upload,url,request"</code> 等属性开放素材库。切换到「素材库」时触发 <code>request</code>；若它是配置的第一项，打开弹框时即请求。<code>event.detail</code> 包含 <code>type</code>、<code>limit</code>、<code>onComplete(urls)</code>、<code>onError(err)</code>。</p>
+                            <p>使用 <code>image="upload,url,resource"</code> 等属性开放素材库。切换到「素材库」时触发 <code>request</code>；若它是配置的第一项，打开弹框时即请求。<code>event.detail</code> 包含 <code>type</code>、<code>limit</code>、<code>onComplete(urls)</code>、<code>onError(err)</code>。</p>
                             <p>调用 <code>onComplete(urls)</code> 返回完整素材数组：元素可为 URL 字符串或 <code>{original,thumbnail}</code> 对象，也可混用。字符串的预览与插入地址相同；对象用 <code>thumbnail</code> 预览、<code>original</code> 插入，省略缩略图则使用原地址。空数组表示暂无素材。默认每行四个、每个至少 120px，窄屏自动减少列数，超出高度滚动显示；用户选中后点击插入。<code>limit</code> 使用对应的 <code>*-batch</code> 配置，只限制本次插入数量，不限制列表长度。演示页的素材库展示本页已上传的同类文件。</p>
                             <widget-code language="javascript">// onComplete 返回值支持混用两种格式：
 // ['photo.jpg', {original:'original.jpg',thumbnail:'thumbnail.jpg'}]

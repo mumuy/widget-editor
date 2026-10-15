@@ -8,8 +8,8 @@ export default {
     'icon':icon,
     'label':'插入视频',
     'type':'button',
-    execute(editor){
-        openMedia(editor,{
+    execute(editor,mode){
+        return openMedia(editor,{
             'name':'视频',
             'kind':'video',
             'size':50,
@@ -29,6 +29,6 @@ export default {
                 let title = escapeHTML(String(values.title||'').trim()||values.name);
                 return '<video src="'+escapeHTML(source)+'" title="'+title+'" controls preload="metadata" playsinline></video><p><br></p>';
             }
-        });
+        },mode);
     }
 };

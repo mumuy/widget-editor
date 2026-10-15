@@ -8,8 +8,8 @@ export default {
     'icon':icon,
     'label':'插入音频',
     'type':'button',
-    execute(editor){
-        openMedia(editor,{
+    execute(editor,mode){
+        return openMedia(editor,{
             'name':'音频',
             'kind':'audio',
             'size':20,
@@ -21,6 +21,6 @@ export default {
                 let title = escapeHTML(String(values.title||'').trim()||values.name);
                 return '<audio src="'+escapeHTML(source)+'" title="'+title+'" controls preload="metadata"></audio><p><br></p>';
             }
-        });
+        },mode);
     }
 };

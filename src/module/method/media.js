@@ -3,12 +3,13 @@ import {safeURL} from './sanitize.js';
 import createMaterials,{normalizeMaterial} from './material.js';
 
 // 上传与素材库共用回调校验、取消状态及插入流程。
-export default function openMedia(editor,options){
+export default function openMedia(editor,options,initialMode){
     let range = editor.getRange()?.cloneRange();
     let modes = editor.config.methods(options.kind);
     if(!modes.length){return;}
     let batch = editor.config.get(options.kind+'-batch');
-    let mode = modes[0];
+    let mode = initialMode??modes[0];
+    if(!modes.includes(mode)){return;}
     let busy = false;
     let cancelPending = null;
     let pendingType;
@@ -45,9 +46,9 @@ export default function openMedia(editor,options){
             panel.element.querySelectorAll('input,textarea').forEach(input=>input.disabled=!active||busy);
         });
         (activePanel.feedback||activePanel.element).appendChild(notice);
-        addButton.hidden = mode!=='request';
+        addButton.hidden = mode!=='resource';
         addButton.disabled = busy;
-        addInput.disabled = busy||mode!=='request';
+        addInput.disabled = busy||mode!=='resource';
         materials?.busy(busy);
         submit.disabled = busy||mode==='upload'&&!uploaded;
     };
@@ -174,7 +175,7 @@ export default function openMedia(editor,options){
         let version = revision;
         materials.status('加载中…');
         let sources = await resolveResources('request');
-        if(current()&&mode==='request'&&version===revision){
+        if(current()&&mode==='resource'&&version===revision){
             sources?materials.render(sources):materials.status('暂无素材');
         }
     };
@@ -183,7 +184,7 @@ export default function openMedia(editor,options){
         cancelPending?.();
         dialog.message('');
         setMode(value,focus);
-        if(mode==='request'){request();}
+        if(mode==='resource'){request();}
     };
     let fields = {
         upload:{'name':'file','label':batch===1?'选择{type}（最大 {size} MB）':
@@ -201,6 +202,7 @@ export default function openMedia(editor,options){
         mount(node){
             dialog = node;
             dialog.classList.add('media-dialog');
+            dialog.dataset.insert = options.kind;
             submit = dialog.querySelector('[type="submit"]');
             notice = dialog.querySelector('.dialog-notice');
             dialog.querySelector('.dialog-cancel').remove();
@@ -222,7 +224,7 @@ export default function openMedia(editor,options){
             tabs.className = 'media-tabs';
             tabs.setAttribute('role','tablist');
             editor.locale.set(tabs,'插入方式',{},'aria-label');
-            let labels = {upload:'上传文件',url:'URL',iframe:'嵌入 iframe',request:'素材库'};
+            let labels = {upload:'上传文件',url:'网络地址',iframe:'嵌入 iframe',resource:'素材库'};
             tabs.innerHTML = modes.map(name=>`<button type="button" role="tab" id="media-${name}-tab" aria-controls="media-${name}-panel" data-media-tab="${name}">${labels[name]}</button>`).join('');
             let panelGroup = document.createElement('div');
             panelGroup.className = 'media-panels';
@@ -241,7 +243,7 @@ export default function openMedia(editor,options){
                 let panel = {element};
                 panels.set(name,panel);
                 panelGroup.appendChild(element);
-                if(name==='request'){
+                if(name==='resource'){
                     materials = createMaterials(editor,{
                         ...options,limit:batch,
                         message:(...args)=>dialog.message(...args),
@@ -294,7 +296,7 @@ export default function openMedia(editor,options){
         },
         async onSubmit(values){
             if(busy){return false;}
-            if(mode==='request'){
+            if(mode==='resource'){
                 let sources = materials.values();
                 if(!sources.length){
                     dialog.message('请选择素材');
@@ -328,6 +330,6 @@ export default function openMedia(editor,options){
             return true;
         }
     });
-    if(mode==='request'){request();}
+    if(mode==='resource'){request();}
     return dialog;
 }

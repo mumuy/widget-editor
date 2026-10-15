@@ -106,6 +106,7 @@ export default {
     '一次最多选择 {count} 个文件':'Choose no more than {count} files at a time.',
     '插入方式':'Insert method',
     '上传文件':'Upload file',
+    '网络地址':'Web address',
     '素材库':'Asset library',
     '上传素材':'Upload assets',
     '素材上传失败，请重试':'Could not upload assets. Please try again.',

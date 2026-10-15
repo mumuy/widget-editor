@@ -8,8 +8,8 @@ export default {
     'icon':icon,
     'label':'插入图片',
     'type':'button',
-    execute(editor){
-        openMedia(editor,{
+    execute(editor,mode){
+        return openMedia(editor,{
             'name':'图片',
             'kind':'image',
             'size':5,
@@ -33,6 +33,6 @@ export default {
                     }
                 });
             }
-        });
+        },mode);
     }
 };

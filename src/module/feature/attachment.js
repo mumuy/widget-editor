@@ -28,8 +28,8 @@ export default {
             download.remove();
         });
     },
-    execute(editor){
-        openMedia(editor,{
+    execute(editor,mode){
+        return openMedia(editor,{
             'name':'附件',
             'kind':'attachment',
             'size':20,
@@ -39,6 +39,6 @@ export default {
                 let text = escapeHTML(String(values.text||'').trim()||values.name);
                 return '<a href="'+escapeHTML(source)+'" download="'+name+'">'+text+'</a>';
             }
-        });
+        },mode);
     }
 };
