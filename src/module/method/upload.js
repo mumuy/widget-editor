@@ -223,12 +223,16 @@ export default function openUpload(editor,options){
                 sources = [source];
             }
             let html = sources.map((source,index)=>options.html(source,{
-                ...values,name:files[index]?.name||urlFileName(source,editor.t(options.name))
+                ...values,name:files[index]?.name||urlFileName(source,editor.t(options.name)),batch:files.length>1
             })).join('');
             // 插入时解除模态层的焦点限制，恢复原选区。
             dialog.close();
             editor.selection.range = range;
-            editor.insertHTML(html);
+            if(files.length>1&&options.insertBatch){
+                options.insertBatch(html);
+            }else{
+                editor.insertHTML(html);
+            }
             return true;
         }
     });

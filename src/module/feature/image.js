@@ -1,5 +1,5 @@
 import {image as icon} from '../icon.js';
-import {escapeHTML} from '../method/sanitize.js';
+import sanitizeHTML,{escapeHTML} from '../method/sanitize.js';
 import {imageTypes} from '../method/file.js';
 import openUpload from '../method/upload.js';
 
@@ -18,7 +18,20 @@ export default {
             'error':'请选择 PNG、JPEG、GIF 或 WebP 图片',
             'field':{'name':'alt','label':'图片描述','type':'text','placeholder':'图片的文字说明'},
             html(source,values){
-                return '<img src="'+escapeHTML(source)+'" alt="'+escapeHTML(String(values.alt||''))+'">';
+                let html = '<img src="'+escapeHTML(source)+'" alt="'+escapeHTML(String(values.alt||''))+'">';
+                return values.batch?'<p>'+html+'</p>':html;
+            },
+            insertBatch(html){
+                editor.history.record();
+                editor.transaction(()=>{
+                    document.execCommand('insertHTML',false,sanitizeHTML(html));
+                    // 将插入点后原有的文字移到下一段，保证图片段落独立。
+                    document.execCommand('insertParagraph',false);
+                    let paragraph = editor.selectedElement().closest('p');
+                    if(paragraph&&editor.blocks.empty(paragraph)){
+                        paragraph.setAttribute('data-block-boundary','');
+                    }
+                });
             }
         });
     }
