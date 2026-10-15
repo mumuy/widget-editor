@@ -738,6 +738,9 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     -webkit-backdrop-filter: blur(8px);
 }
 .dialog-panel{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     padding: 20px;
 }
 .dialog-head{
@@ -751,6 +754,11 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
 .dialog-head h3{
     font-size: 18px;
     font-weight: 600;
+}
+.dialog-body{
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
 }
 .dialog-close{
     display: flex;
@@ -770,6 +778,10 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     background: var(--button-background-color);
 }
 .insert-tabs{
+    position: sticky;
+    top: 0;
+    z-index: 9;
+    background: #fff;
     display: flex;
     gap: 10px;
     margin-bottom: 18px;
@@ -805,8 +817,9 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     display: grid !important;
     visibility: hidden;
 }
-.upload-dialog:has(.material-list){
-    width: min(568px,calc(100vw - 32px));
+.upload-dialog{
+    width: min(640px,calc(100vw - 32px));
+    height: min(480px,calc(100vh - 32px));
 }
 .insert-panel[data-insert-panel="request"]{
     grid-template-rows: minmax(0,1fr);
@@ -820,13 +833,11 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     min-height: 0;
 }
 .material-list{
-    position: absolute;
-    inset: 0;
     display: grid;
     grid-template-columns: repeat(auto-fill,minmax(120px,1fr));
     grid-auto-rows: 88px;
     align-content: start;
-    gap: 8px;
+    gap: 6px;
     overflow: auto;
     overscroll-behavior: contain;
 }
@@ -848,6 +859,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
 .material-select[aria-pressed="true"]{
     border-color: var(--button-active-color);
     background: var(--button-active-background);
+    padding:2px;
 }
 .material-select img,.material-select video,.material-select svg{
     display: block;
@@ -865,13 +877,14 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     width: 22px;
     height: 22px;
     padding: 3px;
-    background: var(--panel-background-color);
-    color: #dc3545;
-    border: 1px solid var(--panel-border-color);
-    border-radius: 4px;
+    background: #dc354588;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    backdrop-filter: blur(9px);
 }
 .material-remove svg{width: 14px;height: 14px;}
-.material-remove:hover{background: #fff0f1;}
+.material-remove:hover{background: #dc3545cc;}
 .material-list button:disabled{opacity: .5;}
 .material-empty{
     grid-column: 1 / -1;
