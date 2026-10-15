@@ -60,7 +60,7 @@
                     <section class="mod-poster">
                         <div class="bd">
                             <h1>富文本编辑器<span class="tag">开源组件</span></h1>
-                            <p>一个标签实现富文本编辑！极简易用、功能强大~</p>
+                            <p>轻量、易用的富文本编辑组件，内容以 HTML 输出。</p>
                             <div class="buttons">
                                 <a class="btn btn-blue" href="https://passer-by.com/widget-markdown/" target="_blank" rel="noopener noreferrer">
                                     <img src="./static/image/icon-markdown.png" width="24" height="24" alt="Markdown">
@@ -112,220 +112,537 @@ console.log(editor.value);</code></pre>
                         <p class="insert-demo-note">文件在本地读取用于演示，并可在素材库中再次选择，不会上传到服务器。</p>
                         <noscript><p>请启用 JavaScript 以使用富文本编辑器。</p></noscript>
                     </section>
-                    <section class="module mod-params" id="parameters" aria-labelledby="parameters-title">
-                        <div class="hd"><span id="parameters-title">参数说明</span></div>
+                    <nav class="doc-nav" aria-label="使用文档导航">
+                        <a href="#usage">快速使用</a>
+                        <a href="#parameters">参数配置</a>
+                        <a href="#api">内容与表单</a>
+                        <a href="#uploads">上传与素材库</a>
+                    </nav>
+                    <section class="module mod-guide" id="usage" aria-labelledby="usage-title">
+                        <div class="hd">
+                            <span id="usage-title">快速使用</span>
+                        </div>
                         <div class="bd">
-                            <p>在组件上设置以下属性；未设置时使用默认值。列表使用英文逗号分隔，配置顺序就是显示顺序，重复值和不支持的值会被忽略。</p>
-                            <div class="table-scroll" role="region" aria-labelledby="parameters-title" tabindex="0">
-                                <table>
-                                    <colgroup><col style="width:16%;"><col style="width:52%;"><col style="width:32%;"></colgroup>
-                                    <thead><tr><th scope="col">属性</th><th scope="col">含义</th><th scope="col">默认值</th></tr></thead>
-                                    <tbody>
-                                        <tr>
-                                            <th scope="row"><span>name</span></th>
-                                            <td>原生表单提交时的字段名，提交内容为编辑器的 HTML。</td>
-                                            <td>空字符串</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>form</span></th>
-                                            <td>关联表单的 <code>id</code>，可让表单外的编辑器参与提交。</td>
-                                            <td>最近的父级表单</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>disabled</span></th>
-                                            <td>禁用编辑和工具栏操作，不参与表单提交及校验。</td>
-                                            <td>不设置（可编辑）</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>required</span></th>
-                                            <td>要求填写内容；空白文字和空段落无效，图片等非文本内容有效。</td>
-                                            <td>不设置（非必填）</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>placeholder</span></th>
-                                            <td>空白编辑器中的提示文字。</td>
-                                            <td>在这里开始写作…</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>height</span></th>
-                                            <td>编辑区域高度，单位为 px，允许 160～2000；</td>
-                                            <td><code>480</code></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>language</span></th>
-                                            <td>界面语言：<code>zh-CN</code> 简体中文、<code>zh-HK</code> 香港繁体中文、<code>en-US</code> 英语。</td>
-                                            <td><code>zh-CN</code></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>heading</span></th>
-                                            <td>标题菜单的选项及顺序，<code>p</code> 为正文，<code>h1</code>～<code>h6</code> 为标题。</td>
-                                            <td><code>p,h1,h2,h3,h4,h5,h6</code></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>fontfamily</span></th>
-                                            <td>字体菜单的选项及顺序，例如 <code>yahei</code>（微软雅黑）、<code>simsun</code>（宋体）。</td>
-                                            <td><details><summary>全部 13 种预设字体</summary><code>default,yahei,simsun,simhei,kaiti,fangsong,pingfang,dengxian,stsong,stkaiti,stxihei,sourceSans,sourceSerif</code></details></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>fontsize</span></th>
-                                            <td>字号菜单的选项及顺序，只填写支持的数字，不加 <code>px</code>。</td>
-                                            <td><code>12,14,16,18,20,24,28,32,36,48</code></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>alignment</span></th>
-                                            <td>对齐菜单的选项及顺序。</td>
-                                            <td><code>left,center,right,justify</code></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>custom</span></th>
-                                            <td>工具栏功能及顺序。撤销和重做固定显示。</td>
-                                            <td><details><summary>默认工具栏</summary><code>heading,fontFamily,fontSize,alignment,indentation,bold,italic,underline,strikethrough,superscript,subscript,color,backgroundColor,blockquote,orderedList,unorderedList,link,format,formatPainter,insert</code></details></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>insert</span></th>
-                                            <td>插入菜单的功能及顺序，<code>custom</code> 中的独立插入按钮仍可使用。</td>
-                                            <td><code>divider,table,image,video,attachment,audio,emoji,code</code></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>view</span></th>
-                                            <td>底部操作按钮及顺序。设为空隐藏按钮，字数统计保留；<code>custom</code> 中的同名功能仍可使用。</td>
-                                            <td><code>source,fullscreen,mobile</code></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>image</span></th>
-                                            <td>图片允许的插入方式及标签顺序。</td>
-                                            <td><code>upload,url,resource</code></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>video</span></th>
-                                            <td>视频允许的插入方式及标签顺序。</td>
-                                            <td><code>upload,url,iframe,resource</code></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>audio</span></th>
-                                            <td>音频允许的插入方式及标签顺序。</td>
-                                            <td><code>upload,url,resource</code></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>attachment</span></th>
-                                            <td>附件允许的插入方式及标签顺序。</td>
-                                            <td><code>upload,url,resource</code></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>image-limit</span></th>
-                                            <td>每次上传或从素材库选择图片数量上限，填写正整数；空值不限数量。</td>
-                                            <td><code>1</code></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>video-limit</span></th>
-                                            <td>每次上传或从素材库选择视频数量上限，填写正整数；空值不限数量。</td>
-                                            <td><code>1</code></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>attachment-limit</span></th>
-                                            <td>每次上传或从素材库选择附件数量上限，填写正整数；空值不限数量。</td>
-                                            <td><code>1</code></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><span>audio-limit</span></th>
-                                            <td>每次上传或从素材库选择音频数量上限，填写正整数；空值不限数量。</td>
-                                            <td><code>1</code></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <p class="doc-lead">一个标签即可使用，内容以 HTML 读写；无需框架依赖。</p>
+                            <div class="doc-grid">
+                                <div class="doc-block">
+                                    <h3>引入组件</h3>
+                                    <widget-code language="html">&lt;script src="./widget-editor.min.js" defer&gt;&lt;/script&gt;
+
+&lt;widget-editor id="editor" placeholder="请输入内容…"&gt;
+    &lt;h2&gt;开始写作&lt;/h2&gt;
+    &lt;p&gt;选中文字，通过工具栏调整格式。&lt;/p&gt;
+&lt;/widget-editor&gt;</widget-code>
+                                </div>
+                                <div class="doc-block">
+                                    <h3>读取与设置</h3>
+                                    <widget-code language="javascript">customElements.whenDefined('widget-editor').then(function(){
+    let editor = document.querySelector('#editor');
+    editor.value = '&lt;p&gt;新的内容&lt;/p&gt;';
+
+    editor.addEventListener('change',function(event){
+        let {value,text} = event.detail;
+        console.log(value,text);
+    });
+});</widget-code>
+                                </div>
                             </div>
-                            <p>通过组件方法 <code>openInsertDialog(type,mode)</code> 可从外部打开资源插入弹框，替代原来的 <code>*-bind</code> 属性。<code>type</code> 支持 <code>image</code>、<code>video</code>、<code>audio</code>、<code>attachment</code>；<code>mode</code> 支持 <code>upload</code>、<code>url</code>、<code>iframe</code>、<code>resource</code>，省略时使用该类型配置的第一项。<code>iframe</code> 仅适用于视频。</p>
-                            <widget-code language="javascript">let editor = document.querySelector('#editor');
-editor.openInsertDialog('image','resource'); // 素材库，触发 request 事件
-editor.openInsertDialog('video','iframe');
-editor.openInsertDialog('audio','url');      // 网络地址
-editor.openInsertDialog('attachment');</widget-code>
-                            <p>方法不依赖工具栏显示，但须遵守对应资源的方式权限、禁用状态和源码/代码块编辑限制；无法打开时返回 <code>null</code>，成功返回弹框。素材库配置值改为 <code>resource</code>，加载事件仍为 <code>request</code>。</p>
                         </div>
                     </section>
-                    <section class="module mod-upload" id="upload" aria-labelledby="upload-title">
-                        <div class="hd"><span id="upload-title">upload / request / add / remove 事件</span></div>
+                    <section class="module mod-params" id="parameters" aria-labelledby="parameters-title">
+                        <div class="hd">
+                            <span id="parameters-title">参数配置</span>
+                        </div>
                         <div class="bd">
-                            <p>图片、视频、音频和附件选择文件并通过校验后立即触发 <code>upload</code> 事件。组件负责文件选择、校验和进度显示，文件由你的页面上传。上传成功后点击插入，不会重复上传。各标签统一在内容有效时启用插入：上传成功、网络地址有效、选中素材，或填入有效 iframe 代码。</p>
-                            <div class="table-scroll" role="region" aria-labelledby="upload-title" tabindex="0">
-                                <table>
-                                    <colgroup><col style="width:36%;"><col style="width:64%;"></colgroup>
-                                    <thead><tr><th scope="col">event.detail</th><th scope="col">说明</th></tr></thead>
-                                    <tbody>
-                                        <tr><th scope="row"><span>files</span></th><td>按选择顺序排列的 <code>File[]</code>，单文件也使用数组。</td></tr>
-                                        <tr><th scope="row"><span>type</span></th><td>文件类型：<code>image</code>、<code>video</code>、<code>audio</code> 或 <code>attachment</code>。</td></tr>
-                                        <tr><th scope="row"><span>limit</span></th><td>本次允许的最大资源数量，未限制时为 <code>Infinity</code>。</td></tr>
-                                        <tr><th scope="row"><span>onComplete(urls)</span></th><td>全部成功后，按文件顺序传入数量相同的地址数组，整批插入原来的光标或选区位置。数组元素可为 URL 字符串或 <code>{original,thumbnail}</code>，插入使用原地址。</td></tr>
-                                        <tr><th scope="row"><span>onError(err)</span></th><td>上传失败时传入 <code>Error</code> 或错误消息，在弹框内显示，用户可重试。</td></tr>
-                                        <tr><th scope="row"><span>onProgress(percent)</span></th><td>更新整批上传进度，传入 0～100 的百分比。</td></tr>
-                                    </tbody>
-                                </table>
+                            <p class="doc-lead">未设置时使用默认值；列表以英文逗号分隔，顺序即显示顺序，支持动态修改。</p>
+                            <div class="doc-block">
+                                <h3>基础设置</h3>
+                                <div class="table-scroll" data-columns="3" role="region" aria-label="基础设置" tabindex="0">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">属性</th>
+                                                <th scope="col">说明</th>
+                                                <th scope="col">默认值</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row"><code>placeholder</code></th>
+                                                <td>空白时的提示文字</td>
+                                                <td>在这里开始写作…</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>height</code></th>
+                                                <td>编辑区域高度，单位 px，范围 160～2000</td>
+                                                <td><code>480</code></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>language</code></th>
+                                                <td>界面语言：zh-CN 简体、zh-HK 繁体、en-US 英语</td>
+                                                <td><code>zh-CN</code></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>name</code></th>
+                                                <td>表单提交字段名，提交值为 HTML</td>
+                                                <td>空字符串</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>form</code></th>
+                                                <td>关联表单的 id，用于表单外的组件</td>
+                                                <td>最近的父级表单</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>disabled</code></th>
+                                                <td>禁用编辑和操作，不参与表单提交及校验</td>
+                                                <td>不设置</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>required</code></th>
+                                                <td>启用必填校验，图片等非文本内容也有效</td>
+                                                <td>不设置</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                            <p>下面使用原生 <code>FileReader</code> 在本地读取文件并报告进度。正式使用时可替换为自己的上传接口。</p>
-                            <widget-code language="javascript">let editor = document.querySelector('#editor');
-editor.addEventListener('upload',async function(event){
-    let {files,type,onComplete,onError,onProgress} = event.detail;
-    let total = files.reduce((sum,file)=>sum+file.size,0);
-    let loaded = 0;
-    let sources = [];
+                            <div class="doc-block">
+                                <h3>工具栏与菜单</h3>
+                                <div class="table-scroll" data-columns="3" role="region" aria-label="工具栏与菜单" tabindex="0">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">属性</th>
+                                                <th scope="col">说明</th>
+                                                <th scope="col">默认值</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row"><code>custom</code></th>
+                                                <td>工具栏功能及顺序；撤销、重做固定显示</td>
+                                                <td>完整工具栏</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>insert</code></th>
+                                                <td>插入菜单中的功能及顺序</td>
+                                                <td><code>divider,table,image,video,attachment,audio,emoji,code</code></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>view</code></th>
+                                                <td>底部操作及顺序：源码、全屏、手机模式</td>
+                                                <td><code>source,fullscreen,mobile</code></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>heading</code></th>
+                                                <td>标题菜单的选项及顺序</td>
+                                                <td><code>p,h1,h2,h3,h4,h5,h6</code></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>fontfamily</code></th>
+                                                <td>字体菜单的选项及顺序</td>
+                                                <td>全部字体，见可选值</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>fontsize</code></th>
+                                                <td>字号菜单的选项及顺序，数字不带 px</td>
+                                                <td><code>12,14,16,18,20,24,28,32,36,48</code></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>alignment</code></th>
+                                                <td>对齐菜单：左、中、右、两端对齐</td>
+                                                <td><code>left,center,right,justify</code></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="doc-block">
+                                <h3>媒体插入</h3>
+                                <div class="table-scroll" data-columns="3" role="region" aria-label="媒体插入" tabindex="0">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">属性</th>
+                                                <th scope="col">说明</th>
+                                                <th scope="col">默认值</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row"><code>image</code></th>
+                                                <td>图片允许的插入方式及顺序</td>
+                                                <td><code>upload,url,resource</code></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>video</code></th>
+                                                <td>视频允许的插入方式及顺序</td>
+                                                <td><code>upload,url,iframe,resource</code></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>audio</code></th>
+                                                <td>音频允许的插入方式及顺序</td>
+                                                <td><code>upload,url,resource</code></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>attachment</code></th>
+                                                <td>附件允许的插入方式及顺序</td>
+                                                <td><code>upload,url,resource</code></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>image-limit</code></th>
+                                                <td>每次上传或选择图片的数量上限</td>
+                                                <td><code>1</code></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>video-limit</code></th>
+                                                <td>每次上传或选择视频的数量上限</td>
+                                                <td><code>1</code></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>audio-limit</code></th>
+                                                <td>每次上传或选择音频的数量上限</td>
+                                                <td><code>1</code></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>attachment-limit</code></th>
+                                                <td>每次上传或选择附件的数量上限</td>
+                                                <td><code>1</code></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <p class="doc-note">布尔属性存在即生效；<code>*-limit</code> 正整数表示上限，空值表示不限数量。数量限制同时作用于文件上传与素材选择。</p>
+                            <details class="doc-details">
+                                <summary>查看工具栏、插入、字体等可选值</summary>
+                                <div>
+                                    <div class="table-scroll" data-columns="2" role="region" aria-label="工具栏可选值" tabindex="0">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">分组</th>
+                                                    <th scope="col">字段与功能</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row"><code>文字格式</code></th>
+                                                    <td><code>bold</code> 加粗 · <code>italic</code> 斜体 · <code>underline</code> 下划线 · <code>strikethrough</code> 删除线 · <code>superscript</code> 上标 · <code>subscript</code> 下标</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>字体与颜色</code></th>
+                                                    <td><code>fontFamily</code> 字体 · <code>fontSize</code> 字号 · <code>color</code> 文字颜色 · <code>backgroundColor</code> 文字背景</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>段落排版</code></th>
+                                                    <td><code>heading</code> 标题 · <code>alignment</code> 对齐 · <code>indentation</code> 首行缩进 · <code>blockquote</code> 引用 · <code>orderedList</code> 有序列表 · <code>unorderedList</code> 无序列表</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>常用操作</code></th>
+                                                    <td><code>link</code> 超链接 · <code>format</code> 清除格式 · <code>formatPainter</code> 格式刷 · <code>insert</code> 插入菜单</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>插入内容</code></th>
+                                                    <td><code>divider</code> 分割线 · <code>table</code> 表格 · <code>image</code> 图片 · <code>video</code> 视频 · <code>attachment</code> 附件 · <code>audio</code> 音频 · <code>emoji</code> 表情 · <code>code</code> 代码块</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>视图操作</code></th>
+                                                    <td><code>source</code> 源码 · <code>fullscreen</code> 全屏 · <code>mobile</code> 手机模式</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <p><code>heading</code>：p 正文、h1～h6 标题。<code>alignment</code>：left 左、center 中、right 右、justify 两端对齐。</p>
+                                    <p>媒体方式：<code>upload</code> 上传文件、<code>url</code> 网络地址、<code>resource</code> 素材库；<code>iframe</code> 仅用于视频。</p>
+                                    <div class="font-values">
+                                        <span><code>default</code>默认字体</span>
+                                        <span><code>yahei</code>微软雅黑</span>
+                                        <span><code>simsun</code>宋体</span>
+                                        <span><code>simhei</code>黑体</span>
+                                        <span><code>kaiti</code>楷体</span>
+                                        <span><code>fangsong</code>仿宋</span>
+                                        <span><code>pingfang</code>苹方</span>
+                                        <span><code>dengxian</code>等线</span>
+                                        <span><code>stsong</code>华文宋体</span>
+                                        <span><code>stkaiti</code>华文楷体</span>
+                                        <span><code>stxihei</code>华文细黑</span>
+                                        <span><code>sourceSans</code>思源黑体</span>
+                                        <span><code>sourceSerif</code>思源宋体</span>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="doc-details">
+                                <summary>配置示例</summary>
+                                <div>
+                                    <widget-code language="html">&lt;widget-editor
+    custom="heading,fontSize,bold,italic,color,link,insert"
+    insert="image,table,emoji"
+    heading="p,h2,h3"
+    fontsize="14,16,20,24"
+    image="upload,url,resource"
+    image-limit="9"
+    view="source,fullscreen"&gt;
+&lt;/widget-editor&gt;</widget-code>
+                                    <p><code>custom</code> 可配置全部功能，<code>insert</code> 配置插入菜单，<code>view</code> 配置底部按钮。设为空值可隐藏对应菜单；<code>custom=""</code> 仅保留撤销和重做，媒体方式为空则禁用该类型插入。</p>
+                                </div>
+                            </details>
+                        </div>
+                    </section>
+                    <section class="module mod-api" id="api" aria-labelledby="api-title">
+                        <div class="hd">
+                            <span id="api-title">内容与表单</span>
+                        </div>
+                        <div class="bd">
+                            <div class="doc-grid">
+                                <div class="doc-block">
+                                    <h3>常用方法</h3>
+                                    <div class="table-scroll" data-columns="2" role="region" aria-label="组件方法" tabindex="0">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">属性或方法</th>
+                                                    <th scope="col">说明</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row"><code>value</code></th>
+                                                    <td>读写 HTML，赋值空字符串可清空内容</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>text</code></th>
+                                                    <td>读取纯文本</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>getHTML() / setHTML(html)</code></th>
+                                                    <td>读取、设置 HTML</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>openInsertDialog(type,mode)</code></th>
+                                                    <td>打开指定媒体插入弹框；省略 mode 时打开第一种方式</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>focus()</code></th>
+                                                    <td>聚焦编辑区域</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>checkValidity() / reportValidity()</code></th>
+                                                    <td>检查表单校验结果 / 显示校验提示</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>setCustomValidity(message)</code></th>
+                                                    <td>设置自定义校验提示；空字符串清除提示</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="doc-block">
+                                    <h3>原生表单</h3>
+                                    <widget-code language="html">&lt;form id="article-form"&gt;
+    &lt;widget-editor name="content" required&gt;&lt;/widget-editor&gt;
+    &lt;button type="submit"&gt;保存&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;script&gt;
+    document.querySelector('#article-form').onsubmit = function(event){
+        event.preventDefault();
+        let html = new FormData(this).get('content');
+        console.log(html);
+    };
+&lt;/script&gt;</widget-code>
+                                    <p>设置 <code>name</code> 即可提交 HTML；支持必填校验、禁用和重置。表单外的组件可用 <code>form="表单id"</code> 关联。</p>
+                                </div>
+                            </div>
+                            <p class="doc-note">设置 <code>value</code> 不触发 <code>change</code>。<code>openInsertDialog(type,mode)</code> 沿用当前光标或选区，插入方式须在媒体属性中开放。</p>
+                            <details class="doc-details">
+                                <summary>打开媒体弹框</summary>
+                                <div>
+                                    <widget-code language="javascript">editor.openInsertDialog('image','upload');
+editor.openInsertDialog('video','iframe');
+editor.openInsertDialog('audio','url');
+editor.openInsertDialog('attachment','resource');</widget-code>
+                                </div>
+                            </details>
+                            <details class="doc-details">
+                                <summary>Vue 3 / React 19 动态绑定</summary>
+                                <div>
+                                    <p>Vue 编译配置设置 <code>isCustomElement: tag =&gt; tag === 'widget-editor'</code>。</p>
+                                    <div class="doc-grid">
+                                        <div class="doc-block">
+                                            <h3>Vue 3</h3>
+                                            <widget-code language="html">&lt;widget-editor
+    :value.prop="content"
+    :image-limit="imageLimit"
+    @change="content = $event.detail.value"
+    @upload="handleUpload"
+/&gt;</widget-code>
+                                        </div>
+                                        <div class="doc-block">
+                                            <h3>React 19</h3>
+                                            <widget-code language="jsx">&lt;widget-editor
+    value={content}
+    image-limit={imageLimit}
+    onchange={event =&gt; setContent(event.detail.value)}
+    onupload={handleUpload}
+/&gt;</widget-code>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </section>
+                    <section class="module mod-upload" id="uploads" aria-labelledby="uploads-title">
+                        <div class="hd">
+                            <span id="uploads-title">上传与素材库</span>
+                        </div>
+                        <div class="bd">
+                            <p class="doc-lead">组件负责选择、校验和插入，业务页面负责上传与素材管理。文件选择后触发事件，完成后由用户确认插入。</p>
+                            <div class="doc-block">
+                                <h3>事件一览</h3>
+                                <div class="table-scroll" data-columns="3" role="region" aria-label="组件事件" tabindex="0">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">事件</th>
+                                                <th scope="col">触发时机</th>
+                                                <th scope="col">event.detail</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row"><code>ready</code></th>
+                                                <td>组件首次初始化完成</td>
+                                                <td>无</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>change</code></th>
+                                                <td>用户编辑内容或执行编辑操作</td>
+                                                <td>value、text</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>upload</code></th>
+                                                <td>选择文件并通过校验</td>
+                                                <td>files、type、limit、onComplete、onError、onProgress</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>request</code></th>
+                                                <td>打开素材库标签</td>
+                                                <td>type、limit、onComplete、onError</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>add</code></th>
+                                                <td>在素材库中选择上传文件</td>
+                                                <td>与 upload 相同</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><code>remove</code></th>
+                                                <td>点击素材的移除按钮</td>
+                                                <td>type、url、limit、onComplete、onError</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="doc-grid">
+                                <div class="doc-block">
+                                    <h3>文件上传</h3>
+                                    <p><code>upload</code> 与 <code>add</code> 共用处理函数。示例接口接收 <code>files</code> 和 <code>type</code>，返回 <code>{urls: [...]}</code>。</p>
+                                    <widget-code language="javascript">let editor = document.querySelector('#editor');
+
+async function upload(event){
+    let {files,type,onComplete,onError} = event.detail;
+    let data = new FormData();
+    files.forEach(file=&gt;data.append('files',file));
+    data.append('type',type);
     try{
-        for(let file of files){
-            sources.push(await new Promise((resolve,reject)=>{
-                let reader = new FileReader();
-                reader.onprogress = event=>{
-                    if(event.lengthComputable){onProgress(total?(loaded+event.loaded)/total*100:100);}
-                };
-                reader.onload = ()=>{
-                    let source = String(reader.result);
-                    if(type==='attachment'){
-                        source = source.replace(/^data:[^,]*;base64,/, 'data:application/octet-stream;base64,');
-                    }else if(type==='audio'&&file.type==='audio/x-wav'){
-                        source = source.replace(/^data:[^,]*;base64,/, 'data:audio/wav;base64,');
-                    }
-                    loaded += file.size;
-                    onProgress(total?loaded/total*100:100);
-                    resolve(source);
-                };
-                reader.onerror = ()=>reject('文件读取失败，请重试');
-                reader.onabort = ()=>reject('文件读取已取消');
-                reader.readAsDataURL(file);
-            }));
-        }
-        onComplete(sources);
-    }catch(error){
-        onError(error);
-    }
-});</widget-code>
-                            <p>使用 <code>image="upload,url,resource"</code> 等属性开放素材库。切换到「素材库」时触发 <code>request</code>；若它是配置的第一项，打开弹框时即请求。<code>event.detail</code> 包含 <code>type</code>、<code>limit</code>、<code>onComplete(urls)</code>、<code>onError(err)</code>。</p>
-                            <p>调用 <code>onComplete(urls)</code> 返回完整素材数组：元素可为 URL 字符串或 <code>{original,thumbnail}</code> 对象，也可混用。字符串的预览与插入地址相同；对象用 <code>thumbnail</code> 预览、<code>original</code> 插入，省略缩略图则使用原地址。空数组表示暂无素材。默认每行四个、每个至少 120px，窄屏自动减少列数，超出高度滚动显示；弹框左下角共用状态区显示已选数量或超限、操作失败提示，用户选中后点击插入。<code>limit</code> 使用对应的 <code>*-limit</code> 配置，只限制本次插入数量，不限制列表长度。演示页的素材库展示本页已上传的同类文件。</p>
-                            <widget-code language="javascript">// onComplete 返回值支持混用两种格式：
-// ['photo.jpg', {original:'original.jpg',thumbnail:'thumbnail.jpg'}]
-editor.addEventListener('request',async function(event){
-    let {type,onComplete,onError} = event.detail;
-    try{
-        let response = await fetch('/api/materials?type='+encodeURIComponent(type));
-        if(!response.ok){throw new Error('素材加载失败');}
-        let data = await response.json();
-        onComplete(data.urls);
-    }catch(error){
-        onError(error);
-    }
-});</widget-code>
-                            <p>素材库「上传素材」打开组件内的文件选择器，选好文件后触发 <code>add</code>。它与 <code>upload</code> 共用文件选择、数量/类型/大小校验及进度逻辑，<code>detail</code> 完全一致：<code>files</code>、<code>type</code>、<code>limit</code>、<code>onComplete(materials)</code>、<code>onError(err)</code>、<code>onProgress(percent)</code>。无需外部再选择文件；完成时按文件顺序返回相同数量的素材，支持字符串和原图/缩略图对象。</p>
-                            <p>可以为两个事件绑定同一个上传处理函数。<code>add</code> 完成后素材放在列表前面，保留已有选择，仍需点击插入；进度显示在「上传素材」按钮上。</p>
-                            <widget-code language="javascript">async function uploadResources(event){
-    let {files,type,onComplete,onError,onProgress} = event.detail;
-    try{
-        // 自行实现上传服务，按文件顺序返回素材并报告进度。
-        onComplete(await uploadFiles(files,{type,onProgress}));
+        let response = await fetch('/api/upload',{method:'POST',body:data});
+        if(!response.ok){throw new Error('上传失败');}
+        let result = await response.json();
+        onComplete(result.urls);
     }catch(error){
         onError(error);
     }
 }
-editor.addEventListener('upload',uploadResources);
-editor.addEventListener('add',uploadResources);</widget-code>
-                            <p>点击素材右上角的移除按钮触发 <code>remove</code>，其 <code>detail</code> 包含 <code>type</code>、<code>url</code>、<code>limit</code>、<code>onComplete()</code>、<code>onError(err)</code>。外部成功删除后调用 <code>onComplete()</code> 才移除列表项；失败则调用 <code>onError(err)</code>，保留素材和选中状态。<code>url</code> 始终为原地址（对象的 <code>original</code>），不会移除文档内已经插入的内容。</p>
-                            <widget-code language="javascript">editor.addEventListener('remove',async function(event){
+editor.addEventListener('upload',upload);
+editor.addEventListener('add',upload);</widget-code>
+                                </div>
+                                <div class="doc-block">
+                                    <h3>素材库</h3>
+                                    <p>配置 <code>image="upload,url,resource"</code> 等属性，切换到素材库时触发 <code>request</code>。</p>
+                                    <widget-code language="javascript">editor.addEventListener('request',async function(event){
+    let {type,onComplete,onError} = event.detail;
+    try{
+        let response = await fetch('/api/materials?type='+encodeURIComponent(type));
+        if(!response.ok){throw new Error('素材加载失败');}
+        let result = await response.json();
+        onComplete(result.urls);
+    }catch(error){
+        onError(error);
+    }
+});</widget-code>
+                                    <p>“上传素材”触发 <code>add</code>，新素材显示在列表前面；移除触发 <code>remove</code>，成功调用 <code>onComplete()</code> 后更新列表。</p>
+                                </div>
+                            </div>
+                            <details class="doc-details">
+                                <summary>回调参数与素材格式</summary>
+                                <div>
+                                    <div class="table-scroll" data-columns="2" role="region" aria-label="事件回调参数" tabindex="0">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">字段</th>
+                                                    <th scope="col">说明</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row"><code>type</code></th>
+                                                    <td>image、video、audio、attachment</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>limit</code></th>
+                                                    <td>本次上传或选择数量上限；不限数量时为 Infinity</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>files</code></th>
+                                                    <td>File[]，单文件也是数组；仅 upload、add 提供</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>url</code></th>
+                                                    <td>待移除素材的原地址；仅 remove 提供</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>onComplete(items)</code></th>
+                                                    <td>上传、加载或新增完成，传入素材数组；移除完成时不传参数</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>onError(error)</code></th>
+                                                    <td>失败时传入 Error 或错误消息</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>onProgress(percent)</code></th>
+                                                    <td>更新上传进度，范围 0～100；仅 upload、add 提供</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <p>素材支持 URL 字符串或原图、缩略图对象。上传、新增需按文件顺序返回相同数量的素材；加载素材库可返回任意数量，空数组表示暂无素材。</p>
+                                    <widget-code language="javascript">onComplete([
+    'https://example.com/photo.jpg',
+    {
+        original:'https://example.com/original.jpg',
+        thumbnail:'https://example.com/thumbnail.jpg'
+    }
+]);</widget-code>
+                                    <p>缩略图用于预览，原图用于插入。省略缩略图则使用原地址，视频、音频、附件也可设置预览图片。</p>
+                                </div>
+                            </details>
+                            <details class="doc-details">
+                                <summary>移除素材</summary>
+                                <div>
+                                    <widget-code language="javascript">editor.addEventListener('remove',async function(event){
     let {type,url,onComplete,onError} = event.detail;
     try{
         let response = await fetch('/api/materials',{
@@ -333,19 +650,54 @@ editor.addEventListener('add',uploadResources);</widget-code>
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify({type,url})
         });
-        if(!response.ok){throw new Error('素材删除失败');}
+        if(!response.ok){throw new Error('素材移除失败');}
         onComplete();
     }catch(error){
         onError(error);
     }
 });</widget-code>
-                            <p>这些回调仅生效一次。切换标签或关闭弹框会取消未完成的素材加载、新增和移除；加载失败可再次点击「素材库」重试。</p>
-                        </div>
-                    </section>
-                    <section class="module mod-article">
-                        <div class="hd"><span>关于富文本编辑器</span></div>
-                        <div class="bd">
-                            <p>富文本编辑器可以在编辑文字时设置字体、颜色、大小和段落样式，并插入链接、图片和表格。通过标题、列表和段落对齐，让内容具有清晰的层次；通过格式刷复用文字样式，让排版保持一致。编辑器同时提供 HTML 源代码查看和编辑功能，适用于文章、公告和日常笔记等内容的编辑。</p>
+                                    <p>移除只更新素材列表，不影响文档中已插入的内容。失败时调用 <code>onError(error)</code>。</p>
+                                </div>
+                            </details>
+                            <details class="doc-details">
+                                <summary>文件限制</summary>
+                                <div>
+                                    <div class="table-scroll" data-columns="3" role="region" aria-label="文件限制" tabindex="0">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">类型</th>
+                                                    <th scope="col">支持格式</th>
+                                                    <th scope="col">单个文件上限</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row"><code>图片</code></th>
+                                                    <td>PNG、JPEG、GIF、WebP</td>
+                                                    <td>5 MB</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>视频</code></th>
+                                                    <td>MP4、WebM、Ogg</td>
+                                                    <td>50 MB</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>音频</code></th>
+                                                    <td>MP3、WAV、Ogg、M4A、AAC、FLAC、WebM</td>
+                                                    <td>20 MB</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>附件</code></th>
+                                                    <td>任意文件</td>
+                                                    <td>20 MB</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <p>回调仅生效一次；关闭弹框或更改相关权限后，未完成回调失效。演示页使用本地文件读取，不上传服务器。</p>
+                                </div>
+                            </details>
                         </div>
                     </section>
                 </div>

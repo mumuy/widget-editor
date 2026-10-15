@@ -114,96 +114,207 @@
     line-height: 1.6;
 }
 
-.mod-params,.mod-upload{
-    margin: 60px 0;
+.doc-nav{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 28px 0 36px;
 }
-.mod-params .bd p,.mod-upload .bd p{
-    margin: 12px 0;
-    line-height: 26px;
+.doc-nav a{
+    padding: 7px 15px;
+    background: #f6f8fa;
+    border: 1px solid #e9edf1;
+    border-radius: 5px;
+    color: #57606a;
+    font-size: 14px;
+    text-decoration: none;
 }
-.mod-params .table-scroll,.mod-upload .table-scroll{
+.doc-nav a:hover,.doc-nav a:focus-visible{
+    color: #2095f2;
+    border-color: #c4e0f8;
+    background: #f0f8ff;
+}
+.mod-guide,.mod-params,.mod-api,.mod-upload{
+    margin: 48px 0;
+    scroll-margin-top: 90px;
+}
+.mod-guide .hd,.mod-params .hd,.mod-api .hd,.mod-upload .hd{
+    margin-bottom: 16px;
+}
+.doc-grid{
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 24px;
+    align-items: start;
+}
+.doc-block{
+    min-width: 0;
+    margin-bottom: 24px;
+}
+.doc-block h3{
+    margin: 0 0 12px;
+    color: var(--title-color);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 24px;
+}
+.mod-guide p,.mod-params p,.mod-api p,.mod-upload p{
+    margin: 0 0 14px;
+    color: #57606a;
+    font-size: 14px;
+    line-height: 1.8;
+}
+.module .doc-lead{
+    margin-bottom: 22px;
+}
+.module .doc-note{
+    color: #808891;
+    font-size: 13px;
+}
+.table-scroll{
     overflow-x: auto;
-    border: 1px solid #eee;
+    border: 1px solid #e9edf1;
     border-radius: 6px;
     outline: none;
 }
-.mod-params table,.mod-upload table{
+.table-scroll:focus-visible{
+    border-color: #b8c4d0;
+}
+.table-scroll table{
     width: 100%;
-    min-width: 560px;
+    min-width: 500px;
     table-layout: fixed;
-    font-size: 14px;
-    line-height: 24px;
-}
-.mod-params th,.mod-params td,.mod-upload th,.mod-upload td{
-    padding: 12px;
-    border-bottom: 1px solid #eee;
-    text-align: left;
-    vertical-align: top;
-}
-.mod-params thead th,.mod-upload thead th{
-    background: #f6f8fa;
-    font-weight: bold;
-}
-.mod-params tbody tr:last-child th,.mod-params tbody tr:last-child td,.mod-upload tbody tr:last-child th,.mod-upload tbody tr:last-child td{
-    border-bottom: 0;
-}
-.mod-params code,.mod-upload code{
-    font-family: Menlo,Monaco,Consolas,'Courier New',monospace;
     font-size: 13px;
-    overflow-wrap: anywhere;
-}
-.mod-params summary{
-    color: #2095f2;
-    cursor: pointer;
-}
-.mod-params details code{
-    display: block;
-    margin-top: 6px;
-}
-
-.mod-upload pre{
-    margin: 16px 0;
-    padding: 18px 20px;
-    overflow: auto;
-    background: #f6f8fa;
-    border: 1px solid #eee;
-    border-radius: 6px;
     line-height: 22px;
 }
-
-.mod-article{
-    margin-bottom: 65px;
+.table-scroll th,.table-scroll td{
+    box-sizing: border-box;
+    padding: 11px 14px;
+    border-bottom: 1px solid #edf0f3;
+    text-align: left;
+    vertical-align: top;
+    overflow-wrap: anywhere;
 }
-.mod-article .hd{
-    margin-top: -36px;
+.table-scroll thead th{
+    background: #f6f8fa;
+    color: #57606a;
+    font-weight: 600;
 }
-.mod-article .hd span{
-    font-size: 24px;
+.table-scroll tr > :first-child{
+    width: 22%;
 }
-.mod-article .bd{
-    position: relative;
-    padding: 30px 0;
+.mod-params .table-scroll[data-columns="3"] tr > :last-child{
+    width: 32%;
 }
-.mod-article .bd::before{
-    position: absolute;
-    top: 0;
-    left: 0;
-    content: '“';
-    font-size: 60px;
+.mod-api .table-scroll[data-columns="2"] tr > :first-child{
+    width: 42%;
+}
+.table-scroll tbody th{
+    color: #343b48;
+    font-weight: 400;
+}
+.table-scroll td{
+    color: #57606a;
+}
+.table-scroll tbody tr:last-child > *{
+    border-bottom: 0;
+}
+.table-scroll tbody tr:hover{
+    background: #fbfcfd;
+}
+.mod-guide code,.mod-params code,.mod-api code,.mod-upload code{
+    font-family: Menlo,Monaco,Consolas,'Courier New',monospace;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+.mod-guide widget-code,.mod-params widget-code,.mod-api widget-code,.mod-upload widget-code{
+    display: block;
+    max-width: 100%;
+    margin-bottom: 14px;
+    overflow: auto;
+    white-space: pre;
+    font-family: Menlo,Monaco,Consolas,'Courier New',monospace;
+    font-size: 12px;
+    line-height: 22px;
+}
+widget-code:not(:defined){
+    padding: 16px;
+    background: #f6f8fa;
+    border: 1px solid #e9edf1;
     border-radius: 6px;
 }
-.mod-article .bd::after{
-    position: absolute;
-    bottom: -10px;
-    right: 0;
-    content: '”';
-    font-size: 60px;
+.doc-details{
+    margin-top: 12px;
+    border: 1px solid #e9edf1;
     border-radius: 6px;
+    background: #fff;
 }
-.mod-article .bd p{
-    margin-bottom: 12px;
-    line-height: 28px;
-    text-indent: 2em;
+.doc-details summary{
+    padding: 13px 16px;
+    color: #57606a;
+    font-size: 14px;
+    line-height: 22px;
+    cursor: pointer;
+}
+.doc-details summary::marker{
+    color: #8a95a4;
+}
+.doc-details[open] summary{
+    color: #2095f2;
+    border-bottom: 1px solid #e9edf1;
+}
+.doc-details > div{
+    padding: 18px 16px 4px;
+}
+.doc-details .table-scroll{
+    margin-bottom: 14px;
+}
+.font-values{
+    display: grid;
+    grid-template-columns: repeat(3,minmax(0,1fr));
+    gap: 12px;
+    margin: 20px 0;
+    font-size: 13px;
+    color: #57606a;
+}
+.font-values span{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.font-values code{
+    color: #343b48;
+}
+@media screen and (max-width: 760px){
+    .doc-grid{
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    .doc-nav{
+        margin: 20px 0 30px;
+    }
+    .doc-nav a{
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+    .mod-guide,.mod-params,.mod-api,.mod-upload{
+        margin: 36px 0;
+        scroll-margin-top: 112px;
+    }
+    .table-scroll table{
+        min-width: 0;
+        font-size: 12px;
+        line-height: 21px;
+    }
+    .table-scroll th,.table-scroll td{
+        padding: 10px;
+    }
+    .table-scroll tr > :first-child{
+        width: 28%;
+    }
+    .font-values{
+        grid-template-columns: repeat(2,minmax(0,1fr));
+    }
 }
 
 .mod-copy{
@@ -255,27 +366,6 @@
         line-height: 22px;
         font-size: 13px;
         overflow: hidden;
-    }
-
-    .mod-article{
-        margin-bottom: 25px;
-    }
-    .mod-article .hd span{
-        font-size: 20px;
-    }
-    .mod-article .bd{
-        padding: 15px 0;
-    }
-    .mod-article .bd::before{
-        font-size: 48px;
-    }
-    .mod-article .bd::after{
-        font-size: 48px;
-    }
-    .mod-article .bd p{
-        margin-bottom: 7px;
-        line-height: 22px;
-        font-size: 14px;
     }
 
     .mod-copy{
