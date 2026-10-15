@@ -20,6 +20,12 @@ export default class EditorBlocks {
             (this.block(previous)||previous?.matches(containerTags))&&
             (!node.nextElementSibling||this.block(node.nextElementSibling));
     }
+    sibling(node,backward=false){
+        do{
+            node = backward?node.previousElementSibling:node.nextElementSibling;
+        }while(this.boundary(node));
+        return node;
+    }
     normalize(){
         let content = this.editor.content;
         let range = this.editor.getRange();
@@ -87,7 +93,7 @@ export default class EditorBlocks {
         editor.history.record();
         editor.transaction(()=>{
             if(!paragraph){
-                paragraph = block.nextElementSibling;
+                paragraph = this.sibling(block);
                 if(!paragraph?.matches(paragraphTags)){
                     paragraph = this.paragraph();
                     block.after(paragraph);
@@ -182,19 +188,30 @@ export default class EditorBlocks {
         if(!backward&&event.inputType!=='deleteContentForward'){return false;}
         let block;
         if(paragraph&&this.edge(paragraph,range,!backward)){
-            block = backward?paragraph.previousElementSibling:paragraph.nextElementSibling;
+            block = this.sibling(paragraph,backward);
         }else if(node.nodeType===Node.ELEMENT_NODE){
             block = node.childNodes[range.startOffset-(backward?1:0)];
         }
-        if(!this.block(block)&&!(backward&&block?.matches('blockquote')&&this.empty(block))){return false;}
+        // 自动补出的光标停留点不属于内容，跨段删除时跳过它。
+        if(this.boundary(block)){block = this.sibling(block,backward);}
+        if(!this.block(block)&&!(backward&&block?.matches?.('blockquote')&&this.empty(block))){return false;}
+        let end = false;
+        if(!paragraph||this.boundary(paragraph)){
+            let sibling = this.sibling(block,!backward);
+            if(sibling?.matches(paragraphTags)){
+                paragraph = sibling;
+                end = !backward;
+            }
+        }
         // 同一段落中的多张图片仍是独立内容，边界删除只移除最近的媒体。
         let media = block.matches(paragraphTags)?block.querySelectorAll(mediaTags):[];
         if(media.length>1){
             paragraph = block;
             block = media[backward?media.length-1:0];
+            end = backward;
         }
         event.preventDefault();
-        this.remove(block,paragraph,backward&&block.matches(mediaTags));
+        this.remove(block,paragraph,end);
         return true;
     }
     keyDown(event){
