@@ -28,6 +28,7 @@ export default function createMaterials(editor,options){
         message.setAttribute('role','status');
         editor.locale.set(message,text);
         list.replaceChildren(message);
+        options.onSelectionChange?.(selected.size);
     };
     return {
         element:list,
@@ -90,6 +91,7 @@ export default function createMaterials(editor,options){
                     }
                     options.message('');
                     items.forEach(item=>item.button.setAttribute('aria-pressed',String(selected.has(item.original))));
+                    options.onSelectionChange?.(selected.size);
                 };
                 item.button = select;
                 let remove = document.createElement('button');
@@ -103,6 +105,7 @@ export default function createMaterials(editor,options){
                         selected.delete(item.original);
                         items = items.filter(value=>value!==item);
                         card.remove();
+                        options.onSelectionChange?.(selected.size);
                         if(!items.length){status('暂无素材');}
                         else if(!list.closest('[hidden]')){items[0].button.focus({preventScroll:true});}
                     }
@@ -110,6 +113,7 @@ export default function createMaterials(editor,options){
                 card.append(select,remove);
                 list.appendChild(card);
             });
+            options.onSelectionChange?.(selected.size);
         }
     };
 }

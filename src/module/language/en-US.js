@@ -110,6 +110,7 @@ export default {
     '素材库':'Asset library',
     '上传素材':'Upload assets',
     '素材上传失败，请重试':'Could not upload assets. Please try again.',
+    '已选 {count} 项':'Selected {count}',
     '素材列表':'Asset list',
     '移除素材':'Remove asset',
     '请选择素材':'Choose assets',

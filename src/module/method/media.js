@@ -17,6 +17,7 @@ export default function openMedia(editor,options,initialMode){
     let materials;
     let addButton;
     let addInput;
+    let selectionCount;
     let uploaded = null;
     let progress;
     let description;
@@ -46,6 +47,7 @@ export default function openMedia(editor,options,initialMode){
             panel.element.querySelectorAll('input,textarea').forEach(input=>input.disabled=!active||busy);
         });
         (activePanel.feedback||activePanel.element).appendChild(notice);
+        selectionCount.hidden = mode!=='resource';
         addButton.hidden = mode!=='resource';
         addButton.disabled = busy;
         addInput.disabled = busy||mode!=='resource';
@@ -219,7 +221,12 @@ export default function openMedia(editor,options,initialMode){
             addInput.dataset.materialUpload = '';
             addInput.onchange = ()=>uploadFiles('add',addInput);
             addButton.onclick = ()=>addInput.click();
-            dialog.querySelector('.dialog-foot').prepend(addButton,addInput);
+            selectionCount = document.createElement('span');
+            selectionCount.className = 'material-count';
+            selectionCount.setAttribute('role','status');
+            selectionCount.setAttribute('aria-live','polite');
+            editor.locale.set(selectionCount,'已选 {count} 项',{count:0});
+            dialog.querySelector('.dialog-foot').prepend(selectionCount,addButton,addInput);
             tabs = document.createElement('div');
             tabs.className = 'media-tabs';
             tabs.setAttribute('role','tablist');
@@ -246,6 +253,7 @@ export default function openMedia(editor,options,initialMode){
                 if(name==='resource'){
                     materials = createMaterials(editor,{
                         ...options,limit:batch,
+                        onSelectionChange:count=>editor.locale.set(selectionCount,'已选 {count} 项',{count}),
                         message:(...args)=>dialog.message(...args),
                         remove:url=>resolveResources('remove',[],url)
                     });
