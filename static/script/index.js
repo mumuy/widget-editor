@@ -39,14 +39,16 @@
         resources.set(type,[...items,...(resources.get(type)||[]).filter(item=>!originals.has(item.url))]);
         return sources;
     };
-    $editor.addEventListener('upload',async function(event){
+    let upload = async function(event){
         let {files,type,onComplete,onError,onProgress} = event.detail;
         try{
             onComplete(await readFiles(files,type,onProgress));
         }catch(error){
             onError(error);
         }
-    });
+    };
+    $editor.addEventListener('upload',upload);
+    $editor.addEventListener('add',upload);
     // 素材库数据由调用方管理，返回列表后在组件内选择和插入。
     $editor.addEventListener('request',function(event){
         let {type,onComplete} = event.detail;
@@ -56,29 +58,5 @@
         let {type,url,onComplete} = event.detail;
         resources.set(type,(resources.get(type)||[]).filter(item=>item.url!==url));
         onComplete();
-    });
-    $editor.addEventListener('add',function(event){
-        let {type,onComplete,onError} = event.detail;
-        let input = document.createElement('input');
-        input.type = 'file';
-        input.multiple = true;
-        input.hidden = true;
-        input.dataset.materialUpload = '';
-        input.accept = {image:'image/png,image/jpeg,image/gif,image/webp',video:'video/mp4,video/webm,video/ogg',audio:'audio/*'}[type]||'';
-        input.oncancel = ()=>{
-            input.remove();
-            onError('已取消上传');
-        };
-        input.onchange = async ()=>{
-            let files = Array.from(input.files);
-            input.remove();
-            try{
-                onComplete(await readFiles(files,type));
-            }catch(error){
-                onError(error);
-            }
-        };
-        document.body.appendChild(input);
-        input.click();
     });
 })();

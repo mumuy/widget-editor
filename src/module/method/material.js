@@ -40,7 +40,9 @@ export default function createMaterials(editor,options){
         },
         prepend(materials){
             let originals = new Set(materials.map(item=>item.original));
-            this.render([...materials,...items.filter(item=>!originals.has(item.original))],true);
+            let seen = new Set();
+            let added = materials.filter(item=>!seen.has(item.original)&&seen.add(item.original));
+            this.render([...added,...items.filter(item=>!originals.has(item.original))],true);
             list.scrollTop = 0;
         },
         render(materials,keepSelection=false){

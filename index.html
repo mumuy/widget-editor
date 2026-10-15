@@ -259,7 +259,7 @@ console.log(editor.value);</code></pre>
                     <section class="module mod-upload" id="upload" aria-labelledby="upload-title">
                         <div class="hd"><span id="upload-title">upload / request / add / remove 事件</span></div>
                         <div class="bd">
-                            <p>图片、视频、音频和附件选择文件并确认插入后，会触发 <code>upload</code> 事件。组件负责插入和显示进度，文件由你的页面上传。</p>
+                            <p>图片、视频、音频和附件选择文件并通过校验后立即触发 <code>upload</code> 事件。组件负责文件选择、校验和进度显示，文件由你的页面上传。上传成功后点击插入，不会重复上传。</p>
                             <div class="table-scroll" role="region" aria-labelledby="upload-title" tabindex="0">
                                 <table>
                                     <colgroup><col style="width:36%;"><col style="width:64%;"></colgroup>
@@ -324,16 +324,19 @@ editor.addEventListener('request',async function(event){
         onError(error);
     }
 });</widget-code>
-                            <p>素材库底部的「上传素材」触发 <code>add</code>，<code>detail</code> 包含 <code>type</code>、<code>limit</code>、<code>onComplete(materials)</code>、<code>onError(err)</code>。外部负责选择、上传文件，完成结果与 <code>request</code> 相同，支持字符串和原图/缩略图对象；新增素材放在列表前面，保留已有选择，仍需点击插入。<code>limit</code> 不限制新增数量。</p>
-                            <widget-code language="javascript">editor.addEventListener('add',async function(event){
-    let {type,onComplete,onError} = event.detail;
+                            <p>素材库「上传素材」打开组件内的文件选择器，选好文件后触发 <code>add</code>。它与 <code>upload</code> 共用文件选择、数量/类型/大小校验及进度逻辑，<code>detail</code> 完全一致：<code>files</code>、<code>type</code>、<code>limit</code>、<code>onComplete(materials)</code>、<code>onError(err)</code>、<code>onProgress(percent)</code>。无需外部再选择文件；完成时按文件顺序返回相同数量的素材，支持字符串和原图/缩略图对象。</p>
+                            <p>可以为两个事件绑定同一个上传处理函数。<code>add</code> 完成后素材放在列表前面，保留已有选择，仍需点击插入；进度显示在「上传素材」按钮上。</p>
+                            <widget-code language="javascript">async function uploadResources(event){
+    let {files,type,onComplete,onError,onProgress} = event.detail;
     try{
-        // 自行实现文件选择和上传，返回素材数组。
-        onComplete(await uploadMaterials(type));
+        // 自行实现上传服务，按文件顺序返回素材并报告进度。
+        onComplete(await uploadFiles(files,{type,onProgress}));
     }catch(error){
         onError(error);
     }
-});</widget-code>
+}
+editor.addEventListener('upload',uploadResources);
+editor.addEventListener('add',uploadResources);</widget-code>
                             <p>点击素材右上角的移除按钮触发 <code>remove</code>，其 <code>detail</code> 包含 <code>type</code>、<code>url</code>、<code>limit</code>、<code>onComplete()</code>、<code>onError(err)</code>。外部成功删除后调用 <code>onComplete()</code> 才移除列表项；失败则调用 <code>onError(err)</code>，保留素材和选中状态。<code>url</code> 始终为原地址（对象的 <code>original</code>），不会移除文档内已经插入的内容。</p>
                             <widget-code language="javascript">editor.addEventListener('remove',async function(event){
     let {type,url,onComplete,onError} = event.detail;

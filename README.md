@@ -309,9 +309,9 @@ editor.setCustomValidity(''); // 清除自定义错误
 | `ready` | 组件首次初始化完成 | 无 |
 | `change` | 用户编辑内容或执行编辑操作 | `{value,text}` |
 | `request` | 切换到素材库标签，或弹框默认打开素材库 | 素材类型、插入数量限制及列表加载回调，见下方说明 |
-| `add` | 用户点击素材库底部的「上传素材」 | 素材类型、插入数量限制及新增完成/失败回调，见下方说明 |
+| `add` | 点击「上传素材」选择文件且通过校验后立即触发 | 素材类型、插入数量限制及新增完成/失败回调，见下方说明 |
 | `remove` | 用户点击素材右上角的移除按钮 | 素材类型、URL 及删除完成/失败回调，见下方说明 |
-| `upload` | 用户选择文件并确认上传 | 文件及上传回调，见下方说明 |
+| `upload` | 用户选择文件且通过校验后立即触发 | 文件及上传回调，见下方说明 |
 
 这些事件会冒泡，也可以在编辑器所在的父元素上监听。若需要监听 `ready`，请先准备一个容器，例如 `<div id="editor-container"></div>`，再在组件加入页面之前绑定：
 
@@ -330,7 +330,7 @@ customElements.whenDefined('widget-editor').then(function(){
 
 默认插入菜单已包含图片、视频、音频和附件，点击对应选项即可插入。未配置插入方式属性时，开放该类型的全部方式，默认打开「上传文件」：
 
-- **上传文件**：选择本地文件并点击插入，组件触发 `upload` 事件，由你的页面负责上传。
+- **上传文件**：选择本地文件即触发 `upload` 事件，由你的页面负责上传，成功后点击插入。
 - **素材库**：切换标签时触发 `request` 事件，返回素材列表后在弹框内选择，点击插入。默认每行四个，每个至少 120px，窄屏自动减少列数素材，超出列表高度时滚动显示。
 - **URL**：填写文件地址，点击插入即可使用，支持 HTTP、HTTPS 或相对地址。
 - **嵌入 iframe**（仅视频）：仅需粘贴第三方视频网站提供的 iframe 代码，再点击「插入视频」，保留代码中原有的 `title`。组件自动写入 `width: 100%`、`height: auto`、`max-width: 100%` 和 `aspect-ratio: 16 / 9`，高度随容器宽度按比例变化；嵌入地址须使用 HTTP、HTTPS 或相对地址。插入的 iframe 支持源码往返、删除及撤销。
@@ -384,13 +384,15 @@ editor.removeAttribute('image-bind');
 <widget-editor image-batch="9" video-batch="3" attachment-batch="" audio-batch="5"></widget-editor>
 ```
 
-未设置时使用配置文件中的默认值（默认单文件）；空值表示不限数量，正整数表示上限，`1` 表示单文件，其他无效值回退到默认值。数量限制同时适用于文件上传和素材库选择，不影响 URL 和 iframe。选择的全部文件均需通过数量、类型和单个文件大小校验，才会触发一次 `upload` 事件。运行时修改数量限制会关闭对应弹框，未完成的旧上传回调随即失效。
+未设置时使用配置文件中的默认值（默认单文件）；空值表示不限数量，正整数表示上限，`1` 表示单文件，其他无效值回退到默认值。数量限制同时适用于文件上传和素材库选择，不影响 URL 和 iframe。选择的全部文件均需通过数量、类型和单个文件大小校验，才会触发一次 `upload` 或 `add` 事件，两种上传使用相同限制。运行时修改数量限制会关闭对应弹框，未完成的旧上传回调随即失效。
 
-组件不会自行向服务器上传文件。`files` 始终为 `File[]`，单文件上传也传数组。全部上传成功后调用 `onComplete(urls)`，地址数组须与 `files` 数量相同、顺序对应；单文件也使用 `[url]`。组件校验全部地址后，一次性插入原来的光标或选区位置，支持整批撤销。批量上传图片时，每张图片独立使用一个 `p` 包裹。描述字段应用于本批全部文件；未填写视频、音频描述或附件文字时，分别使用每个文件的名称。
+组件不会自行向服务器上传文件。`files` 始终为 `File[]`，单文件上传也传数组。全部上传成功后调用 `onComplete(urls)`，地址数组须与 `files` 数量相同、顺序对应；单文件也使用 `[url]`。组件校验全部地址后保留上传结果；用户点击「插入」才一次性写入原来的光标或选区位置，支持整批撤销。批量上传图片时，每张图片独立使用一个 `p` 包裹。描述字段应用于本批全部文件；未填写视频、音频描述或附件文字时，分别使用每个文件的名称。
 
 这是上传接口调整：原来的 `detail.file` 改为 `detail.files`，完成回调 `onUploadComplete` 改为 `onComplete`，失败回调 `onUploadError` 改为 `onError`；完成时统一传入地址数组（单文件也使用 `[url]`）。失败、数量不匹配或地址无效时不会插入任何文件，弹框保留，允许整批重试。
 
-`upload` 事件的 `detail` 包含：
+选择文件后立即触发 `upload`，无需点击「插入」。上传期间及失败时不能插入；失败后重新选择文件重试，重新选文件会清除旧上传结果。成功后点击「插入」只使用已有结果，不重复触发上传。
+
+`upload` 和 `add` 事件的 `detail` 完全相同：
 
 | 字段 | 说明 |
 | --- | --- |
@@ -489,19 +491,25 @@ onComplete([
 
 返回列表只负责展示，不会直接插入。素材默认每行四个，每个至少 120px，窄屏自动减少列数，列表沿用其他标签页的高度，超出时内部滚动。默认单选，再选其他素材会切换选中项；设置 `*-batch` 后可多选。用户点击「插入」才将选中素材按列表顺序插入原来的光标或选区，支持整批撤销，批量图片各自使用 `p` 包裹。
 
-素材库底部「插入」左侧的「上传素材」触发 `add` 事件，`detail` 包含 `type`、`limit`、`onComplete(materials)`、`onError(err)`。外部负责选择并上传文件，完成结果与 `request` 相同，支持 URL 字符串和 `{original,thumbnail}` 对象混用。新增素材放到列表最前面，按原地址去重并更新缩略图，保留已有选中状态，不会直接插入文档；`limit` 只限制最终插入数量，不限制新增数量。
+素材库底部「插入」左侧的「上传素材」会打开组件的文件选择器，选好文件并通过校验后触发 `add`。它与 `upload` 共用选择、数量/类型/大小校验和进度处理，`detail` 完全相同：`files`、`type`、`limit`、`onComplete(materials)`、`onError(err)`、`onProgress(percent)`。无需外部再打开文件选择器。
+
+完成时按文件顺序返回相同数量的元素，支持 URL 字符串和 `{original,thumbnail}` 对象混用。新增素材放到列表最前面，按原地址去重并更新缩略图，保留已有选中状态，不会直接插入文档。上传进度显示在「上传素材」按钮上。
+
+可以复用同一个处理函数：
 
 ```javascript
-editor.addEventListener('add',async function(event){
-    let {type,onComplete,onError} = event.detail;
+async function uploadResources(event){
+    let {files,type,onComplete,onError,onProgress} = event.detail;
     try{
-        // 自行实现文件选择和上传，返回与 request 相同格式的数组。
-        let materials = await uploadMaterials(type);
+        // 自行实现上传服务，按 files 顺序返回素材数组，并调用 onProgress 更新进度。
+        let materials = await uploadFiles(files,{type,onProgress});
         onComplete(materials);
     }catch(error){
         onError(error);
     }
-});
+}
+editor.addEventListener('upload',uploadResources);
+editor.addEventListener('add',uploadResources);
 ```
 
 每个素材右上角的移除按钮触发 `remove` 事件，其 `event.detail` 包含 `type`、`url`、`limit`、`onComplete()`、`onError(err)`。外部删除成功后调用 `onComplete()`，组件才从当前列表移除该素材；失败调用 `onError(err)`，保留素材及选中状态。`url` 始终是原地址（对象的 `original`），不使用缩略图地址。此操作不修改文档中已插入的内容。

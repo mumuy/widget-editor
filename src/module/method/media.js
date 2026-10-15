@@ -15,6 +15,8 @@ export default function openMedia(editor,options){
     let revision = 0;
     let materials;
     let addButton;
+    let addInput;
+    let uploaded = null;
     let progress;
     let description;
     let dialog;
@@ -45,21 +47,24 @@ export default function openMedia(editor,options){
         (activePanel.feedback||activePanel.element).appendChild(notice);
         addButton.hidden = mode!=='request';
         addButton.disabled = busy;
+        addInput.disabled = busy||mode!=='request';
         materials?.busy(busy);
-        submit.disabled = busy;
+        submit.disabled = busy||mode==='upload'&&!uploaded;
     };
     let setBusy = function(value,name){
         busy = value;
         pendingType = value?name:null;
-        tabs.querySelectorAll('[data-media-tab]').forEach(button=>button.disabled=busy&&pendingType==='upload');
+        tabs.querySelectorAll('[data-media-tab]').forEach(button=>button.disabled=busy&&['upload','add'].includes(pendingType));
         setMode(mode);
         progress.hidden = !busy||pendingType!=='upload';
         editor.locale.set(submit,busy&&pendingType==='upload'?'上传中…':'插入'+options.name);
+        editor.locale.set(addButton,busy&&pendingType==='add'?'上传中…':'上传素材');
         if(busy){
             dialog.message('');
         }
     };
     let resolveResources = function(name,files=[],url){
+        let uploading = ['upload','add'].includes(name);
         setBusy(true,name);
         return new Promise(resolve=>{
             let done = false;
@@ -89,28 +94,28 @@ export default function openMedia(editor,options){
                     }
                     if(name==='remove'){finish(true);return;}
                     let sources = Array.isArray(urls)?Array.from(urls,value=>normalizeMaterial(value,options.kind)):[];
-                    if(!Array.isArray(urls)||sources.some(source=>!source)||name==='upload'&&sources.length!==files.length){
-                        error(name==='upload'?'请按文件顺序返回对应数量的有效 URL，请重试':'请返回有效的素材列表，请重试',true);
+                    if(!Array.isArray(urls)||sources.some(source=>!source)||uploading&&sources.length!==files.length){
+                        error(uploading?'请按文件顺序返回对应数量的有效 URL，请重试':'请返回有效的素材列表，请重试',true);
                         return;
                     }
-                    if(name==='upload'&&sources.length>batch){
+                    if(uploading&&sources.length>batch){
                         error('一次最多选择 {count} 个素材',true,{count:batch});
                         return;
                     }
                     let seen = new Set();
-                    finish(name!=='upload'?sources.filter(item=>!seen.has(item.original)&&seen.add(item.original)):
-                        sources.map(item=>item.original));
+                    finish(name==='request'?sources.filter(item=>!seen.has(item.original)&&seen.add(item.original)):sources);
                 },
                 onError:error
             };
             if(name==='remove'){detail.url = url;}
-            if(name==='upload'){
+            if(uploading){
                 detail.files = files.slice();
                 detail.onProgress = function(percent){
                     if(active()&&Number.isFinite(Number(percent))){
                         let value = Math.max(0,Math.min(100,Number(percent)));
                         progress.querySelector('progress').value = value;
                         editor.locale.set(progress.querySelector('span'),'上传中 {percent}%',{percent:Math.round(value)});
+                        if(name==='add'){editor.locale.set(addButton,'上传中 {percent}%',{percent:Math.round(value)});}
                     }
                 };
                 progress.querySelector('progress').value = 0;
@@ -122,6 +127,39 @@ export default function openMedia(editor,options){
                 composed:true
             }));
         });
+    };
+    let uploadFiles = async function(name,input){
+        if(busy||!current()){return;}
+        let files = Array.from(input.files);
+        if(name==='upload'){uploaded = null;}
+        dialog.message('');
+        setMode(mode);
+        if(!files.length){return;}
+        let message;
+        let params;
+        if(files.some(file=>!fileType(file,options.types))){
+            message = options.error||'请选择文件';
+        }else if(files.length>batch){
+            message = '一次最多选择 {count} 个文件';
+            params = {count:batch};
+        }else if(files.some(file=>file.size>options.size*1024*1024)){
+            message = '{type}大小不能超过 {size} MB';
+            params = {type:options.name,size:options.size};
+        }
+        if(message){
+            dialog.message(message,params);
+            input.value = '';
+            return;
+        }
+        let version = revision;
+        let sources = await resolveResources(name,files);
+        if(!current()||version!==revision){return;}
+        if(sources){
+            if(name==='upload'){uploaded = {files,sources:sources.map(item=>item.original)};}
+            else{materials.prepend(sources);}
+        }
+        if(name==='add'||!sources){input.value = '';}
+        setMode(mode);
     };
     let insert = function(sources,files=[],values={}){
         let batch = sources.length>1;
@@ -171,13 +209,15 @@ export default function openMedia(editor,options){
             addButton.className = 'btn';
             addButton.dataset.materialAdd = '';
             editor.locale.set(addButton,'上传素材');
-            addButton.onclick = async ()=>{
-                if(busy){return;}
-                let version = revision;
-                let sources = await resolveResources('add');
-                if(sources&&current()&&mode==='request'&&version===revision){materials.prepend(sources);}
-            };
-            dialog.querySelector('.dialog-foot').prepend(addButton);
+            addInput = document.createElement('input');
+            addInput.type = 'file';
+            addInput.accept = fields.upload.accept;
+            addInput.multiple = fields.upload.multiple;
+            addInput.hidden = true;
+            addInput.dataset.materialUpload = '';
+            addInput.onchange = ()=>uploadFiles('add',addInput);
+            addButton.onclick = ()=>addInput.click();
+            dialog.querySelector('.dialog-foot').prepend(addButton,addInput);
             tabs = document.createElement('div');
             tabs.className = 'media-tabs';
             tabs.setAttribute('role','tablist');
@@ -217,6 +257,7 @@ export default function openMedia(editor,options){
                 if(name==='upload'){
                     panel.feedback = document.createElement('div');
                     panel.feedback.className = 'upload-feedback';
+                    panel.fields.querySelector('[name=file]').onchange = event=>uploadFiles('upload',event.target);
                     panel.feedback.appendChild(progress);
                     element.appendChild(panel.feedback);
                 }
@@ -228,10 +269,10 @@ export default function openMedia(editor,options){
             dialog.querySelector('.dialog-body').replaceChildren(tabs,panelGroup);
             tabs.addEventListener('click',event=>{
                 let button = event.target.closest('[data-media-tab]');
-                if(button&&(!busy||pendingType!=='upload')){activate(button.dataset.mediaTab);}
+                if(button&&(!busy||!['upload','add'].includes(pendingType))){activate(button.dataset.mediaTab);}
             });
             tabs.addEventListener('keydown',event=>{
-                if(busy&&pendingType==='upload'){return;}
+                if(busy&&['upload','add'].includes(pendingType)){return;}
                 let value;
                 if(event.key==='ArrowLeft'||event.key==='ArrowRight'){
                     value = modes[(modes.indexOf(mode)+(event.key==='ArrowRight'?1:-1)+modes.length)%modes.length];
@@ -273,37 +314,17 @@ export default function openMedia(editor,options){
                 editor.insertHTML(html);
                 return true;
             }
-            let files = mode==='upload'?values.file:[];
-            let sources;
             if(mode==='upload'){
-                if(!files.length||files.some(file=>!fileType(file,options.types))){
-                    dialog.message(options.error||'请选择文件');
-                    return false;
-                }
-                if(files.length>batch){
-                    dialog.message('一次最多选择 {count} 个文件',{count:batch});
-                    return false;
-                }
-                if(files.some(file=>file.size>options.size*1024*1024)){
-                    dialog.message('{type}大小不能超过 {size} MB',{type:options.name,size:options.size});
-                    return false;
-                }
-                sources = await resolveResources('upload',files);
-                if(sources===null||!current()){
-                    return true;
-                }
-                if(sources===false){
-                    return false;
-                }
-            }else{
-                let source = safeURL(values.url,options.kind);
-                if(!source){
-                    dialog.message('请输入有效的{type}地址',{type:options.name});
-                    return false;
-                }
-                sources = [source];
+                if(!uploaded){return false;}
+                insert(uploaded.sources,uploaded.files,values);
+                return true;
             }
-            insert(sources,files,values);
+            let source = safeURL(values.url,options.kind);
+            if(!source){
+                dialog.message('请输入有效的{type}地址',{type:options.name});
+                return false;
+            }
+            insert([source],[],values);
             return true;
         }
     });
