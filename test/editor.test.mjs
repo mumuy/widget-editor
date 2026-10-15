@@ -187,6 +187,8 @@ try {
     console.log('PASS long document output, unchanged code nodes and external DOM normalization');
     await run(`reset();for(let kind of ['image','video','audio','attachment']){let attr=kind+'-limit';if(e.config.get(attr)!==1&&kind!=='image')throw Error('Default limit');e.setAttribute(attr,'2');if(e.config.get(attr)!==2)throw Error('Configured limit');let dialog=e.openInsertDialog(kind,'upload');if(!dialog.querySelector('[name=file]').multiple)throw Error('Multiple file input');e.setAttribute(attr,'1');if(e._dialog!==null)throw Error('Changing limit must close dialog');e.setAttribute(attr,'');if(e.config.get(attr)!==Infinity)throw Error('Empty limit');e.setAttribute(attr,'0');if(e.config.get(attr)!==1)throw Error('Invalid limit');e.removeAttribute(attr);if(e.config.get(attr)!==1)throw Error('Default restored');}`);
     console.log('PASS image/video/audio/attachment limit attributes, file inputs and dynamic invalidation');
+    await run(`reset();e.value='';if(['checkValidity','reportValidity','setCustomValidity','validity','validationMessage','willValidate'].some(name=>name in e))throw Error('Unexpected validation API');if('message' in e.formControl)throw Error('Custom validation state remains');e.required=true;if(document.querySelector('form').checkValidity())throw Error('Required form validation');e.value='<p>已填写</p>';if(!document.querySelector('form').checkValidity())throw Error('Filled form validation');e.required=false;`);
+    console.log('PASS native form required validation without editor validation APIs');
     assert.deepEqual(b.logs, []);
 } finally {
     await b?.close();

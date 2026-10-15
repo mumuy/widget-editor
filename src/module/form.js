@@ -5,7 +5,6 @@ export default class EditorForm {
         this.internals = editor.attachInternals();
         this.disabled = false;
         this.initialValue = null;
-        this.message = '';
         editor.addEventListener('focus',()=>{
             if(!editor.shadowRoot.activeElement){
                 editor.focus({preventScroll:true});
@@ -33,8 +32,8 @@ export default class EditorForm {
             missing = !(template.content.textContent||'').replace(/[\s\u200b-\u200d\ufeff]/g,'')&&
                 !template.content.querySelector('img,video,audio,iframe,table,hr');
         }
-        let message = this.message||(missing?editor.t('请填写内容'):'');
-        this.internals.setValidity({valueMissing:missing,customError:!!this.message},message,
+        let message = missing?editor.t('请填写内容'):'';
+        this.internals.setValidity({valueMissing:missing},message,
             editor.source?editor.sourceArea:editor.content);
         editor.content.setAttribute('aria-required',String(editor.required));
         editor.sourceArea.required = editor.required;

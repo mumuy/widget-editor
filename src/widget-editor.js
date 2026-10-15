@@ -200,25 +200,6 @@ class WidgetEditor extends HTMLElement {
     get labels(){
         return this.formControl.internals.labels;
     }
-    get validity(){
-        return this.formControl.internals.validity;
-    }
-    get validationMessage(){
-        return this.formControl.internals.validationMessage;
-    }
-    get willValidate(){
-        return this.formControl.internals.willValidate;
-    }
-    checkValidity(){
-        return this.formControl.internals.checkValidity();
-    }
-    reportValidity(){
-        return this.formControl.internals.reportValidity();
-    }
-    setCustomValidity(message){
-        this.formControl.message = String(message);
-        this.formControl.update();
-    }
     focus(options){
         if(!this.formControl.disabled){
             (this.source?this.sourceArea:this.content)?.focus(options);

@@ -135,8 +135,6 @@ customElements.whenDefined('widget-editor').then(function(){
 | `getHTML() / setHTML(html)` | 读取、设置 HTML |
 | `openInsertDialog(type,mode)` | 打开指定媒体插入弹框；省略 mode 时打开第一种方式 |
 | `focus()` | 聚焦编辑区域 |
-| `checkValidity() / reportValidity()` | 检查表单校验结果 / 显示校验提示 |
-| `setCustomValidity(message)` | 设置自定义校验提示；空字符串清除提示 |
 
 程序设置 `value` 或调用 `setHTML()` 不触发 `change`。组件会整理输出 HTML，清理不支持的标签和属性。
 
@@ -170,7 +168,7 @@ editor.openInsertDialog('attachment','resource');
 </script>
 ```
 
-支持 `required`、`disabled`、`form.reset()` 和原生表单校验。重置恢复初始内容；禁用时不参与提交。通过 `editor.form`、`editor.labels`、`editor.validity`、`editor.validationMessage` 可读取表单信息。
+支持 `required`、`disabled`、`form.reset()` 和原生表单校验。重置恢复初始内容；禁用时不参与提交。通过 `editor.form`、`editor.labels` 可读取表单信息。
 
 ## 事件
 
