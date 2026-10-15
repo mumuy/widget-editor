@@ -794,7 +794,6 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog
     display: flex;
     flex-shrink: 0;
     gap: 10px;
-    margin-bottom: 18px;
     border-bottom: 1px solid var(--panel-border-color);
 }
 .media-tabs button{
@@ -824,9 +823,11 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog
     flex-direction: column;
     grid-area: 1 / 1;
     gap: 6px;
+    padding: 18px 0;
     min-width: 0;
     min-height: 0;
-    overflow: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
 }
 .media-fields{
     display: grid;
@@ -844,8 +845,6 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog
     gap: 6px;
     flex: 1;
     min-height: 0;
-    overflow: auto;
-    overscroll-behavior: contain;
 }
 .media-dialog .dialog-foot > .dialog-notice{
     align-self: center;
