@@ -37,13 +37,13 @@ export default function createMaterials(editor,options){
             if(!items.length){return;}
             list.replaceChildren();
             items.forEach(item=>{
-                let name = urlFileName(item.url,editor.t(options.name));
                 let card = document.createElement('div');
                 card.className = 'material-item';
                 let select = document.createElement('button');
                 select.type = 'button';
                 select.className = 'material-select';
                 select.setAttribute('aria-pressed','false');
+                select.setAttribute('aria-label',urlFileName(item.url,editor.t(options.name)));
                 select.disabled = busy;
                 if(options.kind==='image'||options.kind==='video'){
                     let preview = document.createElement(options.kind==='image'?'img':'video');
@@ -60,9 +60,6 @@ export default function createMaterials(editor,options){
                 }else{
                     select.innerHTML = renderIcon(options.kind==='audio'?audio:attachment);
                 }
-                let caption = document.createElement('span');
-                caption.textContent = name;
-                select.appendChild(caption);
                 select.onclick = ()=>{
                     if(selected.has(item.url)){
                         selected.delete(item.url);
