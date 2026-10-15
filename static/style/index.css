@@ -102,136 +102,82 @@
     margin-bottom: 25px;
 }
 .mod-demo .bd{
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 .mod-demo .bd widget-editor{
     box-shadow: 1px 2px 12px rgba(0, 0, 0, 0.02);
 }
 .mod-demo .insert-demo-note{
-    padding: 0 10px 15px;
+    padding: 0 10px;
     line-height: 30px;
+    font-size: 14px;
     color: #999;
 }
 
-.doc-nav{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 28px 0 36px;
-}
-.doc-nav a{
-    padding: 7px 15px;
-    background: #f6f8fa;
-    border: 1px solid #e9edf1;
-    border-radius: 5px;
-    color: #57606a;
-    font-size: 14px;
-    text-decoration: none;
-}
-.doc-nav a:hover,.doc-nav a:focus-visible{
-    color: #2095f2;
-    border-color: #c4e0f8;
-    background: #f0f8ff;
-}
 .mod-guide,.mod-params,.mod-api,.mod-upload{
     margin: 48px 0;
     scroll-margin-top: 90px;
 }
-.mod-guide .hd,.mod-params .hd,.mod-api .hd,.mod-upload .hd{
-    margin-bottom: 16px;
+.module .hd{
+    margin-bottom: 20px;
 }
-.doc-block{
-    min-width: 0;
-    margin-bottom: 24px;
-}
-.doc-block h3{
-    margin: 0 0 12px;
-    color: var(--title-color);
-    font-size: 15px;
+.module .hd h3{
+    line-height: 36px;
+    font-size: 20px;
     font-weight: 600;
-    line-height: 24px;
+    color: var(--title-color);
 }
-.mod-guide p,.mod-params p,.mod-api p,.mod-upload p{
-    margin: 0 0 14px;
+.module .hd p{
+    line-height: 28px;
+    font-size: 15px;
     color: #57606a;
-    font-size: 14px;
-    line-height: 1.8;
 }
-.module .doc-lead{
-    margin-bottom: 22px;
+
+.module .code-container{
+    margin-bottom: 20px;
 }
-.module .doc-note{
-    color: #808891;
-    font-size: 13px;
-}
-.table-scroll{
+.table-inner{
     overflow-x: auto;
-    border: 1px solid #e9edf1;
     border-radius: 6px;
     outline: none;
 }
-.table-scroll:focus-visible{
-    border-color: #b8c4d0;
-}
-.table-scroll table{
+.table-inner table{
     width: 100%;
-    min-width: 500px;
+    min-width: 600px;
     table-layout: fixed;
-    font-size: 13px;
-    line-height: 22px;
+    line-height: 24px;
 }
-.table-scroll th,.table-scroll td{
+.table-inner tr{
+    border-bottom: 1px solid #f0f0f0;
+}
+.table-inner th,.table-inner td{
     box-sizing: border-box;
-    padding: 11px 14px;
-    border-bottom: 1px solid #edf0f3;
+    padding: 10px;
     text-align: left;
     vertical-align: top;
     overflow-wrap: anywhere;
 }
-.table-scroll thead th{
-    background: #f6f8fa;
+.table-inner thead th{
+    background: #f5f5f5;
     color: #57606a;
     font-weight: 600;
 }
-.table-scroll tr > :first-child{
-    width: 22%;
-}
-.mod-params .table-scroll[data-columns="3"] tr > :last-child{
-    width: 32%;
-}
-.table-scroll tbody th{
+.table-inner tbody th{
     color: #343b48;
     font-weight: 400;
 }
-.table-scroll td{
+.table-inner td{
     color: #57606a;
 }
-.table-scroll tbody tr:last-child > *{
+.table-inner tbody tr:last-child > *{
     border-bottom: 0;
 }
-.table-scroll tbody tr:hover{
+.table-inner tbody tr:hover{
     background: #fbfcfd;
 }
-.mod-guide code,.mod-params code,.mod-api code,.mod-upload code{
+.module code{
     font-family: Menlo,Monaco,Consolas,'Courier New',monospace;
-    font-size: 12px;
     overflow-wrap: anywhere;
-}
-.mod-guide widget-code,.mod-params widget-code,.mod-api widget-code,.mod-upload widget-code{
-    display: block;
-    max-width: 100%;
-    margin-bottom: 14px;
-    overflow: auto;
-    font-family: Menlo,Monaco,Consolas,'Courier New',monospace;
-    font-size: 12px;
-    line-height: 22px;
-}
-widget-code:not(:defined){
-    white-space: pre;
-    padding: 16px;
-    background: #f6f8fa;
-    border: 1px solid #e9edf1;
-    border-radius: 6px;
 }
 .doc-tabs{
     margin-bottom: 20px;
@@ -249,33 +195,33 @@ widget-code:not(:defined){
 .doc-tab-list button{
     position: relative;
     flex-shrink: 0;
-    padding: 13px 18px;
+    padding: 0 20px;
     background: transparent;
     border: 0;
-    color: #57606a;
-    font: inherit;
-    font-size: 14px;
-    line-height: 22px;
+    line-height: 48px;
     white-space: nowrap;
     cursor: pointer;
+    font-size: 17px;
+    color: #57606a;
     outline: none;
 }
 .doc-tab-list button:hover,.doc-tab-list button:focus-visible{
-    color: #2095f2;
-    background: #edf4fa;
+    background: #00000008;
 }
 .doc-tab-list button[aria-selected="true"]{
+    font-weight: bold;
     color: #2095f2;
-    background: #fff;
 }
 .doc-tab-list button[aria-selected="true"]::after{
-    content: '';
     position: absolute;
-    right: 18px;
+    left: 50%;
     bottom: 0;
-    left: 18px;
-    height: 2px;
+    content: '';
+    width: 20px;
+    height: 5px;
     background: #2095f2;
+    border-radius: 6px;
+    transform: translateX(-50%);
 }
 .doc-tab-panel{
     padding: 20px;
@@ -283,7 +229,11 @@ widget-code:not(:defined){
 .doc-tab-panel[hidden]{
     display: none;
 }
-.doc-tab-panel .table-scroll{
+.doc-tab-panel p{
+    margin-bottom: 12px;
+    line-height: 24px;
+}
+.doc-tab-panel .table-inner{
     margin-bottom: 16px;
 }
 .doc-tab-panel > :last-child{
@@ -296,62 +246,53 @@ widget-code:not(:defined){
     background: #fff;
 }
 .doc-details summary{
-    padding: 13px 16px;
+    padding: 10px 16px;
+    background: #f6f8fa;
     color: #57606a;
-    font-size: 14px;
-    line-height: 22px;
+    line-height: 24px;
+    font-size: 16px;
+    font-weight: bold;
     cursor: pointer;
+}
+.doc-details summary span{
+    margin-left: 8px;
 }
 .doc-details summary::marker{
     color: #8a95a4;
 }
 .doc-details[open] summary{
-    color: #2095f2;
     border-bottom: 1px solid #e9edf1;
 }
+.doc-details p{
+    margin-bottom: 12px;
+    line-height: 24px;
+}
+.doc-details p:last-child{
+    margin-bottom: 0;
+}
 .doc-details > div{
-    padding: 18px 16px 4px;
+    padding: 20px;
 }
-.doc-details .table-scroll{
-    margin-bottom: 14px;
+.doc-details .table-inner{
+    overflow-x: auto;
+    margin-bottom: 20px;
 }
-.font-values{
-    display: grid;
-    grid-template-columns: repeat(3,minmax(0,1fr));
-    gap: 12px;
-    margin: 20px 0;
-    font-size: 13px;
-    color: #57606a;
-}
-.font-values span{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-.font-values code{
-    color: #343b48;
-}
+
+
 @media screen and (max-width: 760px){
-    .doc-nav{
-        margin: 20px 0 30px;
-    }
-    .doc-nav a{
-        padding: 6px 10px;
-        font-size: 13px;
-    }
     .mod-guide,.mod-params,.mod-api,.mod-upload{
         margin: 36px 0;
         scroll-margin-top: 112px;
     }
-    .table-scroll table{
+    .table-inner table{
         min-width: 0;
         font-size: 12px;
         line-height: 21px;
     }
-    .table-scroll th,.table-scroll td{
+    .table-inner th,.table-inner td{
         padding: 10px;
     }
-    .table-scroll tr > :first-child{
+    .table-inner tr > :first-child{
         width: 31%;
     }
     .font-values{

@@ -112,46 +112,27 @@ console.log(editor.value);</code></pre>
                         <p class="insert-demo-note">文件在本地读取用于演示，不会上传到服务器。</p>
                         <noscript><p>请启用 JavaScript 以使用富文本编辑器。</p></noscript>
                     </section>
-                    <nav class="doc-nav" aria-label="使用文档导航">
-                        <a href="#usage">快速使用</a>
-                        <a href="#parameters">参数配置</a>
-                        <a href="#api">常用方法</a>
-                        <a href="#uploads">事件</a>
-                    </nav>
                     <section class="module mod-guide" id="usage" aria-labelledby="usage-title">
                         <div class="hd">
-                            <span id="usage-title">快速使用</span>
+                            <h3>快速使用</h3>
+                            <p>引入组件、设置初始内容，并监听内容变化。</p>
                         </div>
-                        <div class="bd">
-                            <p class="doc-lead">引入组件、设置初始内容，并监听内容变化。</p>
+                        <div class="bd">    
                             <widget-code language="html">&lt;script src="./widget-editor.min.js" defer&gt;&lt;/script&gt;
 
 &lt;widget-editor id="editor" placeholder="请输入内容…"&gt;
     &lt;h2&gt;开始写作&lt;/h2&gt;
     &lt;p&gt;选中文字，通过工具栏调整格式。&lt;/p&gt;
-&lt;/widget-editor&gt;
-
-&lt;script&gt;
-    customElements.whenDefined('widget-editor').then(function(){
-        let editor = document.querySelector('#editor');
-        editor.value = '&lt;p&gt;新的内容&lt;/p&gt;';
-        console.log(editor.value,editor.text);
-
-        editor.addEventListener('change',function(event){
-            console.log(event.detail.value,event.detail.text);
-        });
-    });
-&lt;/script&gt;</widget-code>
+&lt;/widget-editor&gt;</widget-code>
                         </div>
                     </section>
                     <section class="module mod-params" id="parameters" aria-labelledby="parameters-title">
                         <div class="hd">
-                            <span id="parameters-title">参数配置</span>
+                            <h3>参数配置</h3>
+                            <p>列表使用英文逗号分隔，顺序即显示顺序，支持动态修改。</p>
                         </div>
                         <div class="bd">
-                            <p class="doc-lead">列表使用英文逗号分隔，顺序即显示顺序，支持动态修改。</p>
-                            <div class="doc-block">
-                                <h3>配置示例</h3>
+                            <div class="code-container">
                                 <widget-code language="html">&lt;widget-editor
     custom="heading,fontSize,bold,italic,color,link,insert"
     insert="image,table,emoji"
@@ -169,7 +150,7 @@ console.log(editor.value);</code></pre>
                                     <button type="button" role="tab" id="params-media-tab" aria-controls="params-media-panel" aria-selected="false" tabindex="-1">媒体插入</button>
                                 </div>
                                 <div class="doc-tab-panel" role="tabpanel" id="params-basic-panel" aria-labelledby="params-basic-tab">
-                                    <div class="table-scroll" data-columns="3" role="region" aria-label="基础设置" tabindex="0">
+                                    <div class="table-inner" data-columns="3" role="region" aria-label="基础设置" tabindex="0">
                                         <table>
                                             <thead>
                                                 <tr>
@@ -227,10 +208,9 @@ console.log(editor.value);</code></pre>
                                             </tbody>
                                         </table>
                                     </div>
-                                    <p class="doc-note"><code>value</code>、<code>text</code> 通过 JavaScript 访问；其他项目通过组件属性配置。布尔属性存在即生效。</p>
                                 </div>
                                 <div class="doc-tab-panel" role="tabpanel" id="params-toolbar-panel" aria-labelledby="params-toolbar-tab" hidden inert>
-                                    <div class="table-scroll" data-columns="3" role="region" aria-label="工具栏与菜单" tabindex="0">
+                                    <div class="table-inner" data-columns="3" role="region" aria-label="工具栏与菜单" tabindex="0">
                                         <table>
                                             <thead>
                                                 <tr>
@@ -278,10 +258,9 @@ console.log(editor.value);</code></pre>
                                             </tbody>
                                         </table>
                                     </div>
-                                    <p class="doc-note">未设置时使用默认值。设置为空可隐藏对应菜单；<code>custom=""</code> 仅保留撤销与重做。</p>
                                 </div>
                                 <div class="doc-tab-panel" role="tabpanel" id="params-media-panel" aria-labelledby="params-media-tab" hidden inert>
-                                    <div class="table-scroll" data-columns="3" role="region" aria-label="媒体插入" tabindex="0">
+                                    <div class="table-inner" data-columns="3" role="region" aria-label="媒体插入" tabindex="0">
                                         <table>
                                             <thead>
                                                 <tr>
@@ -313,34 +292,33 @@ console.log(editor.value);</code></pre>
                                                 </tr>
                                                 <tr>
                                                     <th scope="row"><code>image-limit</code></th>
-                                                    <td>每次上传或选择图片的数量上限</td>
+                                                    <td>选择图片的数量上限</td>
                                                     <td><code>1</code></td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="row"><code>video-limit</code></th>
-                                                    <td>每次上传或选择视频的数量上限</td>
+                                                    <td>选择视频的数量上限</td>
                                                     <td><code>1</code></td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="row"><code>audio-limit</code></th>
-                                                    <td>每次上传或选择音频的数量上限</td>
+                                                    <td>选择音频的数量上限</td>
                                                     <td><code>1</code></td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="row"><code>attachment-limit</code></th>
-                                                    <td>每次上传或选择附件的数量上限</td>
+                                                    <td>选择附件的数量上限</td>
                                                     <td><code>1</code></td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
-                                    <p class="doc-note"><code>*-limit</code> 默认为单选，正整数表示上限，空值表示不限数量，同时约束上传和素材库选择。媒体方式为空则禁用该类型插入。</p>
                                 </div>
                             </div>
                             <details class="doc-details">
-                                <summary>查看工具栏、插入、字体等可选值</summary>
+                                <summary><span>查看工具栏工具</span></summary>
                                 <div>
-                                    <div class="table-scroll" data-columns="2" role="region" aria-label="工具栏可选值" tabindex="0">
+                                    <div class="table-inner" data-columns="2" role="region" aria-label="工具栏可选值" tabindex="0">
                                         <table>
                                             <thead>
                                                 <tr>
@@ -376,23 +354,6 @@ console.log(editor.value);</code></pre>
                                             </tbody>
                                         </table>
                                     </div>
-                                    <p><code>heading</code>：p 正文、h1～h6 标题。<code>alignment</code>：left 左、center 中、right 右、justify 两端对齐。</p>
-                                    <p>媒体方式：<code>upload</code> 上传文件、<code>url</code> 网络地址、<code>resource</code> 素材库；<code>iframe</code> 仅用于视频。</p>
-                                    <div class="font-values">
-                                        <span><code>default</code>默认字体</span>
-                                        <span><code>yahei</code>微软雅黑</span>
-                                        <span><code>simsun</code>宋体</span>
-                                        <span><code>simhei</code>黑体</span>
-                                        <span><code>kaiti</code>楷体</span>
-                                        <span><code>fangsong</code>仿宋</span>
-                                        <span><code>pingfang</code>苹方</span>
-                                        <span><code>dengxian</code>等线</span>
-                                        <span><code>stsong</code>华文宋体</span>
-                                        <span><code>stkaiti</code>华文楷体</span>
-                                        <span><code>stxihei</code>华文细黑</span>
-                                        <span><code>sourceSans</code>思源黑体</span>
-                                        <span><code>sourceSerif</code>思源宋体</span>
-                                    </div>
                                 </div>
                             </details>
                         </div>
@@ -420,7 +381,7 @@ console.log(html);</widget-code>
                                 </div>
                                 <div class="doc-tab-panel" role="tabpanel" id="methods-insert-panel" aria-labelledby="methods-insert-tab" hidden inert>
                                     <p>打开媒体插入弹框，沿用当前光标或选区。省略 <code>mode</code> 时打开该类型配置的第一种方式，无法打开时返回 <code>null</code>。</p>
-                                    <div class="table-scroll" data-columns="2" role="region" aria-label="媒体弹框参数" tabindex="0">
+                                    <div class="table-inner" data-columns="2" role="region" aria-label="媒体弹框参数" tabindex="0">
                                         <table>
                                             <thead>
                                                 <tr>
@@ -472,10 +433,10 @@ editor.openInsertDialog('attachment','resource');</widget-code>
                     </section>
                     <section class="module mod-upload" id="uploads" aria-labelledby="uploads-title">
                         <div class="hd">
-                            <span id="uploads-title">事件</span>
+                            <h3>事件</h3>
+                            <p>事件通过 <code>event.detail</code> 提供数据，并支持冒泡。上传与素材管理由业务页面处理。</p>
                         </div>
                         <div class="bd">
-                            <p class="doc-lead">事件通过 <code>event.detail</code> 提供数据，并支持冒泡。上传与素材管理由业务页面处理。</p>
                             <div class="doc-tabs" data-doc-tabs>
                                 <div class="doc-tab-list" role="tablist" aria-label="组件事件">
                                     <button type="button" role="tab" id="events-ready-tab" aria-controls="events-ready-panel" aria-selected="true" tabindex="0">ready</button>
@@ -495,7 +456,7 @@ document.body.appendChild(editor);</widget-code>
                                 </div>
                                 <div class="doc-tab-panel" role="tabpanel" id="events-change-panel" aria-labelledby="events-change-tab" hidden inert>
                                     <p>用户编辑内容或执行编辑操作时触发。程序设置 <code>value</code> 或调用 <code>setHTML()</code> 不触发此事件。</p>
-                                    <div class="table-scroll" data-columns="2" role="region" aria-label="内容变化数据" tabindex="0">
+                                    <div class="table-inner" data-columns="2" role="region" aria-label="内容变化数据" tabindex="0">
                                         <table>
                                             <thead>
                                                 <tr>
@@ -522,7 +483,7 @@ document.body.appendChild(editor);</widget-code>
                                 </div>
                                 <div class="doc-tab-panel" role="tabpanel" id="events-upload-panel" aria-labelledby="events-upload-tab" hidden inert>
                                     <p>选择文件并通过校验后触发。业务上传成功后返回素材数组，数量和顺序须与 <code>files</code> 一致；用户确认后插入。</p>
-                                    <div class="table-scroll" data-columns="2" role="region" aria-label="上传数据" tabindex="0">
+                                    <div class="table-inner" data-columns="2" role="region" aria-label="上传数据" tabindex="0">
                                         <table>
                                             <thead>
                                                 <tr>
@@ -580,7 +541,7 @@ editor.addEventListener('add',upload);</widget-code>
                                 </div>
                                 <div class="doc-tab-panel" role="tabpanel" id="events-request-panel" aria-labelledby="events-request-tab" hidden inert>
                                     <p>切换到素材库时触发；若素材库是配置的第一项，打开弹框即请求。返回数组用于展示，空数组表示暂无素材。</p>
-                                    <div class="table-scroll" data-columns="2" role="region" aria-label="素材加载数据" tabindex="0">
+                                    <div class="table-inner" data-columns="2" role="region" aria-label="素材加载数据" tabindex="0">
                                         <table>
                                             <thead>
                                                 <tr>
@@ -622,7 +583,7 @@ editor.addEventListener('add',upload);</widget-code>
                                 </div>
                                 <div class="doc-tab-panel" role="tabpanel" id="events-add-panel" aria-labelledby="events-add-tab" hidden inert>
                                     <p>在素材库点击“上传素材”并选择文件后触发，参数与 <code>upload</code> 相同，可共用上传处理函数。成功后新素材显示在列表前面，仍需用户确认插入。</p>
-                                    <div class="table-scroll" data-columns="2" role="region" aria-label="素材上传数据" tabindex="0">
+                                    <div class="table-inner" data-columns="2" role="region" aria-label="素材上传数据" tabindex="0">
                                         <table>
                                             <thead>
                                                 <tr>
@@ -663,7 +624,7 @@ editor.addEventListener('add',upload);</widget-code>
                                 </div>
                                 <div class="doc-tab-panel" role="tabpanel" id="events-remove-panel" aria-labelledby="events-remove-tab" hidden inert>
                                     <p>点击素材右上角的移除按钮时触发。业务删除成功后调用 <code>onComplete()</code> 更新列表，不影响文档中已插入的内容。</p>
-                                    <div class="table-scroll" data-columns="2" role="region" aria-label="素材移除数据" tabindex="0">
+                                    <div class="table-inner" data-columns="2" role="region" aria-label="素材移除数据" tabindex="0">
                                         <table>
                                             <thead>
                                                 <tr>
@@ -712,7 +673,7 @@ editor.addEventListener('add',upload);</widget-code>
                                 </div>
                             </div>
                             <details class="doc-details">
-                                <summary>素材格式</summary>
+                                <summary><span>素材格式</span></summary>
                                 <div>
                                     <p>上传、新增和加载素材均支持以下格式：缩略图用于预览，原图用于插入；省略缩略图时使用原地址。</p>
                                     <widget-code language="javascript">onComplete([
@@ -725,9 +686,9 @@ editor.addEventListener('add',upload);</widget-code>
                                 </div>
                             </details>
                             <details class="doc-details">
-                                <summary>文件限制</summary>
+                                <summary><span>文件限制</span></summary>
                                 <div>
-                                    <div class="table-scroll" data-columns="3" role="region" aria-label="文件限制" tabindex="0">
+                                    <div class="table-inner" data-columns="3" role="region" aria-label="文件限制" tabindex="0">
                                         <table>
                                             <thead>
                                                 <tr>
@@ -760,7 +721,6 @@ editor.addEventListener('add',upload);</widget-code>
                                             </tbody>
                                         </table>
                                     </div>
-                                    <p>回调仅生效一次；关闭弹框或更改相关权限后，未完成回调失效。演示页使用本地文件读取，不上传服务器。</p>
                                 </div>
                             </details>
                         </div>
