@@ -18,7 +18,8 @@ export default function openUpload(editor,options){
         if(!modes.includes(value)){return;}
         mode = value;
         if(description&&['file','url'].includes(mode)){
-            dialog.querySelector('[data-insert-panel="'+mode+'"]').appendChild(description);
+            let panel = dialog.querySelector('[data-insert-panel="'+mode+'"]');
+            panel.insertBefore(description,panel.querySelector('.insert-feedback'));
         }
         dialog.querySelectorAll('[data-insert-tab]').forEach(button=>{
             let active = button.dataset.insertTab===mode;
@@ -34,6 +35,7 @@ export default function openUpload(editor,options){
             panel.inert = !active;
             panel.querySelectorAll('input,textarea').forEach(input=>input.disabled=!active||busy);
         });
+        dialog.querySelector('[data-insert-panel="'+mode+'"] .insert-feedback').appendChild(dialog.querySelector('.dialog-notice'));
         dialog.querySelector('[type="submit"]').hidden = mode==='request';
     };
     let setBusy = function(value){
@@ -206,10 +208,15 @@ export default function openUpload(editor,options){
             progress.className = 'upload-progress';
             progress.hidden = true;
             progress.innerHTML = '<progress max="100" value="0" aria-label="上传进度"></progress><span role="status" aria-live="polite"></span>';
-            let feedback = document.createElement('div');
-            feedback.className = 'upload-feedback';
-            feedback.append(progress,dialog.querySelector('.dialog-notice'));
-            dialog.querySelector('.dialog-body').appendChild(feedback);
+            panels.querySelectorAll('[data-insert-panel]').forEach(panel=>{
+                let feedback = document.createElement('div');
+                feedback.className = 'insert-feedback';
+                if(panel.dataset.insertPanel==='file'){
+                    feedback.classList.add('upload-feedback');
+                    feedback.appendChild(progress);
+                }
+                panel.appendChild(feedback);
+            });
             setMode(mode);
         },
         onClose(){
