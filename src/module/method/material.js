@@ -41,8 +41,15 @@ export default function createMaterials(editor,options){
             list.setAttribute('aria-busy',String(value));
             list.querySelectorAll('button').forEach(button=>button.disabled=value);
         },
-        render(materials){
+        prepend(materials){
+            let originals = new Set(materials.map(item=>item.original));
+            this.render([...materials,...items.filter(item=>!originals.has(item.original))],true);
+            list.scrollTop = 0;
+        },
+        render(materials,keepSelection=false){
+            let selection = keepSelection?new Set(selected):new Set();
             status('暂无素材');
+            selected = selection;
             items = materials;
             if(!items.length){return;}
             list.replaceChildren();
@@ -52,7 +59,7 @@ export default function createMaterials(editor,options){
                 let select = document.createElement('button');
                 select.type = 'button';
                 select.className = 'material-select';
-                select.setAttribute('aria-pressed','false');
+                select.setAttribute('aria-pressed',String(selected.has(item.original)));
                 select.setAttribute('aria-label',urlFileName(item.original,editor.t(options.name)));
                 select.disabled = busy;
                 if(options.kind==='image'||options.kind==='video'||item.thumbnail!==item.original){

@@ -14,6 +14,7 @@ export default function openUpload(editor,options){
     let pendingType;
     let revision = 0;
     let materials;
+    let addButton;
     let progress;
     let description;
     let dialog;
@@ -23,7 +24,7 @@ export default function openUpload(editor,options){
         mode = value;
         if(description&&['file','url'].includes(mode)){
             let panel = dialog.querySelector('[data-insert-panel="'+mode+'"]');
-            panel.insertBefore(description,panel.querySelector('.insert-feedback'));
+            panel.insertBefore(description,panel.querySelector('.insert-feedback,.dialog-notice'));
         }
         dialog.querySelectorAll('[data-insert-tab]').forEach(button=>{
             let active = button.dataset.insertTab===mode;
@@ -39,7 +40,10 @@ export default function openUpload(editor,options){
             panel.inert = !active;
             panel.querySelectorAll('input,textarea').forEach(input=>input.disabled=!active||busy);
         });
-        dialog.querySelector('[data-insert-panel="'+mode+'"] .insert-feedback').appendChild(dialog.querySelector('.dialog-notice'));
+        let panel = dialog.querySelector('[data-insert-panel="'+mode+'"]');
+        (panel.querySelector('.insert-feedback')||panel).appendChild(dialog.querySelector('.dialog-notice'));
+        addButton.hidden = mode!=='request';
+        addButton.disabled = busy;
         materials?.busy(busy);
         dialog.querySelector('[type="submit"]').disabled = busy;
     };
@@ -70,7 +74,7 @@ export default function openUpload(editor,options){
             };
             let error = function(err,translate=false,params){
                 if(active()){
-                    dialog.message(String(err?.message||err||({upload:'上传失败，请重试',request:'素材加载失败，请重试',delete:'素材删除失败，请重试'}[name])),params,!translate&&!!(err?.message||err));
+                    dialog.message(String(err?.message||err||({upload:'上传失败，请重试',request:'素材加载失败，请重试',remove:'素材删除失败，请重试',add:'素材上传失败，请重试'}[name])),params,!translate&&!!(err?.message||err));
                     finish(false);
                 }
             };
@@ -82,7 +86,7 @@ export default function openUpload(editor,options){
                     if(!active()){
                         return;
                     }
-                    if(name==='delete'){finish(true);return;}
+                    if(name==='remove'){finish(true);return;}
                     let sources = Array.isArray(urls)?Array.from(urls,value=>normalizeMaterial(value,options.kind)):[];
                     if(!Array.isArray(urls)||sources.some(source=>!source)||name==='upload'&&sources.length!==files.length){
                         error(name==='upload'?'请按文件顺序返回对应数量的有效 URL，请重试':'请返回有效的素材列表，请重试',true);
@@ -93,12 +97,12 @@ export default function openUpload(editor,options){
                         return;
                     }
                     let seen = new Set();
-                    finish(name==='request'?sources.filter(item=>!seen.has(item.original)&&seen.add(item.original)):
+                    finish(name!=='upload'?sources.filter(item=>!seen.has(item.original)&&seen.add(item.original)):
                         sources.map(item=>item.original));
                 },
                 onError:error
             };
-            if(name==='delete'){detail.url = url;}
+            if(name==='remove'){detail.url = url;}
             if(name==='upload'){
                 detail.files = files.slice();
                 detail.onProgress = function(percent){
@@ -158,6 +162,19 @@ export default function openUpload(editor,options){
         mount(node){
             dialog = node;
             dialog.classList.add('upload-dialog');
+            dialog.querySelector('.dialog-cancel').remove();
+            addButton = document.createElement('button');
+            addButton.type = 'button';
+            addButton.className = 'btn';
+            addButton.dataset.materialAdd = '';
+            editor.locale.set(addButton,'上传素材');
+            addButton.onclick = async ()=>{
+                if(busy){return;}
+                let version = revision;
+                let sources = await resolveResources('add');
+                if(sources&&current()&&mode==='request'&&version===revision){materials.prepend(sources);}
+            };
+            dialog.querySelector('.dialog-foot').prepend(addButton);
             let tabs = document.createElement('div');
             tabs.className = 'insert-tabs';
             tabs.setAttribute('role','tablist');
@@ -180,7 +197,7 @@ export default function openUpload(editor,options){
                     materials = createMaterials(editor,{
                         ...options,limit:batch,
                         message:(...args)=>dialog.message(...args),
-                        remove:url=>resolveResources('delete',[],url)
+                        remove:url=>resolveResources('remove',[],url)
                     });
                     panel.appendChild(materials.field);
                 }else{
@@ -218,15 +235,13 @@ export default function openUpload(editor,options){
             progress.className = 'upload-progress';
             progress.hidden = true;
             progress.innerHTML = '<progress max="100" value="0" aria-label="上传进度"></progress><span role="status" aria-live="polite"></span>';
-            panels.querySelectorAll('[data-insert-panel]').forEach(panel=>{
+            let uploadPanel = panels.querySelector('[data-insert-panel="file"]');
+            if(uploadPanel){
                 let feedback = document.createElement('div');
-                feedback.className = 'insert-feedback';
-                if(panel.dataset.insertPanel==='file'){
-                    feedback.classList.add('upload-feedback');
-                    feedback.appendChild(progress);
-                }
-                panel.appendChild(feedback);
-            });
+                feedback.className = 'insert-feedback upload-feedback';
+                feedback.appendChild(progress);
+                uploadPanel.appendChild(feedback);
+            }
             setMode(mode);
         },
         onClose(){

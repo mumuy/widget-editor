@@ -257,7 +257,7 @@ console.log(editor.value);</code></pre>
                         </div>
                     </section>
                     <section class="module mod-upload" id="upload" aria-labelledby="upload-title">
-                        <div class="hd"><span id="upload-title">upload / request / delete 事件</span></div>
+                        <div class="hd"><span id="upload-title">upload / request / add / remove 事件</span></div>
                         <div class="bd">
                             <p>图片、视频、音频和附件选择文件并确认插入后，会触发 <code>upload</code> 事件。组件负责插入和显示进度，文件由你的页面上传。</p>
                             <div class="table-scroll" role="region" aria-labelledby="upload-title" tabindex="0">
@@ -310,7 +310,7 @@ editor.addEventListener('upload',async function(event){
     }
 });</widget-code>
                             <p>使用 <code>image="upload,url,request"</code> 等属性开放素材库。切换到「素材库」时触发 <code>request</code>；若它是配置的第一项，打开弹框时即请求。<code>event.detail</code> 包含 <code>type</code>、<code>limit</code>、<code>onComplete(urls)</code>、<code>onError(err)</code>。</p>
-                            <p>调用 <code>onComplete(urls)</code> 返回完整素材数组：元素可为 URL 字符串或 <code>{original,thumbnail}</code> 对象，也可混用。字符串的预览与插入地址相同；对象用 <code>thumbnail</code> 预览、<code>original</code> 插入，省略缩略图则使用原地址。空数组表示暂无素材。每行三个，超出高度滚动显示；用户选中后点击插入。<code>limit</code> 使用对应的 <code>*-batch</code> 配置，只限制本次插入数量，不限制列表长度。演示页的素材库展示本页已上传的同类文件。</p>
+                            <p>调用 <code>onComplete(urls)</code> 返回完整素材数组：元素可为 URL 字符串或 <code>{original,thumbnail}</code> 对象，也可混用。字符串的预览与插入地址相同；对象用 <code>thumbnail</code> 预览、<code>original</code> 插入，省略缩略图则使用原地址。空数组表示暂无素材。默认每行四个、每个至少 120px，窄屏自动减少列数，超出高度滚动显示；用户选中后点击插入。<code>limit</code> 使用对应的 <code>*-batch</code> 配置，只限制本次插入数量，不限制列表长度。演示页的素材库展示本页已上传的同类文件。</p>
                             <widget-code language="javascript">// onComplete 返回值支持混用两种格式：
 // ['photo.jpg', {original:'original.jpg',thumbnail:'thumbnail.jpg'}]
 editor.addEventListener('request',async function(event){
@@ -324,8 +324,18 @@ editor.addEventListener('request',async function(event){
         onError(error);
     }
 });</widget-code>
-                            <p>点击素材左上角的移除按钮触发 <code>delete</code>，其 <code>detail</code> 包含 <code>type</code>、<code>url</code>、<code>limit</code>、<code>onComplete()</code>、<code>onError(err)</code>。外部成功删除后调用 <code>onComplete()</code> 才移除列表项；失败则调用 <code>onError(err)</code>，保留素材和选中状态。<code>url</code> 始终为原地址（对象的 <code>original</code>），不会移除文档内已经插入的内容。</p>
-                            <widget-code language="javascript">editor.addEventListener('delete',async function(event){
+                            <p>素材库底部的「上传素材」触发 <code>add</code>，<code>detail</code> 包含 <code>type</code>、<code>limit</code>、<code>onComplete(materials)</code>、<code>onError(err)</code>。外部负责选择、上传文件，完成结果与 <code>request</code> 相同，支持字符串和原图/缩略图对象；新增素材放在列表前面，保留已有选择，仍需点击插入。<code>limit</code> 不限制新增数量。</p>
+                            <widget-code language="javascript">editor.addEventListener('add',async function(event){
+    let {type,onComplete,onError} = event.detail;
+    try{
+        // 自行实现文件选择和上传，返回素材数组。
+        onComplete(await uploadMaterials(type));
+    }catch(error){
+        onError(error);
+    }
+});</widget-code>
+                            <p>点击素材右上角的移除按钮触发 <code>remove</code>，其 <code>detail</code> 包含 <code>type</code>、<code>url</code>、<code>limit</code>、<code>onComplete()</code>、<code>onError(err)</code>。外部成功删除后调用 <code>onComplete()</code> 才移除列表项；失败则调用 <code>onError(err)</code>，保留素材和选中状态。<code>url</code> 始终为原地址（对象的 <code>original</code>），不会移除文档内已经插入的内容。</p>
+                            <widget-code language="javascript">editor.addEventListener('remove',async function(event){
     let {type,url,onComplete,onError} = event.detail;
     try{
         let response = await fetch('/api/materials',{
@@ -339,7 +349,7 @@ editor.addEventListener('request',async function(event){
         onError(error);
     }
 });</widget-code>
-                            <p>这些回调仅生效一次。切换标签或关闭弹框会取消未完成的素材加载和删除；加载失败可再次点击「素材库」重试。</p>
+                            <p>这些回调仅生效一次。切换标签或关闭弹框会取消未完成的素材加载、新增和移除；加载失败可再次点击「素材库」重试。</p>
                         </div>
                     </section>
                     <section class="module mod-article">

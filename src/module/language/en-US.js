@@ -107,6 +107,8 @@ export default {
     '插入方式':'Insert method',
     '上传文件':'Upload file',
     '素材库':'Asset library',
+    '上传素材':'Upload assets',
+    '素材上传失败，请重试':'Could not upload assets. Please try again.',
     '素材列表':'Asset list',
     '移除素材':'Remove asset',
     '请选择素材':'Choose assets',

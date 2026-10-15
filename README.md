@@ -309,7 +309,8 @@ editor.setCustomValidity(''); // 清除自定义错误
 | `ready` | 组件首次初始化完成 | 无 |
 | `change` | 用户编辑内容或执行编辑操作 | `{value,text}` |
 | `request` | 切换到素材库标签，或弹框默认打开素材库 | 素材类型、插入数量限制及列表加载回调，见下方说明 |
-| `delete` | 用户点击素材左上角的移除按钮 | 素材类型、URL 及删除完成/失败回调，见下方说明 |
+| `add` | 用户点击素材库底部的「上传素材」 | 素材类型、插入数量限制及新增完成/失败回调，见下方说明 |
+| `remove` | 用户点击素材右上角的移除按钮 | 素材类型、URL 及删除完成/失败回调，见下方说明 |
 | `upload` | 用户选择文件并确认上传 | 文件及上传回调，见下方说明 |
 
 这些事件会冒泡，也可以在编辑器所在的父元素上监听。若需要监听 `ready`，请先准备一个容器，例如 `<div id="editor-container"></div>`，再在组件加入页面之前绑定：
@@ -330,7 +331,7 @@ customElements.whenDefined('widget-editor').then(function(){
 默认插入菜单已包含图片、视频、音频和附件，点击对应选项即可插入。未配置插入方式属性时，开放该类型的全部方式，默认打开「上传文件」：
 
 - **上传文件**：选择本地文件并点击插入，组件触发 `upload` 事件，由你的页面负责上传。
-- **素材库**：切换标签时触发 `request` 事件，返回素材列表后在弹框内选择，点击插入。每行三个素材，超出列表高度时滚动显示。
+- **素材库**：切换标签时触发 `request` 事件，返回素材列表后在弹框内选择，点击插入。默认每行四个，每个至少 120px，窄屏自动减少列数素材，超出列表高度时滚动显示。
 - **URL**：填写文件地址，点击插入即可使用，支持 HTTP、HTTPS 或相对地址。
 - **嵌入 iframe**（仅视频）：仅需粘贴第三方视频网站提供的 iframe 代码，再点击「插入视频」，保留代码中原有的 `title`。组件自动写入 `width: 100%`、`height: auto`、`max-width: 100%` 和 `aspect-ratio: 16 / 9`，高度随容器宽度按比例变化；嵌入地址须使用 HTTP、HTTPS 或相对地址。插入的 iframe 支持源码往返、删除及撤销。
 
@@ -486,12 +487,27 @@ onComplete([
 
 视频、音频、附件也可以通过 `thumbnail` 指定预览图片。原地址和缩略图地址都会校验，任何一项无效则整批拒绝。`upload` 的 `onComplete` 也接受这两种格式，仍须按文件顺序返回相同数量的元素，插入时使用原地址。
 
-返回列表只负责展示，不会直接插入。素材每行三个，列表沿用其他标签页的高度，超出时内部滚动。默认单选，再选其他素材会切换选中项；设置 `*-batch` 后可多选。用户点击「插入」才将选中素材按列表顺序插入原来的光标或选区，支持整批撤销，批量图片各自使用 `p` 包裹。
+返回列表只负责展示，不会直接插入。素材默认每行四个，每个至少 120px，窄屏自动减少列数，列表沿用其他标签页的高度，超出时内部滚动。默认单选，再选其他素材会切换选中项；设置 `*-batch` 后可多选。用户点击「插入」才将选中素材按列表顺序插入原来的光标或选区，支持整批撤销，批量图片各自使用 `p` 包裹。
 
-每个素材左上角的移除按钮触发 `delete` 事件，其 `event.detail` 包含 `type`、`url`、`limit`、`onComplete()`、`onError(err)`。外部删除成功后调用 `onComplete()`，组件才从当前列表移除该素材；失败调用 `onError(err)`，保留素材及选中状态。`url` 始终是原地址（对象的 `original`），不使用缩略图地址。此操作不修改文档中已插入的内容。
+素材库底部「插入」左侧的「上传素材」触发 `add` 事件，`detail` 包含 `type`、`limit`、`onComplete(materials)`、`onError(err)`。外部负责选择并上传文件，完成结果与 `request` 相同，支持 URL 字符串和 `{original,thumbnail}` 对象混用。新增素材放到列表最前面，按原地址去重并更新缩略图，保留已有选中状态，不会直接插入文档；`limit` 只限制最终插入数量，不限制新增数量。
 
 ```javascript
-editor.addEventListener('delete',async function(event){
+editor.addEventListener('add',async function(event){
+    let {type,onComplete,onError} = event.detail;
+    try{
+        // 自行实现文件选择和上传，返回与 request 相同格式的数组。
+        let materials = await uploadMaterials(type);
+        onComplete(materials);
+    }catch(error){
+        onError(error);
+    }
+});
+```
+
+每个素材右上角的移除按钮触发 `remove` 事件，其 `event.detail` 包含 `type`、`url`、`limit`、`onComplete()`、`onError(err)`。外部删除成功后调用 `onComplete()`，组件才从当前列表移除该素材；失败调用 `onError(err)`，保留素材及选中状态。`url` 始终是原地址（对象的 `original`），不使用缩略图地址。此操作不修改文档中已插入的内容。
+
+```javascript
+editor.addEventListener('remove',async function(event){
     let {type,url,onComplete,onError} = event.detail;
     try{
         let response = await fetch('/api/materials',{
@@ -507,7 +523,7 @@ editor.addEventListener('delete',async function(event){
 });
 ```
 
-`upload`、`request`、`delete` 都由外部处理数据，组件不会自行调用接口。回调仅生效一次；切换标签、关闭弹框、修改对应权限或数量限制、替换内容、禁用或移除组件后，未完成的素材加载与删除回调失效。加载失败可重新点击「素材库」重试，删除失败可再次点击移除按钮。
+`upload`、`request`、`add`、`remove` 都由外部处理数据，组件不会自行调用接口。回调仅生效一次；切换标签、关闭弹框、修改对应权限或数量限制、替换内容、禁用或移除组件后，未完成的素材加载、新增与移除回调失效。加载失败可重新点击「素材库」重试，新增和移除失败可再次点击对应按钮。媒体弹框底部不显示「取消」，可通过右上角关闭或 Escape 退出。仅「上传文件」标签保留进度反馈区，其他标签在有错误时直接显示提示，不预留反馈区。
 
 ## 编辑操作
 
