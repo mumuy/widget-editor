@@ -190,7 +190,7 @@ export default class EditorBlocks {
         // 同一段落中的多张图片仍是独立内容，边界删除只移除最近的媒体。
         let media = block.matches(paragraphTags)?block.querySelectorAll(mediaTags):[];
         if(media.length>1){
-            paragraph ||= block;
+            paragraph = block;
             block = media[backward?media.length-1:0];
         }
         event.preventDefault();
