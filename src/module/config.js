@@ -29,7 +29,11 @@ export const attributes = {
     image: { default: ['upload', 'url'], toolbar: true, media: true },
     video: { default: ['upload', 'url', 'iframe'], toolbar: true, media: true },
     attachment: { default: ['upload', 'url'], toolbar: true, media: true },
-    audio: { default: ['upload', 'url'], toolbar: true, media: true }
+    audio: { default: ['upload', 'url'], toolbar: true, media: true },
+    'image-bind': { default: '' },
+    'video-bind': { default: '' },
+    'attachment-bind': { default: '' },
+    'audio-bind': { default: '' }
 };
 
 export const observedAttributes = Object.keys(attributes);

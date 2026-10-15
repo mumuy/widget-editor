@@ -67,7 +67,7 @@ export default class EditorToolbar {
         if(!feature?.insertion||this.editor.config.methods(feature.name)?.length===0){
             return false;
         }
-        return this.items.some(item=>item===feature||item.name==='insert'&&item.options.some(option=>option.value===feature.name));
+        return this.editor.bindings.has(feature.name)||this.items.some(item=>item===feature||item.name==='insert'&&item.options.some(option=>option.value===feature.name));
     }
     disabled(feature,inCode=!!this.editor.codes?.selected()){
         if(!feature){return true;}

@@ -50,6 +50,10 @@
 | `video` | 视频允许的插入方式 | `upload,url,iframe` |
 | `audio` | 音频允许的插入方式 | `upload,url` |
 | `attachment` | 附件允许的插入方式 | `upload,url` |
+| `image-bind` | 唤起图片插入弹框的外部节点 ID | 空字符串 |
+| `video-bind` | 唤起视频插入弹框的外部节点 ID | 空字符串 |
+| `attachment-bind` | 唤起附件插入弹框的外部节点 ID | 空字符串 |
+| `audio-bind` | 唤起音频插入弹框的外部节点 ID | 空字符串 |
 
 `insert` 支持以下字段，字段顺序就是插入菜单中的顺序：
 
@@ -335,7 +339,36 @@ customElements.whenDefined('widget-editor').then(function(){
 </widget-editor>
 ```
 
-不设置属性时全开放；设置为空（例如 `video=""`）则禁用该类型的插入功能。无效字段会忽略，重复字段仅保留一次。这些属性只配置插入方式；自定义工具栏时，通过 `custom` 加入插入菜单或对应的独立按钮。运行时修改属性会立即生效，并关闭该类型已打开的弹框；未完成的旧上传回调也会失效。
+不设置属性时全开放；设置为空（例如 `video=""`）则禁用该类型的插入功能。无效字段会忽略，重复字段仅保留一次。这些属性只配置插入方式；自定义工具栏时，通过 `custom` 加入插入菜单或对应的独立按钮，也可使用下面的外部节点绑定。运行时修改属性会立即生效，并关闭该类型已打开的弹框；未完成的旧上传回调也会失效。
+
+### 绑定外部插入按钮
+
+`image-bind`、`video-bind`、`attachment-bind` 和 `audio-bind` 分别绑定一个外部节点的 ID，填写 ID 本身，不加 `#`，保留大小写：
+
+```html
+<button type="button" id="imageElement">插入图片</button>
+<button type="button" id="videoElement">插入视频</button>
+<button type="button" id="attachmentElement">插入附件</button>
+<button type="button" id="audioElement">插入音频</button>
+
+<widget-editor
+    image-bind="imageElement"
+    video-bind="videoElement"
+    attachment-bind="attachmentElement"
+    audio-bind="audioElement">
+</widget-editor>
+```
+
+点击绑定节点或其子节点，会打开对应的插入弹框；原生按钮也支持 Enter、空格键触发。外部入口不要求工具栏显示该功能，即使设置 `custom="" insert=""` 仍可使用，但继续遵守各媒体类型的插入方式限制、组件禁用状态及源码、代码块的编辑限制。弹框、`upload` 事件和回调与组件内的插入功能一致，内容插入到原来的光标或选区；未设置光标时插入到文档末尾。
+
+节点与编辑器需位于同一文档或同一个 ShadowRoot，ID 应唯一。绑定支持后续添加、替换节点和运行时修改属性；设为空可取消绑定，移除属性恢复配置文件中的默认值（默认为空），组件移除后自动解绑。若移除绑定后，工具栏也未开放对应插入功能，会关闭已打开的弹框并使未完成的上传回调失效。
+
+```javascript
+editor.setAttribute('image-bind','anotherImageButton');
+editor.removeAttribute('image-bind');
+```
+
+### 处理上传
 
 组件不会自行向服务器上传文件。上传成功后，调用 `onUploadComplete(url)`，组件将返回的地址插入到打开弹窗前的光标或选区位置。
 

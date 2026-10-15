@@ -9,6 +9,7 @@ import EditorHistory from './module/history.js';
 import EditorForm from './module/form.js';
 import EditorBlocks from './module/blocks.js';
 import EditorToolbar from './module/toolbar.js';
+import EditorBindings from './module/bindings.js';
 import openDialog from './module/dialog.js';
 import EditorDropdown from './module/dropdown.js';
 import EditorTooltip from './module/tooltip.js';
@@ -22,6 +23,7 @@ class WidgetEditor extends HTMLElement {
         this.attachShadow({mode:'open'});
         this.formControl = new EditorForm(this);
         this.config = new EditorConfig(this);
+        this.bindings = new EditorBindings(this);
         this.tools = new EditorToolbar(this);
         this.locale = new EditorLanguage(this);
         this.source = false;
@@ -69,9 +71,11 @@ class WidgetEditor extends HTMLElement {
         this.tooltip.connect();
         this.fullscreen.connect();
         this.mobile.connect();
+        this.bindings.connect();
         document.addEventListener('selectionchange',this._onSelection);
     }
     disconnectedCallback(){
+        this.bindings.disconnect();
         this.mobile?.disconnect();
         this.fullscreen?.disconnect();
         this.dropdown?.disconnect();
@@ -110,16 +114,18 @@ class WidgetEditor extends HTMLElement {
             return;
         }
         if(name==='disabled'){return;}
-        if(toolbarAttributes.includes(name)&&this.dropdown){
+        if((toolbarAttributes.includes(name)||name?.endsWith('-bind'))&&this.dropdown){
             this.saveSelection();
             this.dropdown.close();
             this.tooltip?.hide();
             if(mediaAttributes.includes(name)&&this._dialog?.dataset.insert===name){
                 this._dialog.dismiss();
             }
-            this.toolbar.innerHTML = this.tools.render();
-            this.tools.items.forEach(feature=>feature.bindToolbar?.(this));
-            this.locale.apply(this.toolbar);
+            if(toolbarAttributes.includes(name)){
+                this.toolbar.innerHTML = this.tools.render();
+                this.tools.items.forEach(feature=>feature.bindToolbar?.(this));
+                this.locale.apply(this.toolbar);
+            }
             if(this._dialog?.dataset.insert&&!this.canInsert(this._dialog.dataset.insert)){
                 this._dialog.dismiss();
             }
