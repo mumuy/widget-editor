@@ -6,6 +6,7 @@ export default function openUpload(editor,options){
     let range = editor.getRange()?.cloneRange();
     let modes = editor.config.methods(options.kind).map(name=>name==='upload'?'file':name);
     if(!modes.length){return;}
+    let batch = editor.config.get(options.kind+'-batch');
     let mode = modes[0];
     let busy = false;
     let cancelUpload = null;
@@ -44,7 +45,7 @@ export default function openUpload(editor,options){
             dialog.message('');
         }
     };
-    let upload = function(file){
+    let upload = function(files){
         return new Promise(resolve=>{
             let done = false;
             let active = ()=>!done&&current();
@@ -67,18 +68,18 @@ export default function openUpload(editor,options){
             editor.locale.set(progress.querySelector('span'),'上传中 {percent}%',{percent:0});
             editor.dispatchEvent(new CustomEvent('upload',{
                 detail:{
-                    file,
+                    files:files.slice(),
                     type:options.kind,
-                    onUploadComplete(url){
+                    onUploadComplete(urls){
                         if(!active()){
                             return;
                         }
-                        let source = typeof url==='string'?safeURL(url,options.kind):'';
-                        if(!source){
-                            error('上传结果不是有效的 URL，请重试',true);
+                        let sources = Array.isArray(urls)?Array.from(urls,url=>typeof url==='string'?safeURL(url,options.kind):''):[];
+                        if(sources.length!==files.length||sources.some(source=>!source)){
+                            error('请按文件顺序返回对应数量的有效 URL，请重试',true);
                             return;
                         }
-                        finish(source);
+                        finish(sources);
                     },
                     onUploadError:error,
                     onProgress(percent){
@@ -95,8 +96,10 @@ export default function openUpload(editor,options){
         });
     };
     let fields = {
-        file:{'name':'file','label':'选择{type}（最大 {size} MB）','params':{type:options.name,size:options.size},'type':'file',
-            'accept':options.accept||'','required':true},
+        file:{'name':'file','label':batch===1?'选择{type}（最大 {size} MB）':
+            Number.isFinite(batch)?'选择{type}（最多 {count} 个，单个最大 {size} MB）':'选择{type}（不限数量，单个最大 {size} MB）',
+            'params':{type:options.name,size:options.size,count:batch},'type':'file',
+            'accept':options.accept||'','required':true,'multiple':batch>1},
         url:{'name':'url','label':options.name+'地址','type':'text','placeholder':'https://example.com/file','required':true},
         iframe:{'name':'iframe','label':'iframe 嵌入代码','type':'textarea','placeholder':'粘贴视频网站提供的 iframe 代码','required':true}
     };
@@ -182,43 +185,50 @@ export default function openUpload(editor,options){
                 editor.insertHTML(html);
                 return true;
             }
-            let file = mode==='file'?values.file:null;
-            let source;
+            let files = mode==='file'?values.file:[];
+            let sources;
             if(mode==='file'){
-                if(!file||!fileType(file,options.types)){
+                if(!files.length||files.some(file=>!fileType(file,options.types))){
                     dialog.message(options.error||'请选择文件');
                     return false;
                 }
-                if(file.size>options.size*1024*1024){
+                if(files.length>batch){
+                    dialog.message('一次最多选择 {count} 个文件',{count:batch});
+                    return false;
+                }
+                if(files.some(file=>file.size>options.size*1024*1024)){
                     dialog.message('{type}大小不能超过 {size} MB',{type:options.name,size:options.size});
                     return false;
                 }
                 setBusy(true);
                 try{
-                    source = await upload(file);
+                    sources = await upload(files);
                 }finally{
                     if(current()){
                         setBusy(false);
                     }
                 }
-                if(source===null||!current()){
+                if(sources===null||!current()){
                     return true;
                 }
-                if(source===false){
+                if(sources===false){
                     return false;
                 }
             }else{
-                source = safeURL(values.url,options.kind);
+                let source = safeURL(values.url,options.kind);
                 if(!source){
                     dialog.message('请输入有效的{type}地址',{type:options.name});
                     return false;
                 }
+                sources = [source];
             }
-            values.name = file?.name||urlFileName(source,editor.t(options.name));
+            let html = sources.map((source,index)=>options.html(source,{
+                ...values,name:files[index]?.name||urlFileName(source,editor.t(options.name))
+            })).join('');
             // 插入时解除模态层的焦点限制，恢复原选区。
             dialog.close();
             editor.selection.range = range;
-            editor.insertHTML(options.html(source,values));
+            editor.insertHTML(html);
             return true;
         }
     });

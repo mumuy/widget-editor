@@ -7,25 +7,37 @@
     });
 
     // 演示页作为外部调用方处理文件，正式使用时替换成自己的上传服务。
-    $editor.addEventListener('upload',function(event){
-        let {file,type,onUploadComplete,onUploadError,onProgress} = event.detail;
-        let reader = new FileReader();
-        reader.onprogress = function(event){
-            if(event.lengthComputable){
-                onProgress(event.loaded/event.total*100);
+    $editor.addEventListener('upload',async function(event){
+        let {files,type,onUploadComplete,onUploadError,onProgress} = event.detail;
+        let total = files.reduce((sum,file)=>sum+file.size,0);
+        let loaded = 0;
+        let sources = [];
+        try{
+            for(let file of files){
+                sources.push(await new Promise((resolve,reject)=>{
+                    let reader = new FileReader();
+                    reader.onprogress = event=>{
+                        if(event.lengthComputable){onProgress(total?(loaded+event.loaded)/total*100:100);}
+                    };
+                    reader.onload = ()=>{
+                        let source = String(reader.result);
+                        if(type==='attachment'){
+                            source = source.replace(/^data:[^,]*;base64,/, 'data:application/octet-stream;base64,');
+                        }else if(type==='audio'&&file.type==='audio/x-wav'){
+                            source = source.replace(/^data:[^,]*;base64,/, 'data:audio/wav;base64,');
+                        }
+                        loaded += file.size;
+                        onProgress(total?loaded/total*100:100);
+                        resolve(source);
+                    };
+                    reader.onerror = ()=>reject('文件读取失败，请重试');
+                    reader.onabort = ()=>reject('文件读取已取消');
+                    reader.readAsDataURL(file);
+                }));
             }
-        };
-        reader.onload = function(){
-            let source = String(reader.result);
-            if(type==='attachment'){
-                source = source.replace(/^data:[^,]*;base64,/, 'data:application/octet-stream;base64,');
-            }else if(type==='audio'&&file.type==='audio/x-wav'){
-                source = source.replace(/^data:[^,]*;base64,/, 'data:audio/wav;base64,');
-            }
-            onUploadComplete(source);
-        };
-        reader.onerror = ()=>onUploadError('文件读取失败，请重试');
-        reader.onabort = ()=>onUploadError('文件读取已取消');
-        reader.readAsDataURL(file);
+            onUploadComplete(sources);
+        }catch(error){
+            onUploadError(error);
+        }
     });
 })();

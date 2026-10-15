@@ -57,6 +57,7 @@ export default function openDialog(editor,options){
             }
         });
         input.required = !!field.required;
+        if(field.type==='file'){input.multiple = !!field.multiple;}
         if(field.type==='checkbox'){
             input.checked = !!field.value;
         }else if(field.type!=='file'){
@@ -109,7 +110,7 @@ export default function openDialog(editor,options){
         let values = {};
         fields.forEach(function(field){
             let input = inputs.get(field.name);
-            values[field.name] = field.type==='file' ? input.files[0] :
+            values[field.name] = field.type==='file' ? Array.from(input.files) :
                 field.type==='checkbox' ? input.checked : input.value;
         });
         // 先解除模态层的焦点限制，编辑命令才能恢复到原来的选区。

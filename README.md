@@ -54,6 +54,10 @@
 | `video-bind` | 唤起视频插入弹框的外部节点 ID | 空字符串 |
 | `attachment-bind` | 唤起附件插入弹框的外部节点 ID | 空字符串 |
 | `audio-bind` | 唤起音频插入弹框的外部节点 ID | 空字符串 |
+| `image-batch` | 每次上传图片数量上限；空值表示不限数量 | `1` |
+| `video-batch` | 每次上传视频数量上限；空值表示不限数量 | `1` |
+| `attachment-batch` | 每次上传附件数量上限；空值表示不限数量 | `1` |
+| `audio-batch` | 每次上传音频数量上限；空值表示不限数量 | `1` |
 
 `insert` 支持以下字段，字段顺序就是插入菜单中的顺序：
 
@@ -370,25 +374,35 @@ editor.removeAttribute('image-bind');
 
 ### 处理上传
 
-组件不会自行向服务器上传文件。上传成功后，调用 `onUploadComplete(url)`，组件将返回的地址插入到打开弹窗前的光标或选区位置。
+通过 `image-batch`、`video-batch`、`attachment-batch`、`audio-batch` 设置每次选择文件的数量上限：
+
+```html
+<widget-editor image-batch="9" video-batch="3" attachment-batch="" audio-batch="5"></widget-editor>
+```
+
+未设置时使用配置文件中的默认值（默认单文件）；空值表示不限数量，正整数表示上限，`1` 表示单文件，其他无效值回退到默认值。限制仅作用于文件上传，不影响 URL 和 iframe。选择的全部文件均需通过数量、类型和单个文件大小校验，才会触发一次 `upload` 事件。运行时修改数量限制会关闭对应弹框，未完成的旧上传回调随即失效。
+
+组件不会自行向服务器上传文件。`files` 始终为 `File[]`，单文件上传也传数组。全部上传成功后调用 `onUploadComplete(urls)`，地址数组须与 `files` 数量相同、顺序对应；单文件也使用 `[url]`。组件校验全部地址后，一次性插入原来的光标或选区位置，支持整批撤销。描述字段应用于本批全部文件；未填写视频、音频描述或附件文字时，分别使用每个文件的名称。
+
+这是上传接口调整：原来的 `detail.file` 改为 `detail.files`，原来的 `onUploadComplete(url)` 改为 `onUploadComplete([url])`。失败、数量不匹配或地址无效时不会插入任何文件，弹框保留，允许整批重试。
 
 `upload` 事件的 `detail` 包含：
 
 | 字段 | 说明 |
 | --- | --- |
-| `file` | 用户选择的原始 `File` |
+| `files` | 按选择顺序排列的原始 `File[]`，单文件也使用数组 |
 | `type` | `image`、`video`、`audio` 或 `attachment` |
-| `onUploadComplete(url)` | 上传成功后传入文件地址 |
+| `onUploadComplete(urls)` | 传入与 `files` 一一对应的地址数组 `string[]` |
 | `onUploadError(err)` | 上传失败时传入 `Error` 或错误消息，允许用户重试 |
-| `onProgress(percent)` | 更新上传进度，范围为 0～100 |
+| `onProgress(percent)` | 更新整批上传进度，范围为 0～100 |
 
-下面的示例假设上传接口为 `/api/upload`，成功响应为 `{ "url": "https://example.com/uploads/file.png" }`：
+下面的示例假设上传接口为 `/api/upload`，接收多个同名 `files` 字段，成功响应为 `{ "urls": ["https://example.com/uploads/file.png"] }`，返回顺序与上传顺序一致：
 
 ```javascript
 customElements.whenDefined('widget-editor').then(function(){
     let editor = document.querySelector('#editor');
     editor.addEventListener('upload',function(event){
-        let {file,onUploadComplete,onUploadError,onProgress} = event.detail;
+        let {files,type,onUploadComplete,onUploadError,onProgress} = event.detail;
         let request = new XMLHttpRequest();
         request.open('POST','/api/upload');
         request.responseType = 'json';
@@ -398,8 +412,8 @@ customElements.whenDefined('widget-editor').then(function(){
             }
         };
         request.onload = function(){
-            if(request.status>=200&&request.status<300&&request.response?.url){
-                onUploadComplete(request.response.url);
+            if(request.status>=200&&request.status<300&&Array.isArray(request.response?.urls)){
+                onUploadComplete(request.response.urls);
             }else{
                 onUploadError(request.response?.message||'上传失败，请重试');
             }
@@ -408,7 +422,8 @@ customElements.whenDefined('widget-editor').then(function(){
         request.onabort = ()=>onUploadError('上传已取消');
 
         let data = new FormData();
-        data.append('file',file);
+        files.forEach(file=>data.append('files',file));
+        data.append('type',type);
         request.send(data);
     });
 });

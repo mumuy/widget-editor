@@ -114,6 +114,10 @@ class WidgetEditor extends HTMLElement {
             return;
         }
         if(name==='disabled'){return;}
+        if(name?.endsWith('-batch')){
+            if(this._dialog?.dataset.insert===name.slice(0,-6)){this._dialog.dismiss();}
+            return;
+        }
         if((toolbarAttributes.includes(name)||name?.endsWith('-bind'))&&this.dropdown){
             this.saveSelection();
             this.dropdown.close();

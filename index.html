@@ -71,7 +71,7 @@
                     </section>
                     <section class="mod-demo" id="demo" aria-label="完整功能演示">
                         <div class="bd">
-                            <widget-editor id="editor" placeholder="请输入文章内容……" aria-label="文章编辑器">
+                            <widget-editor id="editor" placeholder="请输入文章内容……" aria-label="文章编辑器" image-batch="9" video-batch="3" attachment-batch="" audio-batch="5">
                                 <h1>富文本编辑器</h1>
                                 <p>一个标签实现富文本编辑，支持常用的文字排版功能。</p>
                                 <h2>文字格式</h2>
@@ -231,6 +231,26 @@ console.log(editor.value);</code></pre>
                                             <td>点击该 ID 的外部节点唤起音频插入弹框，不加 <code>#</code>。</td>
                                             <td>空字符串</td>
                                         </tr>
+                                        <tr>
+                                            <th scope="row"><span>image-batch</span></th>
+                                            <td>每次上传图片数量上限，填写正整数；空值不限数量。</td>
+                                            <td><code>1</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><span>video-batch</span></th>
+                                            <td>每次上传视频数量上限，填写正整数；空值不限数量。</td>
+                                            <td><code>1</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><span>attachment-batch</span></th>
+                                            <td>每次上传附件数量上限，填写正整数；空值不限数量。</td>
+                                            <td><code>1</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><span>audio-batch</span></th>
+                                            <td>每次上传音频数量上限，填写正整数；空值不限数量。</td>
+                                            <td><code>1</code></td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -245,18 +265,18 @@ console.log(editor.value);</code></pre>
                                     <colgroup><col style="width:36%;"><col style="width:64%;"></colgroup>
                                     <thead><tr><th scope="col">event.detail</th><th scope="col">说明</th></tr></thead>
                                     <tbody>
-                                        <tr><th scope="row"><span>file</span></th><td>用户选择的原始 <code>File</code> 对象。</td></tr>
+                                        <tr><th scope="row"><span>files</span></th><td>按选择顺序排列的 <code>File[]</code>，单文件也使用数组。</td></tr>
                                         <tr><th scope="row"><span>type</span></th><td>文件类型：<code>image</code>、<code>video</code>、<code>audio</code> 或 <code>attachment</code>。</td></tr>
-                                        <tr><th scope="row"><span>onUploadComplete(url)</span></th><td>上传成功后传入文件地址，组件将其插入到原来的光标或选区位置。</td></tr>
+                                        <tr><th scope="row"><span>onUploadComplete(urls)</span></th><td>全部成功后，按文件顺序传入数量相同的地址数组，整批插入原来的光标或选区位置。</td></tr>
                                         <tr><th scope="row"><span>onUploadError(err)</span></th><td>上传失败时传入 <code>Error</code> 或错误消息，在弹框内显示，用户可重试。</td></tr>
-                                        <tr><th scope="row"><span>onProgress(percent)</span></th><td>更新上传进度，传入 0～100 的百分比。</td></tr>
+                                        <tr><th scope="row"><span>onProgress(percent)</span></th><td>更新整批上传进度，传入 0～100 的百分比。</td></tr>
                                     </tbody>
                                 </table>
                             </div>
                             <p>下面使用原生 <code>XMLHttpRequest</code> 上传文件并报告进度。请按实际接口修改地址和响应字段。</p>
                             <widget-code language="javascript">let editor = document.querySelector('#editor');
 editor.addEventListener('upload',function(event){
-    let {file,type,onUploadComplete,onUploadError,onProgress} = event.detail;
+    let {files,type,onUploadComplete,onUploadError,onProgress} = event.detail;
     let request = new XMLHttpRequest();
     request.open('POST','/api/upload');
     request.responseType = 'json';
@@ -266,8 +286,8 @@ editor.addEventListener('upload',function(event){
         }
     };
     request.onload = function(){
-        if(request.status&gt;=200&amp;&amp;request.status&lt;300&amp;&amp;request.response?.url){
-            onUploadComplete(request.response.url);
+        if(request.status&gt;=200&amp;&amp;request.status&lt;300&amp;&amp;Array.isArray(request.response?.urls)){
+            onUploadComplete(request.response.urls);
         }else{
             onUploadError(request.response?.message||'上传失败，请重试');
         }
@@ -276,7 +296,7 @@ editor.addEventListener('upload',function(event){
     request.onabort = ()=&gt;onUploadError('上传已取消');
 
     let data = new FormData();
-    data.append('file',file);
+    files.forEach(file=&gt;data.append('files',file));
     data.append('type',type);
     request.send(data);
 });</widget-code>

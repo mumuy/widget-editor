@@ -33,7 +33,11 @@ export const attributes = {
     'image-bind': { default: '' },
     'video-bind': { default: '' },
     'attachment-bind': { default: '' },
-    'audio-bind': { default: '' }
+    'audio-bind': { default: '' },
+    'image-batch': { default: 1, min: 1, max: Number.MAX_SAFE_INTEGER, integer: true, empty: Infinity },
+    'video-batch': { default: 1, min: 1, max: Number.MAX_SAFE_INTEGER, integer: true, empty: Infinity },
+    'attachment-batch': { default: 1, min: 1, max: Number.MAX_SAFE_INTEGER, integer: true, empty: Infinity },
+    'audio-batch': { default: 1, min: 1, max: Number.MAX_SAFE_INTEGER, integer: true, empty: Infinity }
 };
 
 export const observedAttributes = Object.keys(attributes);
@@ -58,8 +62,10 @@ export default class EditorConfig {
             return this.editor.hasAttribute(name) || attribute.default;
         }
         if (typeof attribute.default === 'number') {
+            if (value !== null && !value.trim() && Object.hasOwn(attribute, 'empty')) { return attribute.empty; }
             let number = Number(value ?? attribute.default);
-            return number >= attribute.min && number <= attribute.max ? number : attribute.default;
+            return number >= attribute.min && number <= attribute.max &&
+                (!attribute.integer || Number.isSafeInteger(number)) ? number : attribute.default;
         }
         if (attribute.translate) {
             return value || this.editor.t(attribute.default);
