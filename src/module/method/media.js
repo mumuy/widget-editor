@@ -28,6 +28,22 @@ export default function openMedia(editor,options,initialMode){
     let tabs;
     let panels = new Map();
     let current = ()=>editor.isConnected&&!editor.source&&editor._dialog===dialog&&dialog.isConnected&&dialog.open;
+    // 同一份有效插入结果同时控制按钮状态和最终提交。
+    let getInsertion = function(){
+        if(busy){return null;}
+        if(mode==='upload'){return uploaded;}
+        if(mode==='resource'){
+            let sources = materials.values();
+            return sources.length&&sources.length<=batch?{sources}:null;
+        }
+        let value = panels.get(mode).fields.querySelector('[name="'+mode+'"]').value;
+        if(mode==='iframe'){
+            let html = options.iframe(value);
+            return html?{html}:null;
+        }
+        let source = safeURL(value,options.kind);
+        return source?{sources:[source]}:null;
+    };
     let updateNotice = function(){
         let count = mode==='resource'&&!noticeMessage[0];
         notice.toggleAttribute('data-count',count);
@@ -63,7 +79,7 @@ export default function openMedia(editor,options,initialMode){
         addButton.disabled = busy;
         addInput.disabled = busy||mode!=='resource';
         materials?.busy(busy);
-        submit.disabled = busy||mode==='upload'&&!uploaded;
+        dialog.updateSubmit();
     };
     let setBusy = function(value,name){
         busy = value;
@@ -210,6 +226,7 @@ export default function openMedia(editor,options,initialMode){
     dialog = editor.openDialog({
         'title':'插入'+options.name,
         'keepOpen':true,
+        canSubmit:()=>!!getInsertion(),
         'fields':[...modes.map(name=>fields[name]).filter(Boolean),...(modes.some(name=>['upload','url'].includes(name))?[options.field]:[])],
         'submitLabel':'插入'+options.name,
         mount(node){
@@ -260,7 +277,7 @@ export default function openMedia(editor,options,initialMode){
                 if(name==='resource'){
                     materials = createMaterials(editor,{
                         ...options,limit:batch,
-                        onSelectionChange:count=>{selectedCount = count;updateNotice();},
+                        onSelectionChange:count=>{selectedCount = count;updateNotice();dialog.updateSubmit();},
                         message:(...args)=>dialog.message(...args),
                         remove:url=>resolveResources('remove',[],url)
                     });
@@ -309,39 +326,16 @@ export default function openMedia(editor,options,initialMode){
             revision++;
             cancelPending?.();
         },
-        async onSubmit(values){
-            if(busy){return false;}
-            if(mode==='resource'){
-                let sources = materials.values();
-                if(!sources.length){
-                    dialog.message('请选择素材');
-                    return false;
-                }
-                insert(sources);
-                return true;
-            }
-            if(mode==='iframe'){
-                let html = options.iframe(values.iframe);
-                if(!html){
-                    dialog.message('请输入有效的 iframe 嵌入代码');
-                    return false;
-                }
+        onSubmit(values){
+            let result = getInsertion();
+            if(!result){return false;}
+            if(result.html){
                 dialog.close();
                 editor.selection.range = range;
-                editor.insertHTML(html);
-                return true;
+                editor.insertHTML(result.html);
+            }else{
+                insert(result.sources,result.files||[],values);
             }
-            if(mode==='upload'){
-                if(!uploaded){return false;}
-                insert(uploaded.sources,uploaded.files,values);
-                return true;
-            }
-            let source = safeURL(values.url,options.kind);
-            if(!source){
-                dialog.message('请输入有效的{type}地址',{type:options.name});
-                return false;
-            }
-            insert([source],[],values);
             return true;
         }
     });

@@ -69,6 +69,11 @@ export default function openDialog(editor,options){
     });
     let submitting = false;
     let finished = false;
+    dialog.updateSubmit = ()=>{submit.disabled = submitting||options.canSubmit?.()===false;};
+    if(options.canSubmit){
+        form.addEventListener('input',dialog.updateSubmit);
+        form.addEventListener('change',dialog.updateSubmit);
+    }
     let current = function(){
         return !finished && editor.isConnected && dialog.isConnected && editor._dialog===dialog;
     };
@@ -101,7 +106,7 @@ export default function openDialog(editor,options){
     });
     form.onsubmit = async function(event){
         event.preventDefault();
-        if(submitting || !current() || !form.reportValidity()){
+        if(submitting || !current() || options.canSubmit?.()===false || !form.reportValidity()){
             return;
         }
         submitting = true;
@@ -141,13 +146,14 @@ export default function openDialog(editor,options){
             }
         }finally{
             submitting = false;
-            submit.disabled = false;
+            dialog.updateSubmit();
             form.removeAttribute('aria-busy');
         }
     };
     editor.shadowRoot.appendChild(dialog);
     editor._dialog = dialog;
     options.mount?.(dialog);
+    if(options.canSubmit){dialog.updateSubmit();}
     editor.locale.apply(dialog);
     dialog.showModal();
     return dialog;
