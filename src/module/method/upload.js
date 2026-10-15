@@ -1,7 +1,7 @@
 import {fileType,urlFileName} from './file.js';
 import {safeURL} from './sanitize.js';
 
-// 文件由外部上传，组件只管理插入弹窗、进度与回调状态。
+// 上传与资源库共用回调校验、取消状态及插入流程。
 export default function openUpload(editor,options){
     let range = editor.getRange()?.cloneRange();
     let modes = editor.config.methods(options.kind).map(name=>name==='upload'?'file':name);
@@ -9,15 +9,15 @@ export default function openUpload(editor,options){
     let batch = editor.config.get(options.kind+'-batch');
     let mode = modes[0];
     let busy = false;
-    let cancelUpload = null;
+    let cancelPending = null;
     let progress;
     let description;
     let dialog;
-    let current = ()=>editor.isConnected&&!editor.source&&editor._dialog===dialog&&dialog.isConnected&&dialog.open;
+    let current = ()=>editor.isConnected&&!editor.source&&editor._dialog===dialog&&dialog.isConnected&&(dialog.open||dialog.suspended);
     let setMode = function(value,focus=false){
         if(!modes.includes(value)){return;}
         mode = value;
-        if(description&&mode!=='iframe'){
+        if(description&&['file','url'].includes(mode)){
             dialog.querySelector('[data-insert-panel="'+mode+'"]').appendChild(description);
         }
         dialog.querySelectorAll('[data-insert-tab]').forEach(button=>{
@@ -34,18 +34,19 @@ export default function openUpload(editor,options){
             panel.inert = !active;
             panel.querySelectorAll('input,textarea').forEach(input=>input.disabled=!active||busy);
         });
+        dialog.querySelector('[type="submit"]').hidden = mode==='request';
     };
     let setBusy = function(value){
         busy = value;
-        dialog.querySelectorAll('input,textarea,[data-insert-tab]').forEach(input=>input.disabled=busy);
+        dialog.querySelectorAll('input,textarea,[data-insert-tab],[data-request]').forEach(input=>input.disabled=busy);
         setMode(mode);
-        progress.hidden = !busy;
+        progress.hidden = !busy||mode==='request';
         editor.locale.set(dialog.querySelector('[type="submit"]'),busy?'上传中…':'插入'+options.name);
         if(busy){
             dialog.message('');
         }
     };
-    let upload = function(files){
+    let resolveResources = function(name,files=[]){
         return new Promise(resolve=>{
             let done = false;
             let active = ()=>!done&&current();
@@ -54,46 +55,77 @@ export default function openUpload(editor,options){
                     return;
                 }
                 done = true;
-                cancelUpload = null;
+                cancelPending = null;
                 resolve(value);
             };
-            let error = function(err,translate=false){
+            let error = function(err,translate=false,params){
                 if(active()){
-                    dialog.message(String(err?.message||err||'上传失败，请重试'),undefined,!translate&&!!(err?.message||err));
+                    dialog.message(String(err?.message||err||(name==='upload'?'上传失败，请重试':'资源选择失败，请重试')),params,!translate&&!!(err?.message||err));
                     finish(false);
                 }
             };
-            cancelUpload = ()=>finish(null);
-            progress.querySelector('progress').value = 0;
-            editor.locale.set(progress.querySelector('span'),'上传中 {percent}%',{percent:0});
-            editor.dispatchEvent(new CustomEvent('upload',{
-                detail:{
-                    files:files.slice(),
-                    type:options.kind,
-                    onUploadComplete(urls){
-                        if(!active()){
-                            return;
-                        }
-                        let sources = Array.isArray(urls)?Array.from(urls,url=>typeof url==='string'?safeURL(url,options.kind):''):[];
-                        if(sources.length!==files.length||sources.some(source=>!source)){
-                            error('请按文件顺序返回对应数量的有效 URL，请重试',true);
-                            return;
-                        }
-                        finish(sources);
-                    },
-                    onUploadError:error,
-                    onProgress(percent){
-                        if(active()&&Number.isFinite(Number(percent))){
-                            let value = Math.max(0,Math.min(100,Number(percent)));
-                            progress.querySelector('progress').value = value;
-                            editor.locale.set(progress.querySelector('span'),'上传中 {percent}%',{percent:Math.round(value)});
-                        }
+            cancelPending = ()=>finish(null);
+            let detail = {
+                type:options.kind,
+                limit:batch,
+                onComplete(urls){
+                    if(!active()){
+                        return;
                     }
+                    let sources = Array.isArray(urls)?Array.from(urls,url=>typeof url==='string'?safeURL(url,options.kind):''):[];
+                    if(!sources.length||sources.some(source=>!source)||name==='upload'&&sources.length!==files.length){
+                        error(name==='upload'?'请按文件顺序返回对应数量的有效 URL，请重试':'请返回有效的资源 URL 数组，请重试',true);
+                        return;
+                    }
+                    if(sources.length>batch){
+                        error('一次最多选择 {count} 个资源',true,{count:batch});
+                        return;
+                    }
+                    finish(sources);
                 },
+                onError:error
+            };
+            if(name==='upload'){
+                detail.files = files.slice();
+                detail.onProgress = function(percent){
+                    if(active()&&Number.isFinite(Number(percent))){
+                        let value = Math.max(0,Math.min(100,Number(percent)));
+                        progress.querySelector('progress').value = value;
+                        editor.locale.set(progress.querySelector('span'),'上传中 {percent}%',{percent:Math.round(value)});
+                    }
+                };
+                progress.querySelector('progress').value = 0;
+                editor.locale.set(progress.querySelector('span'),'上传中 {percent}%',{percent:0});
+            }
+            editor.dispatchEvent(new CustomEvent(name,{
+                detail,
                 bubbles:true,
                 composed:true
             }));
         });
+    };
+    let insert = function(sources,files=[],values={}){
+        let batch = sources.length>1;
+        let html = sources.map((source,index)=>options.html(source,{
+            ...values,name:files[index]?.name||urlFileName(source,editor.t(options.name)),batch
+        })).join('');
+        dialog.dismiss();
+        editor.selection.range = range;
+        batch&&options.insertBatch?options.insertBatch(html):editor.insertHTML(html);
+    };
+    let request = async function(){
+        if(busy||!current()){return;}
+        setBusy(true);
+        dialog.suspend();
+        try{
+            let sources = await resolveResources('request');
+            if(sources&&current()){insert(sources);}
+        }finally{
+            if(current()){
+                setBusy(false);
+                dialog.resume();
+            }
+        }
     };
     let fields = {
         file:{'name':'file','label':batch===1?'选择{type}（最大 {size} MB）':
@@ -106,7 +138,7 @@ export default function openUpload(editor,options){
     dialog = editor.openDialog({
         'title':'插入'+options.name,
         'keepOpen':true,
-        'fields':[...modes.map(name=>fields[name]),...(modes.some(name=>name!=='iframe')?[options.field]:[])],
+        'fields':[...modes.map(name=>fields[name]).filter(Boolean),...(modes.some(name=>['file','url'].includes(name))?[options.field]:[])],
         'submitLabel':'插入'+options.name,
         mount(node){
             dialog = node;
@@ -115,13 +147,13 @@ export default function openUpload(editor,options){
             tabs.className = 'insert-tabs';
             tabs.setAttribute('role','tablist');
             tabs.setAttribute('aria-label','插入方式');
-            tabs.innerHTML = modes.map(name=>`<button type="button" role="tab" id="insert-${name}-tab" aria-controls="insert-${name}-panel" data-insert-tab="${name}">${name==='file'?'上传文件':name==='url'?'URL':'嵌入 iframe'}</button>`).join('');
+            let labels = {file:'上传文件',url:'URL',iframe:'嵌入 iframe',request:'资源库'};
+            tabs.innerHTML = modes.map(name=>`<button type="button" role="tab" id="insert-${name}-tab" aria-controls="insert-${name}-panel" data-insert-tab="${name}">${labels[name]}</button>`).join('');
             dialog.querySelector('.dialog-body').prepend(tabs);
             let panels = document.createElement('div');
             panels.className = 'insert-panels';
             dialog.querySelector('.dialog-fields').prepend(panels);
             modes.forEach(name=>{
-                let field = dialog.querySelector('[name="'+name+'"]').closest('.field');
                 let panel = document.createElement('div');
                 panel.className = 'insert-panel';
                 panel.id = 'insert-'+name+'-panel';
@@ -129,11 +161,21 @@ export default function openUpload(editor,options){
                 panel.setAttribute('role','tabpanel');
                 panel.setAttribute('aria-labelledby','insert-'+name+'-tab');
                 panels.appendChild(panel);
-                panel.appendChild(field);
+                if(name==='request'){
+                    let button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'resource-button';
+                    button.dataset.request = '';
+                    editor.locale.set(button,'选择资源');
+                    button.addEventListener('click',request);
+                    panel.appendChild(button);
+                }else{
+                    panel.appendChild(dialog.querySelector('[name="'+name+'"]').closest('.field'));
+                }
             });
             description = dialog.querySelector('[name="'+options.field.name+'"]')?.closest('.field');
             if(description){
-                panels.querySelector('[data-insert-panel]:not([data-insert-panel="iframe"])').appendChild(description);
+                panels.querySelector('[data-insert-panel="file"],[data-insert-panel="url"]').appendChild(description);
             }
             tabs.addEventListener('click',event=>{
                 let button = event.target.closest('[data-insert-tab]');
@@ -171,9 +213,10 @@ export default function openUpload(editor,options){
             setMode(mode);
         },
         onClose(){
-            cancelUpload?.();
+            cancelPending?.();
         },
         async onSubmit(values){
+            if(mode==='request'){return false;}
             if(mode==='iframe'){
                 let html = options.iframe(values.iframe);
                 if(!html){
@@ -202,7 +245,7 @@ export default function openUpload(editor,options){
                 }
                 setBusy(true);
                 try{
-                    sources = await upload(files);
+                    sources = await resolveResources('upload',files);
                 }finally{
                     if(current()){
                         setBusy(false);
@@ -222,17 +265,7 @@ export default function openUpload(editor,options){
                 }
                 sources = [source];
             }
-            let html = sources.map((source,index)=>options.html(source,{
-                ...values,name:files[index]?.name||urlFileName(source,editor.t(options.name)),batch:files.length>1
-            })).join('');
-            // 插入时解除模态层的焦点限制，恢复原选区。
-            dialog.close();
-            editor.selection.range = range;
-            if(files.length>1&&options.insertBatch){
-                options.insertBatch(html);
-            }else{
-                editor.insertHTML(html);
-            }
+            insert(sources,files,values);
             return true;
         }
     });

@@ -46,18 +46,18 @@
 | `fontfamily` | 字体下拉菜单的选项及顺序 | 下方列出的全部字体 |
 | `fontsize` | 字号下拉菜单的选项及顺序，单位为 px | `12,14,16,18,20,24,28,32,36,48` |
 | `alignment` | 对齐下拉菜单的选项及顺序 | `left,center,right,justify` |
-| `image` | 图片允许的插入方式 | `upload,url` |
-| `video` | 视频允许的插入方式 | `upload,url,iframe` |
-| `audio` | 音频允许的插入方式 | `upload,url` |
-| `attachment` | 附件允许的插入方式 | `upload,url` |
+| `image` | 图片允许的插入方式 | `upload,url,request` |
+| `video` | 视频允许的插入方式 | `upload,url,iframe,request` |
+| `audio` | 音频允许的插入方式 | `upload,url,request` |
+| `attachment` | 附件允许的插入方式 | `upload,url,request` |
 | `image-bind` | 唤起图片插入弹框的外部节点 ID | 空字符串 |
 | `video-bind` | 唤起视频插入弹框的外部节点 ID | 空字符串 |
 | `attachment-bind` | 唤起附件插入弹框的外部节点 ID | 空字符串 |
 | `audio-bind` | 唤起音频插入弹框的外部节点 ID | 空字符串 |
-| `image-batch` | 每次上传图片数量上限；空值表示不限数量 | `1` |
-| `video-batch` | 每次上传视频数量上限；空值表示不限数量 | `1` |
-| `attachment-batch` | 每次上传附件数量上限；空值表示不限数量 | `1` |
-| `audio-batch` | 每次上传音频数量上限；空值表示不限数量 | `1` |
+| `image-batch` | 每次上传或选择图片数量上限；空值表示不限数量 | `1` |
+| `video-batch` | 每次上传或选择视频数量上限；空值表示不限数量 | `1` |
+| `attachment-batch` | 每次上传或选择附件数量上限；空值表示不限数量 | `1` |
+| `audio-batch` | 每次上传或选择音频数量上限；空值表示不限数量 | `1` |
 
 `insert` 支持以下字段，字段顺序就是插入菜单中的顺序：
 
@@ -308,6 +308,7 @@ editor.setCustomValidity(''); // 清除自定义错误
 | --- | --- | --- |
 | `ready` | 组件首次初始化完成 | 无 |
 | `change` | 用户编辑内容或执行编辑操作 | `{value,text}` |
+| `request` | 用户点击资源库的「选择资源」 | 资源类型、数量限制及完成/失败回调，见下方说明 |
 | `upload` | 用户选择文件并确认上传 | 文件及上传回调，见下方说明 |
 
 这些事件会冒泡，也可以在编辑器所在的父元素上监听。若需要监听 `ready`，请先准备一个容器，例如 `<div id="editor-container"></div>`，再在组件加入页面之前绑定：
@@ -328,10 +329,11 @@ customElements.whenDefined('widget-editor').then(function(){
 默认插入菜单已包含图片、视频、音频和附件，点击对应选项即可插入。未配置插入方式属性时，开放该类型的全部方式，默认打开「上传文件」：
 
 - **上传文件**：选择本地文件并点击插入，组件触发 `upload` 事件，由你的页面负责上传。
+- **资源库**：点击「选择资源」触发 `request` 事件，由外部资源库返回选中的资源地址。
 - **URL**：填写文件地址，点击插入即可使用，支持 HTTP、HTTPS 或相对地址。
 - **嵌入 iframe**（仅视频）：仅需粘贴第三方视频网站提供的 iframe 代码，再点击「插入视频」，保留代码中原有的 `title`。组件自动写入 `width: 100%`、`height: auto`、`max-width: 100%` 和 `aspect-ratio: 16 / 9`，高度随容器宽度按比例变化；嵌入地址须使用 HTTP、HTTPS 或相对地址。插入的 iframe 支持源码往返、删除及撤销。
 
-分别设置 `image`、`video`、`audio`、`attachment` 属性，可以限制插入方式。使用 `upload` 表示上传文件，`url` 表示填写地址，`iframe` 仅适用于视频；tabs 按配置顺序显示，默认打开第一项：
+分别设置 `image`、`video`、`audio`、`attachment` 属性，可以限制插入方式。使用 `upload` 表示上传文件，`url` 表示填写地址，`request` 表示资源库，`iframe` 仅适用于视频；tabs 按配置顺序显示，默认打开第一项：
 
 ```html
 <widget-editor
@@ -380,11 +382,11 @@ editor.removeAttribute('image-bind');
 <widget-editor image-batch="9" video-batch="3" attachment-batch="" audio-batch="5"></widget-editor>
 ```
 
-未设置时使用配置文件中的默认值（默认单文件）；空值表示不限数量，正整数表示上限，`1` 表示单文件，其他无效值回退到默认值。限制仅作用于文件上传，不影响 URL 和 iframe。选择的全部文件均需通过数量、类型和单个文件大小校验，才会触发一次 `upload` 事件。运行时修改数量限制会关闭对应弹框，未完成的旧上传回调随即失效。
+未设置时使用配置文件中的默认值（默认单文件）；空值表示不限数量，正整数表示上限，`1` 表示单文件，其他无效值回退到默认值。数量限制同时适用于文件上传和资源库选择，不影响 URL 和 iframe。选择的全部文件均需通过数量、类型和单个文件大小校验，才会触发一次 `upload` 事件。运行时修改数量限制会关闭对应弹框，未完成的旧上传回调随即失效。
 
-组件不会自行向服务器上传文件。`files` 始终为 `File[]`，单文件上传也传数组。全部上传成功后调用 `onUploadComplete(urls)`，地址数组须与 `files` 数量相同、顺序对应；单文件也使用 `[url]`。组件校验全部地址后，一次性插入原来的光标或选区位置，支持整批撤销。批量上传图片时，每张图片独立使用一个 `p` 包裹。描述字段应用于本批全部文件；未填写视频、音频描述或附件文字时，分别使用每个文件的名称。
+组件不会自行向服务器上传文件。`files` 始终为 `File[]`，单文件上传也传数组。全部上传成功后调用 `onComplete(urls)`，地址数组须与 `files` 数量相同、顺序对应；单文件也使用 `[url]`。组件校验全部地址后，一次性插入原来的光标或选区位置，支持整批撤销。批量上传图片时，每张图片独立使用一个 `p` 包裹。描述字段应用于本批全部文件；未填写视频、音频描述或附件文字时，分别使用每个文件的名称。
 
-这是上传接口调整：原来的 `detail.file` 改为 `detail.files`，原来的 `onUploadComplete(url)` 改为 `onUploadComplete([url])`。失败、数量不匹配或地址无效时不会插入任何文件，弹框保留，允许整批重试。
+这是上传接口调整：原来的 `detail.file` 改为 `detail.files`，完成回调 `onUploadComplete` 改为 `onComplete`，失败回调 `onUploadError` 改为 `onError`；完成时统一传入地址数组（单文件也使用 `[url]`）。失败、数量不匹配或地址无效时不会插入任何文件，弹框保留，允许整批重试。
 
 `upload` 事件的 `detail` 包含：
 
@@ -392,8 +394,9 @@ editor.removeAttribute('image-bind');
 | --- | --- |
 | `files` | 按选择顺序排列的原始 `File[]`，单文件也使用数组 |
 | `type` | `image`、`video`、`audio` 或 `attachment` |
-| `onUploadComplete(urls)` | 传入与 `files` 一一对应的地址数组 `string[]` |
-| `onUploadError(err)` | 上传失败时传入 `Error` 或错误消息，允许用户重试 |
+| `limit` | 本次允许的最大资源数量，未限制时为 `Infinity` |
+| `onComplete(urls)` | 传入与 `files` 一一对应的地址数组 `string[]` |
+| `onError(err)` | 上传失败时传入 `Error` 或错误消息，允许用户重试 |
 | `onProgress(percent)` | 更新整批上传进度，范围为 0～100 |
 
 下面的示例假设上传接口为 `/api/upload`，接收多个同名 `files` 字段，成功响应为 `{ "urls": ["https://example.com/uploads/file.png"] }`，返回顺序与上传顺序一致：
@@ -402,7 +405,7 @@ editor.removeAttribute('image-bind');
 customElements.whenDefined('widget-editor').then(function(){
     let editor = document.querySelector('#editor');
     editor.addEventListener('upload',function(event){
-        let {files,type,onUploadComplete,onUploadError,onProgress} = event.detail;
+        let {files,type,onComplete,onError,onProgress} = event.detail;
         let request = new XMLHttpRequest();
         request.open('POST','/api/upload');
         request.responseType = 'json';
@@ -413,13 +416,13 @@ customElements.whenDefined('widget-editor').then(function(){
         };
         request.onload = function(){
             if(request.status>=200&&request.status<300&&Array.isArray(request.response?.urls)){
-                onUploadComplete(request.response.urls);
+                onComplete(request.response.urls);
             }else{
-                onUploadError(request.response?.message||'上传失败，请重试');
+                onError(request.response?.message||'上传失败，请重试');
             }
         };
-        request.onerror = ()=>onUploadError('网络错误，请重试');
-        request.onabort = ()=>onUploadError('上传已取消');
+        request.onerror = ()=>onError('网络错误，请重试');
+        request.onabort = ()=>onError('上传已取消');
 
         let data = new FormData();
         files.forEach(file=>data.append('files',file));
@@ -439,6 +442,31 @@ customElements.whenDefined('widget-editor').then(function(){
 上传过程中弹窗会显示进度；失败后可以重试。取消弹窗、切换源码、替换内容、移除组件或禁用对应插入功能后，该次上传回调不再插入内容。
 
 在线演示仅在本地读取文件，不会将文件上传到服务器。视频和音频的播放能力取决于浏览器支持的文件编码。
+
+### 接入资源库
+
+四种媒体都支持 `request`，例如 `image="upload,url,request"` 或 `video="request"`。点击「选择资源」后，组件暂时关闭插入弹框，让外部资源库可以接收操作。
+
+`request` 事件的 `detail` 包含 `type`、`limit`、`onComplete(urls)`、`onError(err)`，与上传使用相同的完成、失败回调；不包含 `files` 和 `onProgress`。`type` 为 `image`、`video`、`audio` 或 `attachment`；`limit` 使用对应的 `*-batch` 配置。
+
+```javascript
+editor.addEventListener('request',async function(event){
+    let {type,limit,onComplete,onError} = event.detail;
+    try{
+        // openResourceLibrary 是你实现的资源库：关闭界面后返回 URL 数组。
+        let urls = await openResourceLibrary({type,limit});
+        if(!urls?.length){
+            onError('已取消选择');
+            return;
+        }
+        onComplete(urls);
+    }catch(error){
+        onError(error);
+    }
+});
+```
+
+成功时传入非空的 `string[]`，单个资源也使用 `[url]`。组件校验所有地址和数量后整批插入到原选区，批量图片各自使用 `p` 包裹。无效地址、超过数量或调用 `onError` 时，恢复插入弹框并显示消息，允许重试。请先关闭外部资源库界面，再调用回调；取消选择也调用 `onError`。每次请求只处理一次回调，编辑器关闭对应弹框、被禁用或移除后，旧回调失效。
 
 ## 编辑操作
 
