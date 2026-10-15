@@ -6,7 +6,7 @@ function boundary(node,offset){
     return {node,offset,left:node.childNodes[offset-1],right:node.childNodes[offset]};
 }
 
-export default function normalizeParagraphs(content,range=null,ensure=false){
+export default function normalizeParagraphs(content,range=null,ensure=false,dirty=null){
     let start = range&&boundary(range.startContainer,range.startOffset);
     let end = range&&boundary(range.endContainer,range.endOffset);
     let collapsed = range?.collapsed;
@@ -73,6 +73,7 @@ export default function normalizeParagraphs(content,range=null,ensure=false){
         changed = true;
     };
     let clean = function(parent){
+        if(dirty&&!dirty.has(parent)){return;}
         Array.from(parent.children).forEach(node=>{
             if(node.tagName==='PRE'){
                 return;

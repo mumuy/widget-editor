@@ -54,6 +54,7 @@ export default class EditorForm {
             editor.dropdown.close();
             editor.table?.dismiss();
             editor.links?.dismiss();
+            editor.images?.dismiss();
             editor.codes?.dismiss();
             editor.cancelPainter();
             editor.tooltip?.hide();

@@ -11,7 +11,7 @@ export function normalizeMaterial(value,kind){
     return original&&thumbnail?{original,thumbnail}:null;
 }
 
-// 只管理素材展示与选择，数据请求、删除及插入交由共享弹框处理。
+// 素材数据与可见卡片分开管理，滚动时只创建可视区域及相邻两行。
 export default function createMaterials(editor,options){
     let list = document.createElement('div');
     list.className = 'material-list';
@@ -20,20 +20,154 @@ export default function createMaterials(editor,options){
     let items = [];
     let selected = new Set();
     let busy = false;
+    let cards = new Map();
+    let viewport;
+    let frame;
+    let columns = 1;
+    let windowKey = '';
+    let updateSelection = ()=>{
+        cards.forEach((card,index)=>card.querySelector('.material-select').setAttribute('aria-pressed',String(selected.has(items[index].original))));
+        options.onSelectionChange?.(selected.size);
+    };
     let status = function(text){
         items = [];
         selected.clear();
+        cards.clear();
+        windowKey = '';
+        list.style.height = '';
         let message = document.createElement('p');
         message.className = 'material-empty';
         message.setAttribute('role','status');
         editor.locale.set(message,text);
         list.replaceChildren(message);
-        options.onSelectionChange?.(selected.size);
+        options.onSelectionChange?.(0);
     };
+    let createCard = function(item,index){
+        let card = document.createElement('div');
+        card.className = 'material-item';
+        card.dataset.index = index;
+        let select = document.createElement('button');
+        select.type = 'button';
+        select.className = 'material-select';
+        select.setAttribute('aria-pressed',String(selected.has(item.original)));
+        select.setAttribute('aria-label',urlFileName(item.original,editor.t(options.name)));
+        select.disabled = busy;
+        if(options.kind==='image'||options.kind==='video'||item.thumbnail!==item.original){
+            let image = options.kind!=='video'||item.thumbnail!==item.original;
+            let preview = document.createElement(image?'img':'video');
+            preview.src = item.thumbnail;
+            if(image){
+                preview.alt = '';
+                preview.loading = 'lazy';
+                preview.decoding = 'async';
+            }else{
+                preview.preload = 'metadata';
+                preview.muted = true;
+                preview.playsInline = true;
+            }
+            select.appendChild(preview);
+        }else{
+            select.innerHTML = renderIcon(options.kind==='audio'?audio:attachment);
+        }
+        let remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'material-remove';
+        remove.innerHTML = renderIcon(close);
+        remove.disabled = busy;
+        editor.locale.set(remove,'移除素材',{},'aria-label');
+        card.append(select,remove);
+        return card;
+    };
+    let renderWindow = function(force=false){
+        if(!items.length||!list.clientWidth||list.closest('[hidden]')){return;}
+        let width = list.clientWidth;
+        columns = Math.max(1,Math.floor((width+6)/126));
+        let cardWidth = (width-(columns-1)*6)/columns;
+        let rows = Math.ceil(items.length/columns);
+        list.style.height = (rows*94-6)+'px';
+        let offset = Math.max(0,viewport.getBoundingClientRect().top-list.getBoundingClientRect().top);
+        let start = Math.max(0,Math.floor(offset/94)-2)*columns;
+        let end = Math.min(items.length,(Math.ceil((offset+viewport.clientHeight)/94)+2)*columns);
+        let focused = editor.shadowRoot.activeElement?.closest('.material-item');
+        let focusIndex = focused&&list.contains(focused)?Number(focused.dataset.index):-1;
+        let key = [start,end,width,focusIndex].join(':');
+        if(!force&&key===windowKey){return;}
+        windowKey = key;
+        cards.forEach((card,index)=>{
+            if((index<start||index>=end)&&index!==focusIndex){card.remove();cards.delete(index);}
+        });
+        for(let index=start;index<end;index++){
+            if(!cards.has(index)){
+                let card = createCard(items[index],index);
+                cards.set(index,card);
+                list.appendChild(card);
+            }
+        }
+        // DOM 顺序和视觉顺序一致，Tab 不会跳到前一行。
+        Array.from(cards.keys()).sort((a,b)=>a-b).forEach(index=>{
+            let card = cards.get(index);
+            card.style.left = (index%columns*(cardWidth+6))+'px';
+            card.style.top = (Math.floor(index/columns)*94)+'px';
+            card.style.width = cardWidth+'px';
+            let next = Array.from(list.children).find(node=>Number(node.dataset.index)>index);
+            if(next!==card.nextElementSibling){list.insertBefore(card,next||null);}
+        });
+    };
+    let schedule = ()=>{
+        if(!frame){frame = requestAnimationFrame(()=>{frame = null;renderWindow();});}
+    };
+    let observer = new ResizeObserver(schedule);
+    observer.observe(list);
+    list.addEventListener('click',async event=>{
+        let button = event.target.closest('button');
+        let card = button?.closest('.material-item');
+        if(!card||busy){return;}
+        let item = items[Number(card.dataset.index)];
+        if(button.classList.contains('material-remove')){
+            if(await options.remove(item.original)&&items.includes(item)){
+                selected.delete(item.original);
+                items = items.filter(value=>value!==item);
+                if(!items.length){status('暂无素材');return;}
+                cards.clear();list.replaceChildren();renderWindow(true);updateSelection();
+                list.querySelector('.material-select')?.focus({preventScroll:true});
+            }
+            return;
+        }
+        if(selected.has(item.original)){selected.delete(item.original);}
+        else{
+            if(options.limit===1){selected.clear();}
+            if(selected.size>=options.limit){
+                options.message('一次最多选择 {count} 个素材',{count:options.limit});return;
+            }
+            selected.add(item.original);
+        }
+        options.message('');
+        updateSelection();
+    });
+    list.addEventListener('keydown',event=>{
+        if(event.isComposing||busy||!event.target.matches('.material-select')){return;}
+        let index = Number(event.target.parentElement.dataset.index);
+        let next = event.key==='ArrowRight'?index+1:event.key==='ArrowLeft'?index-1:
+            event.key==='ArrowDown'?index+columns:event.key==='ArrowUp'?index-columns:
+            event.key==='Home'?0:event.key==='End'?items.length-1:null;
+        if(next===null){return;}
+        event.preventDefault();
+        next = Math.max(0,Math.min(items.length-1,next));
+        let top = list.getBoundingClientRect().top-viewport.getBoundingClientRect().top+viewport.scrollTop+Math.floor(next/columns)*94;
+        if(top<viewport.scrollTop){viewport.scrollTop = top;}
+        else if(top+88>viewport.scrollTop+viewport.clientHeight){viewport.scrollTop = top+88-viewport.clientHeight;}
+        renderWindow(true);
+        cards.get(next)?.querySelector('.material-select').focus({preventScroll:true});
+    });
     return {
         element:list,
         status,
         values:()=>items.filter(item=>selected.has(item.original)).map(item=>item.original),
+        destroy(){
+            observer.disconnect();
+            viewport?.removeEventListener('scroll',schedule);
+            cancelAnimationFrame(frame);
+        },
         busy(value){
             busy = value;
             list.setAttribute('aria-busy',String(value));
@@ -44,76 +178,22 @@ export default function createMaterials(editor,options){
             let seen = new Set();
             let added = materials.filter(item=>!seen.has(item.original)&&seen.add(item.original));
             this.render([...added,...items.filter(item=>!originals.has(item.original))],true);
-            list.scrollTop = 0;
         },
         render(materials,keepSelection=false){
             let selection = keepSelection?new Set(selected):new Set();
             status('暂无素材');
-            selected = selection;
             items = materials;
+            selected = new Set(items.filter(item=>selection.has(item.original)).map(item=>item.original));
             if(!items.length){return;}
             list.replaceChildren();
-            items.forEach(item=>{
-                let card = document.createElement('div');
-                card.className = 'material-item';
-                let select = document.createElement('button');
-                select.type = 'button';
-                select.className = 'material-select';
-                select.setAttribute('aria-pressed',String(selected.has(item.original)));
-                select.setAttribute('aria-label',urlFileName(item.original,editor.t(options.name)));
-                select.disabled = busy;
-                if(options.kind==='image'||options.kind==='video'||item.thumbnail!==item.original){
-                    let image = options.kind!=='video'||item.thumbnail!==item.original;
-                    let preview = document.createElement(image?'img':'video');
-                    preview.src = item.thumbnail;
-                    if(image){
-                        preview.alt = '';
-                        preview.loading = 'lazy';
-                    }else{
-                        preview.preload = 'metadata';
-                        preview.muted = true;
-                        preview.playsInline = true;
-                    }
-                    select.appendChild(preview);
-                }else{
-                    select.innerHTML = renderIcon(options.kind==='audio'?audio:attachment);
-                }
-                select.onclick = ()=>{
-                    if(selected.has(item.original)){
-                        selected.delete(item.original);
-                    }else{
-                        if(options.limit===1){selected.clear();}
-                        if(selected.size>=options.limit){
-                            options.message('一次最多选择 {count} 个素材',{count:options.limit});
-                            return;
-                        }
-                        selected.add(item.original);
-                    }
-                    options.message('');
-                    items.forEach(item=>item.button.setAttribute('aria-pressed',String(selected.has(item.original))));
-                    options.onSelectionChange?.(selected.size);
-                };
-                item.button = select;
-                let remove = document.createElement('button');
-                remove.type = 'button';
-                remove.className = 'material-remove';
-                remove.innerHTML = renderIcon(close);
-                remove.disabled = busy;
-                editor.locale.set(remove,'移除素材',{},'aria-label');
-                remove.onclick = async ()=>{
-                    if(await options.remove(item.original)&&list.contains(card)){
-                        selected.delete(item.original);
-                        items = items.filter(value=>value!==item);
-                        card.remove();
-                        options.onSelectionChange?.(selected.size);
-                        if(!items.length){status('暂无素材');}
-                        else if(!list.closest('[hidden]')){items[0].button.focus({preventScroll:true});}
-                    }
-                };
-                card.append(select,remove);
-                list.appendChild(card);
-            });
-            options.onSelectionChange?.(selected.size);
+            if(viewport!==list.parentElement){
+                viewport?.removeEventListener('scroll',schedule);
+                viewport = list.parentElement;
+                viewport.addEventListener('scroll',schedule,{passive:true});
+            }
+            viewport.scrollTop = 0;
+            renderWindow(true);
+            updateSelection();
         }
     };
 }

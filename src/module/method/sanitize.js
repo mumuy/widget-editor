@@ -25,9 +25,10 @@ export function escapeHTML(value){
 }
 
 export function setLinkTarget(link,newWindow=link.getAttribute('target')?.toLowerCase()!=='_self'){
-    link.setAttribute('target',newWindow?'_blank':'_self');
+    let target = newWindow?'_blank':'_self';
+    if(link.getAttribute('target')!==target){link.setAttribute('target',target);}
     if(newWindow){
-        link.setAttribute('rel','noopener noreferrer');
+        if(link.getAttribute('rel')!=='noopener noreferrer'){link.setAttribute('rel','noopener noreferrer');}
     }else{
         link.removeAttribute('rel');
     }
@@ -132,6 +133,13 @@ export default function sanitizeHTML(html){
                 }
             }
             if(tag==='img'){
+                if(node.style.display==='block'){
+                    styles.display = 'block';
+                    ['margin-left','margin-right'].forEach(name=>{
+                        let value = node.style.getPropertyValue(name);
+                        if(value==='auto'||value==='0px'){styles[name] = value;}
+                    });
+                }
                 let src = safeURL(node.getAttribute('src'),true);
                 if(!src){
                     node.remove();

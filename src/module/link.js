@@ -97,6 +97,7 @@ export default class EditorLink {
             }
         };
         this.onKey = event=>{
+            if(event.isComposing||event.keyCode===229||editor._composing){return;}
             if(event.key==='Escape'&&!this.toolbar.hidden){
                 event.preventDefault();
                 if(this.toolbar.contains(event.target)){

@@ -98,5 +98,9 @@ export default class EditorToolbar {
                 control.setAttribute('aria-pressed',String(active));
             }
         });
+        let buttons = Array.from(editor.toolbar.querySelectorAll('[data-action]'));
+        let active = buttons.find(button=>!button.disabled&&button===editor.shadowRoot.activeElement)||
+            buttons.find(button=>!button.disabled&&button.tabIndex===0)||buttons.find(button=>!button.disabled);
+        buttons.forEach(button=>button.tabIndex=button===active?0:-1);
     }
 }

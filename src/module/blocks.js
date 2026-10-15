@@ -73,6 +73,7 @@ export default class EditorBlocks {
     dismiss(){
         this.editor.table?.clear();
         this.editor.links?.dismiss();
+        this.editor.images?.dismiss();
         this.editor.codes?.dismiss();
     }
     exit(block){

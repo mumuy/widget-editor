@@ -54,3 +54,27 @@ export default function formatHTML(html){
     flush();
     return lines.join('\n');
 }
+
+// 保留当前文档各顶层块的结果，未改变的段落和代码块不重复清理、着色。
+export function createFormatter(){
+    let previous = new Map();
+    return function(html){
+        let template = document.createElement('template');
+        template.innerHTML = html;
+        let nodes = Array.from(template.content.childNodes);
+        if(nodes.some(node=>node.nodeType===Node.ELEMENT_NODE?!blockTags.has(node.localName):
+            node.nodeType!==Node.TEXT_NODE||!!node.textContent.trim())){
+            previous.clear();
+            return formatHTML(html);
+        }
+        let next = new Map();
+        let values = nodes.filter(node=>node.nodeType===Node.ELEMENT_NODE).map(node=>{
+            let source = node.outerHTML;
+            let value = previous.get(source)??next.get(source)??formatHTML(source);
+            next.set(source,value);
+            return value;
+        });
+        previous = next;
+        return values.filter(Boolean).join('\n');
+    };
+}

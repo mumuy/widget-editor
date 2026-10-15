@@ -135,6 +135,7 @@ export default class EditorDropdown {
         }
     }
     keydown(event){
+        if(event.isComposing||event.keyCode===229||this.editor._composing){return;}
         let button = event.target.closest('.tool-dropdown-button');
         if(button&&['ArrowDown','ArrowUp'].includes(event.key)&&!button.disabled){
             event.preventDefault();

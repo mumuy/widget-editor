@@ -42,6 +42,7 @@
     },
     "scripts": {
         "build": "rollup -c",
+        "test": "node --test test/*.test.mjs",
         "watch": "rollup -wc"
     },
     "homepage": "https://passer-by.com/widget-editor/",

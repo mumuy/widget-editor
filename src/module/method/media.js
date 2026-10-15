@@ -323,6 +323,7 @@ export default function openMedia(editor,options,initialMode){
             setMode(mode);
         },
         onClose(){
+            materials?.destroy();
             revision++;
             cancelPending?.();
         },

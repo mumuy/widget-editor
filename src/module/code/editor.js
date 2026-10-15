@@ -60,7 +60,7 @@ export default class EditorCode {
         };
         this.onKey = event=>{
             let code = this.selected();
-            if(!code||event.isComposing){return;}
+            if(!code||event.isComposing||event.keyCode===229||editor._composing){return;}
             let range = this.range();
             let end = codeOffset(code,range.endContainer,range.endOffset);
             let text = codeText(code);

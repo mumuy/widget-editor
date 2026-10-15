@@ -1,4 +1,11 @@
 export default {
+    '编辑图片':'Edit image',
+    '图片宽度':'Image width',
+    '自动':'Auto',
+    '默认':'Default',
+    '替换图片':'Replace image',
+    '请输入有效的图片地址':'Please enter a valid image URL',
+
     '请填写内容':'Please enter content',
     '源代码':'Source code',
     '撤销':'Undo',

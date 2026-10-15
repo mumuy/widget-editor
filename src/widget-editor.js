@@ -1,11 +1,14 @@
 import EditorSelection from './module/method/selection.js';
-import sanitizeHTML,{escapeHTML,setLinkTarget} from './module/method/sanitize.js';
-import formatHTML from './module/method/formatHTML.js';
+import sanitizeHTML,{setLinkTarget} from './module/method/sanitize.js';
+import {createFormatter} from './module/method/formatHTML.js';
+import EditorClipboard from './module/clipboard.js';
+import EditorImage from './module/image.js';
 import applyStyle from './module/method/applyStyle.js';
 import normalizeParagraphs from './module/method/normalizeParagraphs.js';
 import normalizeTableCells from './module/method/normalizeTableCells.js';
 import EditorConfig,{observedAttributes,toolbarAttributes,mediaAttributes} from './module/config.js';
 import EditorHistory from './module/history.js';
+import EditorNormalizer from './module/normalizer.js';
 import EditorForm from './module/form.js';
 import EditorBlocks from './module/blocks.js';
 import EditorToolbar from './module/toolbar.js';
@@ -28,7 +31,9 @@ class WidgetEditor extends HTMLElement {
         this.painter = null;
         this._initialized = false;
         this._pendingValue = null;
+        this._formatHTML = createFormatter();
         this._onSelection = ()=>{
+            if(this._composing){return;}
             if(this.selection?.current()){
                 this.saveSelection();
                 this.scheduleToolbarUpdate();
@@ -55,6 +60,9 @@ class WidgetEditor extends HTMLElement {
             this.dropdown = new EditorDropdown(this);
             this.formControl.initialize(this._pendingValue===null?this.innerHTML:this._pendingValue);
             this.value = this._pendingValue===null?this.innerHTML:this._pendingValue;
+            this.normalizer = new EditorNormalizer(this);
+            this.images = new EditorImage(this);
+            this.clipboard = new EditorClipboard(this);
             this.bindEvents();
             this.tooltip = new EditorTooltip(this);
             this.fullscreen = new EditorFullscreen(this);
@@ -62,9 +70,11 @@ class WidgetEditor extends HTMLElement {
             this.attributeChangedCallback();
             this.dispatchEvent(new CustomEvent('ready',{bubbles:true,composed:true}));
         }
+        this.normalizer.connect();
         this.dropdown.connect();
         this.table?.connect();
         this.links.connect();
+        this.images.connect();
         this.codes.connect();
         this.tooltip.connect();
         this.fullscreen.connect();
@@ -77,8 +87,10 @@ class WidgetEditor extends HTMLElement {
         this.mobile?.disconnect();
         this.fullscreen?.disconnect();
         this.dropdown?.disconnect();
+        this.normalizer?.disconnect();
         this.table?.disconnect();
         this.links?.disconnect();
+        this.images?.disconnect();
         this.codes?.disconnect();
         this.tooltip?.disconnect();
         document.removeEventListener('selectionchange',this._onSelection);
@@ -150,6 +162,8 @@ class WidgetEditor extends HTMLElement {
             return;
         }
         this._dialog?.dismiss();
+        this._composing = false;
+        this._compositionHTML = null;
         this.content.innerHTML = sanitizeHTML(value);
         normalizeTableCells(this.content,true);
         this.sourceArea.value = this.formatValue(this.content.innerHTML);
@@ -212,7 +226,7 @@ class WidgetEditor extends HTMLElement {
     }
     formatValue(html){
         if(this._formatted?.html!==html){
-            this._formatted = {html,value:formatHTML(html)};
+            this._formatted = {html,value:this._formatHTML(html)};
         }
         return this._formatted.value;
     }
@@ -290,6 +304,21 @@ class WidgetEditor extends HTMLElement {
                 event.preventDefault();
             }
         });
+        this.toolbar.addEventListener('keydown',event=>{
+            if(event.isComposing||event.keyCode===229||this._composing||this.dropdown.opened||!event.target.matches('[data-action]')){return;}
+            let buttons = Array.from(this.toolbar.querySelectorAll('[data-action]:not(:disabled)'));
+            let index = buttons.indexOf(event.target);
+            if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){
+                event.preventDefault();
+                let next = event.key==='Home'?0:event.key==='End'?buttons.length-1:
+                    (index+(event.key==='ArrowRight'?1:-1)+buttons.length)%buttons.length;
+                buttons.forEach((button,i)=>button.tabIndex=i===next?0:-1);
+                buttons[next]?.focus({preventScroll:true});
+            }else if(event.key==='Escape'){
+                event.preventDefault();
+                this.restoreSelection();
+            }
+        });
         this.toolbar.addEventListener('click',event=>{
             let control = event.target.closest('button[data-action]');
             if(control&&!control.disabled){
@@ -304,7 +333,13 @@ class WidgetEditor extends HTMLElement {
         });
         this.content.addEventListener('beforeinput',event=>{
             if(this.formControl.disabled){event.preventDefault();return;}
-            if(!event.isComposing){this.history.record();}
+            if(event.isComposing||this._composing){return;}
+            if(['historyUndo','historyRedo'].includes(event.inputType)){
+                event.preventDefault();
+                this.history.move(event.inputType==='historyUndo'?-1:1);
+                return;
+            }
+            this.history.capture(event.inputType);
             if(this.codes?.beforeInput(event)||this.blocks.beforeInput(event)){
                 if(event.defaultPrevented&&event.inputType?.startsWith('delete')){this.selection.ensureVisible();}
                 return;
@@ -313,19 +348,31 @@ class WidgetEditor extends HTMLElement {
             document.execCommand('defaultParagraphSeparator',false,'p');
         });
         this.content.addEventListener('keydown',event=>{
-            if(this.formControl.disabled){return;}
+            if(this.formControl.disabled||event.isComposing||event.keyCode===229||this._composing){return;}
             this.blocks.keyDown(event);
             if(event.defaultPrevented&&['Backspace','Delete'].includes(event.key)){this.selection.ensureVisible();}
         },true);
         this.content.addEventListener('input',event=>{
-            if(!event.isComposing&&!this._transaction){
-                this.update();
+            if(!event.isComposing&&!this._composing&&!this._transaction){
+                let unchanged = this._compositionHTML===this.content.innerHTML;
+                this._compositionHTML = null;
+                if(unchanged){return;}
+                this.update(true,true,event.inputType);
                 if(event.inputType?.startsWith('delete')){this.selection.ensureVisible();}
             }
         });
-        this.content.addEventListener('compositionstart',()=>this.history.record());
-        this.content.addEventListener('compositionend',()=>this.update());
-        ['pointerup','keyup','focus'].forEach(name=>this.content.addEventListener(name,()=>{
+        this.content.addEventListener('compositionstart',()=>{
+            this.history.record();
+            this._composing = true;
+        });
+        this.content.addEventListener('compositionend',()=>{
+            this._composing = false;
+            this.update();
+            this._compositionHTML = this.content.innerHTML;
+        });
+        ['pointerup','keyup','focus'].forEach(name=>this.content.addEventListener(name,event=>{
+            if(event.isComposing||this._composing){return;}
+            if(name==='pointerup'||name==='keyup'&&['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End','PageUp','PageDown'].includes(event.key)){this.history.cutoff();}
             this.saveSelection();
             if(this.painter&&this.codes.selected()){
                 this.cancelPainter();
@@ -340,17 +387,14 @@ class WidgetEditor extends HTMLElement {
             }
             this.scheduleToolbarUpdate();
         }));
-        this.content.addEventListener('paste',event=>{
-            event.preventDefault();
-            if(this.formControl.disabled){return;}
-            this.saveSelection();
-            let html = event.clipboardData.getData('text/html');
-            let text = event.clipboardData.getData('text/plain');
-            let lines = text.split(/\r\n?|\n/);
-            this.insertHTML(html||(lines.length>1?lines.map(line=>'<p>'+(escapeHTML(line)||'<br>')+'</p>').join(''):escapeHTML(text)));
-        });
-        this.content.addEventListener('drop',event=>event.preventDefault());
         this.shadowRoot.addEventListener('keydown',event=>{
+            if(event.isComposing||event.keyCode===229||this._composing){return;}
+            if(event.altKey&&event.key==='F10'&&!this.formControl.disabled){
+                event.preventDefault();
+                this.saveSelection();
+                this.toolbar.querySelector('[data-action]:not(:disabled)')?.focus({preventScroll:true});
+                return;
+            }
             if(event.key==='Escape'&&this.painter){
                 this.cancelPainter();
             }
@@ -372,6 +416,7 @@ class WidgetEditor extends HTMLElement {
         });
     }
     execute(name,value,event){
+        if(this._composing){return;}
         let feature = this.tools.get(name);
         if(this.tools.disabled(feature)){
             return;
@@ -388,7 +433,7 @@ class WidgetEditor extends HTMLElement {
         if(this._toolbarRevision===revision){this.updateToolbar();}
     }
     openInsertDialog(type,mode){
-        if(!this.isConnected||!this._initialized||this.formControl.disabled||this.source||this.codes?.selected()){
+        if(!this.isConnected||!this._initialized||this.formControl.disabled||this._composing||this.source||this.codes?.selected()){
             return null;
         }
         type = String(type??'').trim().toLowerCase();
@@ -421,7 +466,7 @@ class WidgetEditor extends HTMLElement {
         if(range&&!this.content.contains(range.commonAncestorContainer)){
             range = null;
         }
-        let changed = normalizeParagraphs(this.content,range,ensure);
+        let changed = this.normalizer?this.normalizer.normalize(range,ensure):normalizeParagraphs(this.content,range,ensure);
         this.blocks.normalize();
         if(range&&changed){
             this.selection.range = range.cloneRange();
@@ -461,9 +506,9 @@ class WidgetEditor extends HTMLElement {
         }
     }
     transaction(callback){
-        if(this.formControl.disabled){return;}
+        if(this.formControl.disabled||this._composing){return;}
         let nested = !!this._transaction;
-        if(!nested){this.restoreSelection();}
+        if(!nested){this.history.record();this.restoreSelection();}
         // 原生 input 与嵌套命令不重复提交，最外层事务统一更新。
         this._transaction = true;
         try{
@@ -542,7 +587,7 @@ class WidgetEditor extends HTMLElement {
         let lines = this.content.querySelectorAll('br').length;
         this.placeholder.hidden = this.source||!!text||!!structure||blocks.length>1||lines>1;
     }
-    update(record=true,emit=true){
+    update(record=true,emit=true,inputType=''){
         if(!this.source){
             this.codes?.normalize();
             this.normalizeContent();
@@ -563,7 +608,7 @@ class WidgetEditor extends HTMLElement {
         this.updateCount(text);
         this.formControl.update(value);
         if(record){
-            this.history.record(this.source?undefined:html);
+            this.history.record(this.source?undefined:html,inputType);
         }
         this.updateToolbar();
         if(emit){
@@ -586,6 +631,7 @@ class WidgetEditor extends HTMLElement {
         this._toolbarRevision = (this._toolbarRevision||0)+1;
         this.table?.refresh();
         this.links?.refresh();
+        this.images?.refresh();
         this.codes?.refresh();
         this.tools.update();
         this.updateLocale();
@@ -600,7 +646,7 @@ class WidgetEditor extends HTMLElement {
         let language = this.locale.name;
         if(this.panel.lang!==language){
             this.panel.lang = language;
-            [this.toolbar,this.footer,this.table?.toolbar,this.links?.toolbar,this.codes?.toolbar,this._dialog].forEach(root=>this.locale.apply(root));
+            [this.toolbar,this.footer,this.table?.toolbar,this.links?.toolbar,this.images?.toolbar,this.codes?.toolbar,this._dialog].forEach(root=>this.locale.apply(root));
             this.locale.apply(this.content,false);
             this.locale.apply(this.sourceArea,false);
         }
