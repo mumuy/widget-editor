@@ -435,7 +435,6 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog
 }
 .editor-content video{
     height: auto;
-    max-height: var(--editor-height);
     border-radius: 4px;
 }
 .editor-content a[download]{

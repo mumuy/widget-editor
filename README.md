@@ -331,6 +331,8 @@ customElements.whenDefined('widget-editor').then(function(){
 - **网络地址**：填写有效地址后才可点击插入，支持 HTTP、HTTPS 或相对地址；清空或填写无效地址时按钮不可用。
 - **嵌入 iframe**（仅视频）：仅需粘贴第三方视频网站提供的 iframe 代码，再点击「插入视频」，保留代码中原有的 `title`。组件自动写入 `width: 100%`、`height: auto`、`max-width: 100%` 和 `aspect-ratio: 16 / 9`，高度随容器宽度按比例变化；嵌入地址须使用 HTTP、HTTPS 或相对地址。插入的 iframe 支持源码往返、删除及撤销。
 
+视频文件与 iframe 使用相同的 16:9 内联样式：`width: 100%; height: auto; max-width: 100%; aspect-ratio: 16 / 9;`。通过上传、网络地址或素材库插入视频时均会写入，源码往返和 HTML 输出也会保留。
+
 分别设置 `image`、`video`、`audio`、`attachment` 属性，可以限制插入方式。使用 `upload` 表示上传文件，`url` 表示填写地址，`resource` 表示素材库，`iframe` 仅适用于视频；tabs 按配置顺序显示，默认打开第一项：
 
 ```html

@@ -115,7 +115,6 @@ export default function sanitizeHTML(html){
                 let allow = (node.getAttribute('allow')||'').split(';').map(value=>value.trim()).filter(value=>permissions.has(value.split(/\s/)[0]));
                 if(allow.length){attributes.allow = allow.join('; ');}
                 if(node.hasAttribute('sandbox')){attributes.sandbox = node.getAttribute('sandbox');}
-                styles = {'width':'100%','height':'auto','max-width':'100%','aspect-ratio':'16 / 9'};
                 node.replaceChildren();
             }
             if(tag==='a'){
@@ -162,6 +161,9 @@ export default function sanitizeHTML(html){
                 if(node.getAttribute('title')){
                     attributes.title = node.getAttribute('title');
                 }
+            }
+            if(tag==='video'||tag==='iframe'){
+                styles = {'width':'100%','height':'auto','max-width':'100%','aspect-ratio':'16 / 9'};
             }
             if(tag==='td'||tag==='th'){
                 ['colspan','rowspan'].forEach(function(name){
