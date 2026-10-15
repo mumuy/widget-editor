@@ -48,43 +48,14 @@
             onError(error);
         }
     });
-    // 资源库由调用方管理；关闭外部界面后再通知编辑器。
+    // 素材库数据由调用方管理，返回列表后在组件内选择和插入。
     $editor.addEventListener('request',function(event){
-        let {type,limit,onComplete,onError} = event.detail;
-        let items = resources.get(type)||[];
-        let dialog = document.createElement('dialog');
-        dialog.className = 'resource-library';
-        dialog.innerHTML = '<form><h3>资源库</h3><div class="resource-list"></div><p role="status"></p><footer><button type="button">取消</button><button type="submit">选择资源</button></footer></form>';
-        let list = dialog.querySelector('.resource-list');
-        if(!items.length){list.textContent = '暂无资源，请先上传文件';}
-        items.forEach((item,index)=>{
-            let label = document.createElement('label');
-            let input = document.createElement('input');
-            input.type = 'checkbox';
-            input.value = index;
-            label.append(input,document.createTextNode(item.name));
-            list.appendChild(label);
-        });
-        let finish = function(urls){
-            dialog.close();
-            dialog.remove();
-            urls?onComplete(urls):onError('已取消选择');
-        };
-        dialog.querySelector('[type="button"]').onclick = ()=>finish();
-        dialog.addEventListener('cancel',event=>{
-            event.preventDefault();
-            finish();
-        });
-        dialog.querySelector('form').onsubmit = function(event){
-            event.preventDefault();
-            let urls = Array.from(list.querySelectorAll(':checked'),input=>items[Number(input.value)].url);
-            if(!urls.length||urls.length>limit){
-                dialog.querySelector('[role="status"]').textContent = !urls.length?'请选择资源':'最多选择 '+limit+' 个资源';
-                return;
-            }
-            finish(urls);
-        };
-        document.body.appendChild(dialog);
-        dialog.showModal();
+        let {type,onComplete} = event.detail;
+        onComplete((resources.get(type)||[]).map(item=>item.url));
+    });
+    $editor.addEventListener('delete',function(event){
+        let {type,url,onComplete} = event.detail;
+        resources.set(type,(resources.get(type)||[]).filter(item=>item.url!==url));
+        onComplete();
     });
 })();

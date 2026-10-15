@@ -308,7 +308,8 @@ editor.setCustomValidity(''); // 清除自定义错误
 | --- | --- | --- |
 | `ready` | 组件首次初始化完成 | 无 |
 | `change` | 用户编辑内容或执行编辑操作 | `{value,text}` |
-| `request` | 用户点击资源库的「选择资源」 | 资源类型、数量限制及完成/失败回调，见下方说明 |
+| `request` | 切换到素材库标签，或弹框默认打开素材库 | 素材类型、插入数量限制及列表加载回调，见下方说明 |
+| `delete` | 用户点击素材左上角的移除按钮 | 素材类型、URL 及删除完成/失败回调，见下方说明 |
 | `upload` | 用户选择文件并确认上传 | 文件及上传回调，见下方说明 |
 
 这些事件会冒泡，也可以在编辑器所在的父元素上监听。若需要监听 `ready`，请先准备一个容器，例如 `<div id="editor-container"></div>`，再在组件加入页面之前绑定：
@@ -329,11 +330,11 @@ customElements.whenDefined('widget-editor').then(function(){
 默认插入菜单已包含图片、视频、音频和附件，点击对应选项即可插入。未配置插入方式属性时，开放该类型的全部方式，默认打开「上传文件」：
 
 - **上传文件**：选择本地文件并点击插入，组件触发 `upload` 事件，由你的页面负责上传。
-- **资源库**：点击「选择资源」触发 `request` 事件，由外部资源库返回选中的资源地址。
+- **素材库**：切换标签时触发 `request` 事件，返回素材列表后在弹框内选择，点击插入。每行三个素材，超出列表高度时滚动显示。
 - **URL**：填写文件地址，点击插入即可使用，支持 HTTP、HTTPS 或相对地址。
 - **嵌入 iframe**（仅视频）：仅需粘贴第三方视频网站提供的 iframe 代码，再点击「插入视频」，保留代码中原有的 `title`。组件自动写入 `width: 100%`、`height: auto`、`max-width: 100%` 和 `aspect-ratio: 16 / 9`，高度随容器宽度按比例变化；嵌入地址须使用 HTTP、HTTPS 或相对地址。插入的 iframe 支持源码往返、删除及撤销。
 
-分别设置 `image`、`video`、`audio`、`attachment` 属性，可以限制插入方式。使用 `upload` 表示上传文件，`url` 表示填写地址，`request` 表示资源库，`iframe` 仅适用于视频；tabs 按配置顺序显示，默认打开第一项：
+分别设置 `image`、`video`、`audio`、`attachment` 属性，可以限制插入方式。使用 `upload` 表示上传文件，`url` 表示填写地址，`request` 表示素材库，`iframe` 仅适用于视频；tabs 按配置顺序显示，默认打开第一项：
 
 ```html
 <widget-editor
@@ -382,7 +383,7 @@ editor.removeAttribute('image-bind');
 <widget-editor image-batch="9" video-batch="3" attachment-batch="" audio-batch="5"></widget-editor>
 ```
 
-未设置时使用配置文件中的默认值（默认单文件）；空值表示不限数量，正整数表示上限，`1` 表示单文件，其他无效值回退到默认值。数量限制同时适用于文件上传和资源库选择，不影响 URL 和 iframe。选择的全部文件均需通过数量、类型和单个文件大小校验，才会触发一次 `upload` 事件。运行时修改数量限制会关闭对应弹框，未完成的旧上传回调随即失效。
+未设置时使用配置文件中的默认值（默认单文件）；空值表示不限数量，正整数表示上限，`1` 表示单文件，其他无效值回退到默认值。数量限制同时适用于文件上传和素材库选择，不影响 URL 和 iframe。选择的全部文件均需通过数量、类型和单个文件大小校验，才会触发一次 `upload` 事件。运行时修改数量限制会关闭对应弹框，未完成的旧上传回调随即失效。
 
 组件不会自行向服务器上传文件。`files` 始终为 `File[]`，单文件上传也传数组。全部上传成功后调用 `onComplete(urls)`，地址数组须与 `files` 数量相同、顺序对应；单文件也使用 `[url]`。组件校验全部地址后，一次性插入原来的光标或选区位置，支持整批撤销。批量上传图片时，每张图片独立使用一个 `p` 包裹。描述字段应用于本批全部文件；未填写视频、音频描述或附件文字时，分别使用每个文件的名称。
 
@@ -443,30 +444,56 @@ customElements.whenDefined('widget-editor').then(function(){
 
 在线演示仅在本地读取文件，不会将文件上传到服务器。视频和音频的播放能力取决于浏览器支持的文件编码。
 
-### 接入资源库
+### 接入素材库
 
-四种媒体都支持 `request`，例如 `image="upload,url,request"` 或 `video="request"`。点击「选择资源」后，组件暂时关闭插入弹框，让外部资源库可以接收操作。
+四种媒体都支持 `request`，例如 `image="upload,url,request"` 或 `video="request"`。切换到「素材库」时触发 `request` 事件；若素材库是配置的第一项，打开弹框就会请求。再次点击该标签也可重新加载。
 
-`request` 事件的 `detail` 包含 `type`、`limit`、`onComplete(urls)`、`onError(err)`，与上传使用相同的完成、失败回调；不包含 `files` 和 `onProgress`。`type` 为 `image`、`video`、`audio` 或 `attachment`；`limit` 使用对应的 `*-batch` 配置。
+`request` 的 `event.detail` 包含：
+
+| 字段 | 说明 |
+| --- | --- |
+| `type` | `image`、`video`、`audio` 或 `attachment` |
+| `limit` | 本次最多可插入的素材数量，沿用对应 `*-batch` 配置，不限制返回的列表长度 |
+| `onComplete(urls)` | 返回 URL 数组 `string[]`，空数组表示暂无素材；重复地址自动去重 |
+| `onError(err)` | 加载失败时传入 `Error` 或错误消息 |
 
 ```javascript
 editor.addEventListener('request',async function(event){
-    let {type,limit,onComplete,onError} = event.detail;
+    let {type,onComplete,onError} = event.detail;
     try{
-        // openResourceLibrary 是你实现的资源库：关闭界面后返回 URL 数组。
-        let urls = await openResourceLibrary({type,limit});
-        if(!urls?.length){
-            onError('已取消选择');
-            return;
-        }
-        onComplete(urls);
+        // 示例接口返回 {urls: ['https://example.com/image.png', ...]}。
+        let response = await fetch('/api/materials?type='+encodeURIComponent(type));
+        if(!response.ok){throw new Error('素材加载失败');}
+        let data = await response.json();
+        onComplete(data.urls);
     }catch(error){
         onError(error);
     }
 });
 ```
 
-成功时传入非空的 `string[]`，单个资源也使用 `[url]`。组件校验所有地址和数量后整批插入到原选区，批量图片各自使用 `p` 包裹。无效地址、超过数量或调用 `onError` 时，恢复插入弹框并显示消息，允许重试。请先关闭外部资源库界面，再调用回调；取消选择也调用 `onError`。每次请求只处理一次回调，编辑器关闭对应弹框、被禁用或移除后，旧回调失效。
+返回列表只负责展示，不会直接插入。素材每行三个，列表沿用其他标签页的高度，超出时内部滚动。默认单选，再选其他素材会切换选中项；设置 `*-batch` 后可多选。用户点击「插入」才将选中素材按列表顺序插入原来的光标或选区，支持整批撤销，批量图片各自使用 `p` 包裹。
+
+每个素材左上角的移除按钮触发 `delete` 事件，其 `event.detail` 包含 `type`、`url`、`limit`、`onComplete()`、`onError(err)`。外部删除成功后调用 `onComplete()`，组件才从当前列表移除该素材；失败调用 `onError(err)`，保留素材及选中状态。此操作不修改文档中已插入的内容。
+
+```javascript
+editor.addEventListener('delete',async function(event){
+    let {type,url,onComplete,onError} = event.detail;
+    try{
+        let response = await fetch('/api/materials',{
+            method:'DELETE',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({type,url})
+        });
+        if(!response.ok){throw new Error('素材删除失败');}
+        onComplete();
+    }catch(error){
+        onError(error);
+    }
+});
+```
+
+`upload`、`request`、`delete` 都由外部处理数据，组件不会自行调用接口。回调仅生效一次；切换标签、关闭弹框、修改对应权限或数量限制、替换内容、禁用或移除组件后，未完成的素材加载与删除回调失效。加载失败可重新点击「素材库」重试，删除失败可再次点击移除按钮。
 
 ## 编辑操作
 

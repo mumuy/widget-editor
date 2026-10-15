@@ -1,7 +1,8 @@
 import {fileType,urlFileName} from './file.js';
 import {safeURL} from './sanitize.js';
+import createMaterials from './material.js';
 
-// 上传与资源库共用回调校验、取消状态及插入流程。
+// 上传与素材库共用回调校验、取消状态及插入流程。
 export default function openUpload(editor,options){
     let range = editor.getRange()?.cloneRange();
     let modes = editor.config.methods(options.kind).map(name=>name==='upload'?'file':name);
@@ -10,10 +11,13 @@ export default function openUpload(editor,options){
     let mode = modes[0];
     let busy = false;
     let cancelPending = null;
+    let pendingType;
+    let revision = 0;
+    let materials;
     let progress;
     let description;
     let dialog;
-    let current = ()=>editor.isConnected&&!editor.source&&editor._dialog===dialog&&dialog.isConnected&&(dialog.open||dialog.suspended);
+    let current = ()=>editor.isConnected&&!editor.source&&editor._dialog===dialog&&dialog.isConnected&&dialog.open;
     let setMode = function(value,focus=false){
         if(!modes.includes(value)){return;}
         mode = value;
@@ -36,19 +40,22 @@ export default function openUpload(editor,options){
             panel.querySelectorAll('input,textarea').forEach(input=>input.disabled=!active||busy);
         });
         dialog.querySelector('[data-insert-panel="'+mode+'"] .insert-feedback').appendChild(dialog.querySelector('.dialog-notice'));
-        dialog.querySelector('[type="submit"]').hidden = mode==='request';
+        materials?.busy(busy);
+        dialog.querySelector('[type="submit"]').disabled = busy;
     };
-    let setBusy = function(value){
+    let setBusy = function(value,name){
         busy = value;
-        dialog.querySelectorAll('input,textarea,[data-insert-tab],[data-request]').forEach(input=>input.disabled=busy);
+        pendingType = value?name:null;
+        dialog.querySelectorAll('[data-insert-tab]').forEach(button=>button.disabled=busy&&pendingType==='upload');
         setMode(mode);
-        progress.hidden = !busy||mode==='request';
-        editor.locale.set(dialog.querySelector('[type="submit"]'),busy?'上传中…':'插入'+options.name);
+        progress.hidden = !busy||pendingType!=='upload';
+        editor.locale.set(dialog.querySelector('[type="submit"]'),busy&&pendingType==='upload'?'上传中…':'插入'+options.name);
         if(busy){
             dialog.message('');
         }
     };
-    let resolveResources = function(name,files=[]){
+    let resolveResources = function(name,files=[],url){
+        setBusy(true,name);
         return new Promise(resolve=>{
             let done = false;
             let active = ()=>!done&&current();
@@ -58,11 +65,12 @@ export default function openUpload(editor,options){
                 }
                 done = true;
                 cancelPending = null;
+                if(current()){setBusy(false);}
                 resolve(value);
             };
             let error = function(err,translate=false,params){
                 if(active()){
-                    dialog.message(String(err?.message||err||(name==='upload'?'上传失败，请重试':'资源选择失败，请重试')),params,!translate&&!!(err?.message||err));
+                    dialog.message(String(err?.message||err||({upload:'上传失败，请重试',request:'素材加载失败，请重试',delete:'素材删除失败，请重试'}[name])),params,!translate&&!!(err?.message||err));
                     finish(false);
                 }
             };
@@ -74,19 +82,21 @@ export default function openUpload(editor,options){
                     if(!active()){
                         return;
                     }
+                    if(name==='delete'){finish(true);return;}
                     let sources = Array.isArray(urls)?Array.from(urls,url=>typeof url==='string'?safeURL(url,options.kind):''):[];
-                    if(!sources.length||sources.some(source=>!source)||name==='upload'&&sources.length!==files.length){
-                        error(name==='upload'?'请按文件顺序返回对应数量的有效 URL，请重试':'请返回有效的资源 URL 数组，请重试',true);
+                    if(!Array.isArray(urls)||sources.some(source=>!source)||name==='upload'&&sources.length!==files.length){
+                        error(name==='upload'?'请按文件顺序返回对应数量的有效 URL，请重试':'请返回有效的素材 URL 数组，请重试',true);
                         return;
                     }
-                    if(sources.length>batch){
-                        error('一次最多选择 {count} 个资源',true,{count:batch});
+                    if(name==='upload'&&sources.length>batch){
+                        error('一次最多选择 {count} 个素材',true,{count:batch});
                         return;
                     }
-                    finish(sources);
+                    finish(name==='request'?[...new Set(sources)]:sources);
                 },
                 onError:error
             };
+            if(name==='delete'){detail.url = url;}
             if(name==='upload'){
                 detail.files = files.slice();
                 detail.onProgress = function(percent){
@@ -116,18 +126,19 @@ export default function openUpload(editor,options){
         batch&&options.insertBatch?options.insertBatch(html):editor.insertHTML(html);
     };
     let request = async function(){
-        if(busy||!current()){return;}
-        setBusy(true);
-        dialog.suspend();
-        try{
-            let sources = await resolveResources('request');
-            if(sources&&current()){insert(sources);}
-        }finally{
-            if(current()){
-                setBusy(false);
-                dialog.resume();
-            }
+        let version = revision;
+        materials.status('加载中…');
+        let sources = await resolveResources('request');
+        if(current()&&mode==='request'&&version===revision){
+            sources?materials.render(sources):materials.status('暂无素材');
         }
+    };
+    let activate = function(value,focus=false){
+        revision++;
+        cancelPending?.();
+        dialog.message('');
+        setMode(value,focus);
+        if(mode==='request'){request();}
     };
     let fields = {
         file:{'name':'file','label':batch===1?'选择{type}（最大 {size} MB）':
@@ -149,7 +160,7 @@ export default function openUpload(editor,options){
             tabs.className = 'insert-tabs';
             tabs.setAttribute('role','tablist');
             tabs.setAttribute('aria-label','插入方式');
-            let labels = {file:'上传文件',url:'URL',iframe:'嵌入 iframe',request:'资源库'};
+            let labels = {file:'上传文件',url:'URL',iframe:'嵌入 iframe',request:'素材库'};
             tabs.innerHTML = modes.map(name=>`<button type="button" role="tab" id="insert-${name}-tab" aria-controls="insert-${name}-panel" data-insert-tab="${name}">${labels[name]}</button>`).join('');
             dialog.querySelector('.dialog-body').prepend(tabs);
             let panels = document.createElement('div');
@@ -164,13 +175,12 @@ export default function openUpload(editor,options){
                 panel.setAttribute('aria-labelledby','insert-'+name+'-tab');
                 panels.appendChild(panel);
                 if(name==='request'){
-                    let button = document.createElement('button');
-                    button.type = 'button';
-                    button.className = 'resource-button';
-                    button.dataset.request = '';
-                    editor.locale.set(button,'选择资源');
-                    button.addEventListener('click',request);
-                    panel.appendChild(button);
+                    materials = createMaterials(editor,{
+                        ...options,limit:batch,
+                        message:(...args)=>dialog.message(...args),
+                        remove:url=>resolveResources('delete',[],url)
+                    });
+                    panel.appendChild(materials.field);
                 }else{
                     panel.appendChild(dialog.querySelector('[name="'+name+'"]').closest('.field'));
                 }
@@ -181,13 +191,12 @@ export default function openUpload(editor,options){
             }
             tabs.addEventListener('click',event=>{
                 let button = event.target.closest('[data-insert-tab]');
-                if(button&&!busy){
-                    dialog.message('');
-                    setMode(button.dataset.insertTab);
+                if(button&&(!busy||pendingType!=='upload')){
+                    activate(button.dataset.insertTab);
                 }
             });
             tabs.addEventListener('keydown',event=>{
-                if(busy){
+                if(busy&&pendingType==='upload'){
                     return;
                 }
                 let value;
@@ -200,8 +209,7 @@ export default function openUpload(editor,options){
                 }
                 if(value){
                     event.preventDefault();
-                    dialog.message('');
-                    setMode(value,true);
+                    activate(value,true);
                 }
             });
             progress = document.createElement('div');
@@ -220,10 +228,20 @@ export default function openUpload(editor,options){
             setMode(mode);
         },
         onClose(){
+            revision++;
             cancelPending?.();
         },
         async onSubmit(values){
-            if(mode==='request'){return false;}
+            if(busy){return false;}
+            if(mode==='request'){
+                let sources = materials.values();
+                if(!sources.length){
+                    dialog.message('请选择素材');
+                    return false;
+                }
+                insert(sources);
+                return true;
+            }
             if(mode==='iframe'){
                 let html = options.iframe(values.iframe);
                 if(!html){
@@ -250,14 +268,7 @@ export default function openUpload(editor,options){
                     dialog.message('{type}大小不能超过 {size} MB',{type:options.name,size:options.size});
                     return false;
                 }
-                setBusy(true);
-                try{
-                    sources = await resolveResources('upload',files);
-                }finally{
-                    if(current()){
-                        setBusy(false);
-                    }
-                }
+                sources = await resolveResources('upload',files);
                 if(sources===null||!current()){
                     return true;
                 }
@@ -276,5 +287,6 @@ export default function openUpload(editor,options){
             return true;
         }
     });
+    if(mode==='request'){request();}
     return dialog;
 }

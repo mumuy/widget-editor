@@ -88,15 +88,6 @@ export default function openDialog(editor,options){
         }
     };
     dialog.dismiss = finish;
-    dialog.suspend = ()=>{
-        dialog.suspended = true;
-        dialog.close();
-    };
-    dialog.resume = ()=>{
-        if(!current()){return;}
-        dialog.suspended = false;
-        if(!dialog.open){dialog.showModal();}
-    };
     dialog.querySelector('.dialog-close').onclick = finish;
     dialog.querySelector('.dialog-cancel').onclick = finish;
     dialog.addEventListener('cancel',function(event){
@@ -104,7 +95,7 @@ export default function openDialog(editor,options){
         finish();
     });
     dialog.addEventListener('close',function(){
-        if(!dialog.open&&!dialog.suspended&&(options.keepOpen||!submitting)){
+        if(!dialog.open&&(options.keepOpen||!submitting)){
             finish();
         }
     });
