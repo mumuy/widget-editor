@@ -396,7 +396,7 @@ editor.removeAttribute('image-bind');
 | `files` | 按选择顺序排列的原始 `File[]`，单文件也使用数组 |
 | `type` | `image`、`video`、`audio` 或 `attachment` |
 | `limit` | 本次允许的最大资源数量，未限制时为 `Infinity` |
-| `onComplete(urls)` | 传入与 `files` 一一对应的地址数组 `string[]` |
+| `onComplete(urls)` | 传入与 `files` 一一对应的数组，元素为 URL 字符串或 `{original,thumbnail}`，插入使用原地址 |
 | `onError(err)` | 上传失败时传入 `Error` 或错误消息，允许用户重试 |
 | `onProgress(percent)` | 更新整批上传进度，范围为 0～100 |
 
@@ -454,7 +454,7 @@ customElements.whenDefined('widget-editor').then(function(){
 | --- | --- |
 | `type` | `image`、`video`、`audio` 或 `attachment` |
 | `limit` | 本次最多可插入的素材数量，沿用对应 `*-batch` 配置，不限制返回的列表长度 |
-| `onComplete(urls)` | 返回 URL 数组 `string[]`，空数组表示暂无素材；重复地址自动去重 |
+| `onComplete(materials)` | 数组元素支持 URL 字符串或 `{original,thumbnail}` 对象，允许混用；空数组表示暂无素材，按原图地址去重 |
 | `onError(err)` | 加载失败时传入 `Error` 或错误消息 |
 
 ```javascript
@@ -472,9 +472,23 @@ editor.addEventListener('request',async function(event){
 });
 ```
 
+字符串使用同一个地址预览和插入；对象的 `thumbnail` 用于预览，`original` 用于插入，省略 `thumbnail` 时使用原地址。两种格式可以混用：
+
+```javascript
+onComplete([
+    'https://example.com/photo.jpg',
+    {
+        original:'https://example.com/original.jpg',
+        thumbnail:'https://example.com/thumbnail.jpg'
+    }
+]);
+```
+
+视频、音频、附件也可以通过 `thumbnail` 指定预览图片。原地址和缩略图地址都会校验，任何一项无效则整批拒绝。`upload` 的 `onComplete` 也接受这两种格式，仍须按文件顺序返回相同数量的元素，插入时使用原地址。
+
 返回列表只负责展示，不会直接插入。素材每行三个，列表沿用其他标签页的高度，超出时内部滚动。默认单选，再选其他素材会切换选中项；设置 `*-batch` 后可多选。用户点击「插入」才将选中素材按列表顺序插入原来的光标或选区，支持整批撤销，批量图片各自使用 `p` 包裹。
 
-每个素材左上角的移除按钮触发 `delete` 事件，其 `event.detail` 包含 `type`、`url`、`limit`、`onComplete()`、`onError(err)`。外部删除成功后调用 `onComplete()`，组件才从当前列表移除该素材；失败调用 `onError(err)`，保留素材及选中状态。此操作不修改文档中已插入的内容。
+每个素材左上角的移除按钮触发 `delete` 事件，其 `event.detail` 包含 `type`、`url`、`limit`、`onComplete()`、`onError(err)`。外部删除成功后调用 `onComplete()`，组件才从当前列表移除该素材；失败调用 `onError(err)`，保留素材及选中状态。`url` 始终是原地址（对象的 `original`），不使用缩略图地址。此操作不修改文档中已插入的内容。
 
 ```javascript
 editor.addEventListener('delete',async function(event){

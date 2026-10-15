@@ -268,7 +268,7 @@ console.log(editor.value);</code></pre>
                                         <tr><th scope="row"><span>files</span></th><td>按选择顺序排列的 <code>File[]</code>，单文件也使用数组。</td></tr>
                                         <tr><th scope="row"><span>type</span></th><td>文件类型：<code>image</code>、<code>video</code>、<code>audio</code> 或 <code>attachment</code>。</td></tr>
                                         <tr><th scope="row"><span>limit</span></th><td>本次允许的最大资源数量，未限制时为 <code>Infinity</code>。</td></tr>
-                                        <tr><th scope="row"><span>onComplete(urls)</span></th><td>全部成功后，按文件顺序传入数量相同的地址数组，整批插入原来的光标或选区位置。</td></tr>
+                                        <tr><th scope="row"><span>onComplete(urls)</span></th><td>全部成功后，按文件顺序传入数量相同的地址数组，整批插入原来的光标或选区位置。数组元素可为 URL 字符串或 <code>{original,thumbnail}</code>，插入使用原地址。</td></tr>
                                         <tr><th scope="row"><span>onError(err)</span></th><td>上传失败时传入 <code>Error</code> 或错误消息，在弹框内显示，用户可重试。</td></tr>
                                         <tr><th scope="row"><span>onProgress(percent)</span></th><td>更新整批上传进度，传入 0～100 的百分比。</td></tr>
                                     </tbody>
@@ -310,8 +310,10 @@ editor.addEventListener('upload',async function(event){
     }
 });</widget-code>
                             <p>使用 <code>image="upload,url,request"</code> 等属性开放素材库。切换到「素材库」时触发 <code>request</code>；若它是配置的第一项，打开弹框时即请求。<code>event.detail</code> 包含 <code>type</code>、<code>limit</code>、<code>onComplete(urls)</code>、<code>onError(err)</code>。</p>
-                            <p>调用 <code>onComplete(urls)</code> 返回完整的素材 URL 数组，空数组表示暂无素材。每行三个，超出高度滚动显示；用户选中后点击插入。<code>limit</code> 使用对应的 <code>*-batch</code> 配置，只限制本次插入数量，不限制列表长度。演示页的素材库展示本页已上传的同类文件。</p>
-                            <widget-code language="javascript">editor.addEventListener('request',async function(event){
+                            <p>调用 <code>onComplete(urls)</code> 返回完整素材数组：元素可为 URL 字符串或 <code>{original,thumbnail}</code> 对象，也可混用。字符串的预览与插入地址相同；对象用 <code>thumbnail</code> 预览、<code>original</code> 插入，省略缩略图则使用原地址。空数组表示暂无素材。每行三个，超出高度滚动显示；用户选中后点击插入。<code>limit</code> 使用对应的 <code>*-batch</code> 配置，只限制本次插入数量，不限制列表长度。演示页的素材库展示本页已上传的同类文件。</p>
+                            <widget-code language="javascript">// onComplete 返回值支持混用两种格式：
+// ['photo.jpg', {original:'original.jpg',thumbnail:'thumbnail.jpg'}]
+editor.addEventListener('request',async function(event){
     let {type,onComplete,onError} = event.detail;
     try{
         let response = await fetch('/api/materials?type='+encodeURIComponent(type));
@@ -322,7 +324,7 @@ editor.addEventListener('upload',async function(event){
         onError(error);
     }
 });</widget-code>
-                            <p>点击素材左上角的移除按钮触发 <code>delete</code>，其 <code>detail</code> 包含 <code>type</code>、<code>url</code>、<code>limit</code>、<code>onComplete()</code>、<code>onError(err)</code>。外部成功删除后调用 <code>onComplete()</code> 才移除列表项；失败则调用 <code>onError(err)</code>，保留素材和选中状态。不会移除文档内已经插入的内容。</p>
+                            <p>点击素材左上角的移除按钮触发 <code>delete</code>，其 <code>detail</code> 包含 <code>type</code>、<code>url</code>、<code>limit</code>、<code>onComplete()</code>、<code>onError(err)</code>。外部成功删除后调用 <code>onComplete()</code> 才移除列表项；失败则调用 <code>onError(err)</code>，保留素材和选中状态。<code>url</code> 始终为原地址（对象的 <code>original</code>），不会移除文档内已经插入的内容。</p>
                             <widget-code language="javascript">editor.addEventListener('delete',async function(event){
     let {type,url,onComplete,onError} = event.detail;
     try{

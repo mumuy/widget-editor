@@ -1,6 +1,6 @@
 import {fileType,urlFileName} from './file.js';
 import {safeURL} from './sanitize.js';
-import createMaterials from './material.js';
+import createMaterials,{normalizeMaterial} from './material.js';
 
 // 上传与素材库共用回调校验、取消状态及插入流程。
 export default function openUpload(editor,options){
@@ -83,16 +83,18 @@ export default function openUpload(editor,options){
                         return;
                     }
                     if(name==='delete'){finish(true);return;}
-                    let sources = Array.isArray(urls)?Array.from(urls,url=>typeof url==='string'?safeURL(url,options.kind):''):[];
+                    let sources = Array.isArray(urls)?Array.from(urls,value=>normalizeMaterial(value,options.kind)):[];
                     if(!Array.isArray(urls)||sources.some(source=>!source)||name==='upload'&&sources.length!==files.length){
-                        error(name==='upload'?'请按文件顺序返回对应数量的有效 URL，请重试':'请返回有效的素材 URL 数组，请重试',true);
+                        error(name==='upload'?'请按文件顺序返回对应数量的有效 URL，请重试':'请返回有效的素材列表，请重试',true);
                         return;
                     }
                     if(name==='upload'&&sources.length>batch){
                         error('一次最多选择 {count} 个素材',true,{count:batch});
                         return;
                     }
-                    finish(name==='request'?[...new Set(sources)]:sources);
+                    let seen = new Set();
+                    finish(name==='request'?sources.filter(item=>!seen.has(item.original)&&seen.add(item.original)):
+                        sources.map(item=>item.original));
                 },
                 onError:error
             };

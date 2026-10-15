@@ -114,7 +114,7 @@ export default {
     '暂无素材':'No assets',
     '素材加载失败，请重试':'Could not load assets. Please try again.',
     '素材删除失败，请重试':'Could not delete this asset. Please try again.',
-    '请返回有效的素材 URL 数组，请重试':'Return an array of valid asset URLs. Please try again.',
+    '请返回有效的素材列表，请重试':'Return a valid asset list. Please try again.',
     '一次最多选择 {count} 个素材':'Choose no more than {count} assets at a time.',
     '嵌入 iframe':'Embed iframe',
     'iframe 嵌入代码':'iframe embed code',

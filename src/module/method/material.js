@@ -1,5 +1,15 @@
 import {audio,attachment,close,renderIcon} from '../icon.js';
 import {urlFileName} from './file.js';
+import {safeURL} from './sanitize.js';
+
+export function normalizeMaterial(value,kind){
+    if(typeof value==='string'){value = {original:value};}
+    if(!value||typeof value!=='object'||Array.isArray(value)){return null;}
+    let original = typeof value.original==='string'?safeURL(value.original,kind):'';
+    let thumbnail = value.thumbnail===undefined?original:
+        typeof value.thumbnail==='string'?safeURL(value.thumbnail,'image'):'';
+    return original&&thumbnail?{original,thumbnail}:null;
+}
 
 // 只管理素材展示与选择，数据请求、删除及插入交由共享弹框处理。
 export default function createMaterials(editor,options){
@@ -25,15 +35,15 @@ export default function createMaterials(editor,options){
     return {
         field,
         status,
-        values:()=>items.filter(item=>selected.has(item.url)).map(item=>item.url),
+        values:()=>items.filter(item=>selected.has(item.original)).map(item=>item.original),
         busy(value){
             busy = value;
             list.setAttribute('aria-busy',String(value));
             list.querySelectorAll('button').forEach(button=>button.disabled=value);
         },
-        render(urls){
+        render(materials){
             status('暂无素材');
-            items = urls.map(url=>({url}));
+            items = materials;
             if(!items.length){return;}
             list.replaceChildren();
             items.forEach(item=>{
@@ -43,12 +53,13 @@ export default function createMaterials(editor,options){
                 select.type = 'button';
                 select.className = 'material-select';
                 select.setAttribute('aria-pressed','false');
-                select.setAttribute('aria-label',urlFileName(item.url,editor.t(options.name)));
+                select.setAttribute('aria-label',urlFileName(item.original,editor.t(options.name)));
                 select.disabled = busy;
-                if(options.kind==='image'||options.kind==='video'){
-                    let preview = document.createElement(options.kind==='image'?'img':'video');
-                    preview.src = item.url;
-                    if(options.kind==='image'){
+                if(options.kind==='image'||options.kind==='video'||item.thumbnail!==item.original){
+                    let image = options.kind!=='video'||item.thumbnail!==item.original;
+                    let preview = document.createElement(image?'img':'video');
+                    preview.src = item.thumbnail;
+                    if(image){
                         preview.alt = '';
                         preview.loading = 'lazy';
                     }else{
@@ -61,18 +72,18 @@ export default function createMaterials(editor,options){
                     select.innerHTML = renderIcon(options.kind==='audio'?audio:attachment);
                 }
                 select.onclick = ()=>{
-                    if(selected.has(item.url)){
-                        selected.delete(item.url);
+                    if(selected.has(item.original)){
+                        selected.delete(item.original);
                     }else{
                         if(options.limit===1){selected.clear();}
                         if(selected.size>=options.limit){
                             options.message('一次最多选择 {count} 个素材',{count:options.limit});
                             return;
                         }
-                        selected.add(item.url);
+                        selected.add(item.original);
                     }
                     options.message('');
-                    items.forEach(item=>item.button.setAttribute('aria-pressed',String(selected.has(item.url))));
+                    items.forEach(item=>item.button.setAttribute('aria-pressed',String(selected.has(item.original))));
                 };
                 item.button = select;
                 let remove = document.createElement('button');
@@ -82,8 +93,8 @@ export default function createMaterials(editor,options){
                 remove.disabled = busy;
                 editor.locale.set(remove,'移除素材',{},'aria-label');
                 remove.onclick = async ()=>{
-                    if(await options.remove(item.url)&&list.contains(card)){
-                        selected.delete(item.url);
+                    if(await options.remove(item.original)&&list.contains(card)){
+                        selected.delete(item.original);
                         items = items.filter(value=>value!==item);
                         card.remove();
                         if(!items.length){status('暂无素材');}
