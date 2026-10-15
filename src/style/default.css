@@ -805,6 +805,9 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     display: grid !important;
     visibility: hidden;
 }
+.resource-button{
+    justify-self: start;
+}
 .upload-feedback{
     display: grid;
     align-items: center;
@@ -1020,7 +1023,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
 .dialog-notice:empty{
     display: none;
 }
-.dialog-foot .btn,.link-actions .btn{
+.dialog-foot .btn,.link-actions .btn,.resource-button{
     min-width: 72px;
     height: 36px;
     padding: 0 16px;
@@ -1029,7 +1032,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     border: 1px solid var(--panel-border-color);
     border-radius: 4px;
 }
-.dialog-foot .btn:hover,.link-actions .btn:hover{
+.dialog-foot .btn:hover,.link-actions .btn:hover,.resource-button:hover{
     background: var(--button-background-color);
 }
 .dialog-foot .btn-primary,.link-actions .btn-primary{

@@ -336,3 +336,20 @@
         padding: 0 10px 12px;
     }
 }
+
+.resource-library{
+    width: 400px;
+    max-width: calc(100vw - 48px);
+    padding: 24px;
+    color: #333;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+.resource-library::backdrop{background: rgba(0,0,0,.3);}
+.resource-library h3{margin: 0 0 16px;}
+.resource-library .resource-list{max-height: 280px;overflow: auto;}
+.resource-library label{display: flex;gap: 8px;padding: 8px 0;overflow-wrap: anywhere;}
+.resource-library [role="status"]{min-height: 20px;color: #c33;}
+.resource-library footer{display: flex;justify-content: flex-end;gap: 12px;}
+.resource-library button{padding: 8px 16px;background: #f7f8fa;border: 1px solid #ddd;border-radius: 4px;cursor: pointer;}

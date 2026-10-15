@@ -109,7 +109,7 @@ console.log(editor.value);</code></pre>
                                 <p>在代码块中输入内容，并通过浮动菜单切换编程语言。</p>
                             </widget-editor>
                         </div>
-                        <p class="insert-demo-note">文件在本地读取用于演示，不会上传到服务器。</p>
+                        <p class="insert-demo-note">文件在本地读取用于演示，并可在资源库中再次选择，不会上传到服务器。</p>
                         <noscript><p>请启用 JavaScript 以使用富文本编辑器。</p></noscript>
                     </section>
                     <section class="module mod-params" id="parameters" aria-labelledby="parameters-title">
@@ -194,22 +194,22 @@ console.log(editor.value);</code></pre>
                                         <tr>
                                             <th scope="row"><span>image</span></th>
                                             <td>图片允许的插入方式及标签顺序。</td>
-                                            <td><code>upload,url</code></td>
+                                            <td><code>upload,url,request</code></td>
                                         </tr>
                                         <tr>
                                             <th scope="row"><span>video</span></th>
                                             <td>视频允许的插入方式及标签顺序。</td>
-                                            <td><code>upload,url,iframe</code></td>
+                                            <td><code>upload,url,iframe,request</code></td>
                                         </tr>
                                         <tr>
                                             <th scope="row"><span>audio</span></th>
                                             <td>音频允许的插入方式及标签顺序。</td>
-                                            <td><code>upload,url</code></td>
+                                            <td><code>upload,url,request</code></td>
                                         </tr>
                                         <tr>
                                             <th scope="row"><span>attachment</span></th>
                                             <td>附件允许的插入方式及标签顺序。</td>
-                                            <td><code>upload,url</code></td>
+                                            <td><code>upload,url,request</code></td>
                                         </tr>
                                         <tr>
                                             <th scope="row"><span>image-bind</span></th>
@@ -233,22 +233,22 @@ console.log(editor.value);</code></pre>
                                         </tr>
                                         <tr>
                                             <th scope="row"><span>image-batch</span></th>
-                                            <td>每次上传图片数量上限，填写正整数；空值不限数量。</td>
+                                            <td>每次上传或从资源库选择图片数量上限，填写正整数；空值不限数量。</td>
                                             <td><code>1</code></td>
                                         </tr>
                                         <tr>
                                             <th scope="row"><span>video-batch</span></th>
-                                            <td>每次上传视频数量上限，填写正整数；空值不限数量。</td>
+                                            <td>每次上传或从资源库选择视频数量上限，填写正整数；空值不限数量。</td>
                                             <td><code>1</code></td>
                                         </tr>
                                         <tr>
                                             <th scope="row"><span>attachment-batch</span></th>
-                                            <td>每次上传附件数量上限，填写正整数；空值不限数量。</td>
+                                            <td>每次上传或从资源库选择附件数量上限，填写正整数；空值不限数量。</td>
                                             <td><code>1</code></td>
                                         </tr>
                                         <tr>
                                             <th scope="row"><span>audio-batch</span></th>
-                                            <td>每次上传音频数量上限，填写正整数；空值不限数量。</td>
+                                            <td>每次上传或从资源库选择音频数量上限，填写正整数；空值不限数量。</td>
                                             <td><code>1</code></td>
                                         </tr>
                                     </tbody>
@@ -257,7 +257,7 @@ console.log(editor.value);</code></pre>
                         </div>
                     </section>
                     <section class="module mod-upload" id="upload" aria-labelledby="upload-title">
-                        <div class="hd"><span id="upload-title">upload 事件</span></div>
+                        <div class="hd"><span id="upload-title">upload / request 事件</span></div>
                         <div class="bd">
                             <p>图片、视频、音频和附件选择文件并确认插入后，会触发 <code>upload</code> 事件。组件负责插入和显示进度，文件由你的页面上传。</p>
                             <div class="table-scroll" role="region" aria-labelledby="upload-title" tabindex="0">
@@ -267,8 +267,9 @@ console.log(editor.value);</code></pre>
                                     <tbody>
                                         <tr><th scope="row"><span>files</span></th><td>按选择顺序排列的 <code>File[]</code>，单文件也使用数组。</td></tr>
                                         <tr><th scope="row"><span>type</span></th><td>文件类型：<code>image</code>、<code>video</code>、<code>audio</code> 或 <code>attachment</code>。</td></tr>
-                                        <tr><th scope="row"><span>onUploadComplete(urls)</span></th><td>全部成功后，按文件顺序传入数量相同的地址数组，整批插入原来的光标或选区位置。</td></tr>
-                                        <tr><th scope="row"><span>onUploadError(err)</span></th><td>上传失败时传入 <code>Error</code> 或错误消息，在弹框内显示，用户可重试。</td></tr>
+                                        <tr><th scope="row"><span>limit</span></th><td>本次允许的最大资源数量，未限制时为 <code>Infinity</code>。</td></tr>
+                                        <tr><th scope="row"><span>onComplete(urls)</span></th><td>全部成功后，按文件顺序传入数量相同的地址数组，整批插入原来的光标或选区位置。</td></tr>
+                                        <tr><th scope="row"><span>onError(err)</span></th><td>上传失败时传入 <code>Error</code> 或错误消息，在弹框内显示，用户可重试。</td></tr>
                                         <tr><th scope="row"><span>onProgress(percent)</span></th><td>更新整批上传进度，传入 0～100 的百分比。</td></tr>
                                     </tbody>
                                 </table>
@@ -305,6 +306,22 @@ console.log(editor.value);</code></pre>
         onUploadComplete(sources);
     }catch(error){
         onUploadError(error);
+    }
+});</widget-code>
+                            <p>使用 <code>image="upload,url,request"</code> 等属性配置资源库入口。点击「选择资源」触发 <code>request</code> 事件，其 <code>detail</code> 包含 <code>type</code>、<code>limit</code>、<code>onComplete(urls)</code>、<code>onError(err)</code>。数量限制沿用对应的 <code>*-batch</code> 属性，未限制时为 <code>Infinity</code>。</p>
+                            <p>外部资源库关闭后，调用 <code>onComplete([url])</code> 插入资源；取消或失败调用 <code>onError(err)</code> 恢复插入弹框。此事件不包含文件和进度回调。演示页的资源库可选择本页已上传的同类文件。</p>
+                            <widget-code language="javascript">editor.addEventListener('request',async function(event){
+    let {type,limit,onComplete,onError} = event.detail;
+    try{
+        // 自行实现资源库，关闭界面后返回 URL 数组。
+        let urls = await openResourceLibrary({type,limit});
+        if(!urls?.length){
+            onError('已取消选择');
+            return;
+        }
+        onComplete(urls);
+    }catch(error){
+        onError(error);
     }
 });</widget-code>
                         </div>
