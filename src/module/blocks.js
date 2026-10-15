@@ -108,6 +108,28 @@ export default class EditorBlocks {
             this.dismiss();
         });
     }
+    join(left,right){
+        let editor = this.editor;
+        editor.history.record();
+        editor.transaction(()=>{
+            let range = document.createRange();
+            if(right.matches('p')){
+                if(this.empty(left)){left.replaceChildren();}
+                let offset = left.childNodes.length;
+                if(!this.empty(right)){left.append(...right.childNodes);}
+                if(!left.childNodes.length){left.appendChild(document.createElement('br'));}
+                right.remove();
+                range.setStart(left,offset);
+                left.normalize();
+            }else{
+                range.setStartBefore(right);
+                left.remove();
+            }
+            range.collapse(true);
+            this.select(range);
+            this.dismiss();
+        });
+    }
     unwrap(paragraph){
         let editor = this.editor;
         let quote = paragraph.parentElement;
@@ -158,6 +180,17 @@ export default class EditorBlocks {
         let element = node.nodeType===Node.TEXT_NODE?node.parentElement:node;
         let paragraph = element.closest(paragraphTags);
         let quote = paragraph?.parentElement;
+        if(range.collapsed&&event.inputType==='deleteContentBackward'){
+            let block = element.closest(blockTags+','+containerTags);
+            if(block&&this.edge(block,range)){
+                let previous = this.sibling(block,true);
+                if(previous?.matches('p')&&!this.boundary(previous)){
+                    event.preventDefault();
+                    this.join(previous,block);
+                    return true;
+                }
+            }
+        }
         if(range.collapsed&&quote?.matches('blockquote')&&
             (event.inputType==='insertParagraph'&&this.empty(paragraph)||
                 event.inputType==='deleteContentBackward'&&(this.empty(paragraph)||this.edge(quote,range))||
@@ -194,6 +227,20 @@ export default class EditorBlocks {
         }
         // 自动补出的光标停留点不属于内容，跨段删除时跳过它。
         if(this.boundary(block)){block = this.sibling(block,backward);}
+        if(!block?.matches){return false;}
+        let left = backward?block:paragraph;
+        let right = backward?paragraph:block;
+        if(!paragraph||this.boundary(paragraph)){
+            left = backward?block:this.sibling(block,true);
+            right = backward?this.sibling(block):block;
+        }
+        // 相邻 p 删除换行后合并，其他块保留自身并删除前面的 p。
+        if(left?.matches('p')&&!this.boundary(left)&&right?.matches(paragraphTags+','+blockTags+','+containerTags)&&
+            left.parentNode===right.parentNode){
+            event.preventDefault();
+            this.join(left,right);
+            return true;
+        }
         if(!this.block(block)&&!(backward&&block?.matches?.('blockquote')&&this.empty(block))){return false;}
         let end = false;
         if(!paragraph||this.boundary(paragraph)){

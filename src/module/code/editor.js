@@ -169,6 +169,10 @@ export default class EditorCode {
         if(!event.isComposing){
             let range = this.editor.getRange();
             let start = codeOffset(code,range.startContainer,range.startOffset);
+            if(range.collapsed&&event.inputType==='deleteContentBackward'&&start===0){
+                let previous = this.editor.blocks.sibling(code.closest('pre'),true);
+                if(previous?.matches('p')&&this.editor.blocks.beforeInput(event)){return true;}
+            }
             if(['insertParagraph','insertLineBreak'].includes(event.inputType)){
                 event.preventDefault();
                 this.write('\n');
