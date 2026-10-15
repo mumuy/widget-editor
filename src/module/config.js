@@ -30,10 +30,10 @@ export const attributes = {
     video: { default: ['upload', 'url', 'iframe', 'resource'], toolbar: true, media: true },
     attachment: { default: ['upload', 'url', 'resource'], toolbar: true, media: true },
     audio: { default: ['upload', 'url', 'resource'], toolbar: true, media: true },
-    'image-batch': { default: 1, min: 1, max: Number.MAX_SAFE_INTEGER, integer: true, empty: Infinity },
-    'video-batch': { default: 1, min: 1, max: Number.MAX_SAFE_INTEGER, integer: true, empty: Infinity },
-    'attachment-batch': { default: 1, min: 1, max: Number.MAX_SAFE_INTEGER, integer: true, empty: Infinity },
-    'audio-batch': { default: 1, min: 1, max: Number.MAX_SAFE_INTEGER, integer: true, empty: Infinity }
+    'image-limit': { default: 1, min: 1, max: Number.MAX_SAFE_INTEGER, integer: true, empty: Infinity },
+    'video-limit': { default: 1, min: 1, max: Number.MAX_SAFE_INTEGER, integer: true, empty: Infinity },
+    'attachment-limit': { default: 1, min: 1, max: Number.MAX_SAFE_INTEGER, integer: true, empty: Infinity },
+    'audio-limit': { default: 1, min: 1, max: Number.MAX_SAFE_INTEGER, integer: true, empty: Infinity }
 };
 
 export const observedAttributes = Object.keys(attributes);

@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { browser } from './browser.mjs';
 const server = http.createServer(async (req, res) => {
     res.setHeader('Content-Type', req.url === '/build.js' ? 'text/javascript' : 'text/html');
-    res.end(req.url === '/build.js' ? await readFile(new URL('../dist/widget-editor.min.js', import.meta.url)) : req.url === '/' ? '<!doctype html><meta charset="utf-8"><form><widget-editor name="content" image-batch=""></widget-editor></form><script src="/build.js"></script>' : '');
+    res.end(req.url === '/build.js' ? await readFile(new URL('../dist/widget-editor.min.js', import.meta.url)) : req.url === '/' ? '<!doctype html><meta charset="utf-8"><form><widget-editor name="content" image-limit=""></widget-editor></form><script src="/build.js"></script>' : '');
 });
 await new Promise(r => server.listen(0, '127.0.0.1', r));
 let b;
@@ -185,6 +185,8 @@ try {
     await run(`e.content.querySelector('p').innerHTML='<div>Direct DOM</div>';await Promise.resolve();e.normalizeContent();`);
     assert.equal(await run(`return !e.content.querySelector('p div')&&e.value.includes('Direct DOM');`), true, 'observer sees external DOM changes');
     console.log('PASS long document output, unchanged code nodes and external DOM normalization');
+    await run(`reset();for(let kind of ['image','video','audio','attachment']){let attr=kind+'-limit';if(e.config.get(attr)!==1&&kind!=='image')throw Error('Default limit');e.setAttribute(attr,'2');if(e.config.get(attr)!==2)throw Error('Configured limit');let dialog=e.openInsertDialog(kind,'upload');if(!dialog.querySelector('[name=file]').multiple)throw Error('Multiple file input');e.setAttribute(attr,'1');if(e._dialog!==null)throw Error('Changing limit must close dialog');e.setAttribute(attr,'');if(e.config.get(attr)!==Infinity)throw Error('Empty limit');e.setAttribute(attr,'0');if(e.config.get(attr)!==1)throw Error('Invalid limit');e.removeAttribute(attr);if(e.config.get(attr)!==1)throw Error('Default restored');}`);
+    console.log('PASS image/video/audio/attachment limit attributes, file inputs and dynamic invalidation');
     assert.deepEqual(b.logs, []);
 } finally {
     await b?.close();

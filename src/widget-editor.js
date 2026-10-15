@@ -124,7 +124,7 @@ class WidgetEditor extends HTMLElement {
             return;
         }
         if(name==='disabled'){return;}
-        if(name?.endsWith('-batch')){
+        if(name?.endsWith('-limit')){
             if(this._dialog?.dataset.insert===name.slice(0,-6)){this._dialog.dismiss();}
             return;
         }

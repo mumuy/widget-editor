@@ -7,7 +7,7 @@ export default function openMedia(editor,options,initialMode){
     let range = editor.getRange()?.cloneRange();
     let modes = editor.config.methods(options.kind);
     if(!modes.length){return;}
-    let batch = editor.config.get(options.kind+'-batch');
+    let limit = editor.config.get(options.kind+'-limit');
     let mode = initialMode??modes[0];
     if(!modes.includes(mode)){return;}
     let busy = false;
@@ -34,7 +34,7 @@ export default function openMedia(editor,options,initialMode){
         if(mode==='upload'){return uploaded;}
         if(mode==='resource'){
             let sources = materials.values();
-            return sources.length&&sources.length<=batch?{sources}:null;
+            return sources.length&&sources.length<=limit?{sources}:null;
         }
         let value = panels.get(mode).fields.querySelector('[name="'+mode+'"]').value;
         if(mode==='iframe'){
@@ -117,7 +117,7 @@ export default function openMedia(editor,options,initialMode){
             cancelPending = ()=>finish(null);
             let detail = {
                 type:options.kind,
-                limit:batch,
+                limit,
                 onComplete(urls){
                     if(!active()){
                         return;
@@ -128,8 +128,8 @@ export default function openMedia(editor,options,initialMode){
                         error(uploading?'请按文件顺序返回对应数量的有效 URL，请重试':'请返回有效的素材列表，请重试',true);
                         return;
                     }
-                    if(uploading&&sources.length>batch){
-                        error('一次最多选择 {count} 个素材',true,{count:batch});
+                    if(uploading&&sources.length>limit){
+                        error('一次最多选择 {count} 个素材',true,{count:limit});
                         return;
                     }
                     let seen = new Set();
@@ -169,9 +169,9 @@ export default function openMedia(editor,options,initialMode){
         let params;
         if(files.some(file=>!fileType(file,options.types))){
             message = options.error||'请选择文件';
-        }else if(files.length>batch){
+        }else if(files.length>limit){
             message = '一次最多选择 {count} 个文件';
-            params = {count:batch};
+            params = {count:limit};
         }else if(files.some(file=>file.size>options.size*1024*1024)){
             message = '{type}大小不能超过 {size} MB';
             params = {type:options.name,size:options.size};
@@ -192,13 +192,13 @@ export default function openMedia(editor,options,initialMode){
         setMode(mode);
     };
     let insert = function(sources,files=[],values={}){
-        let batch = sources.length>1;
+        let multiple = sources.length>1;
         let html = sources.map((source,index)=>options.html(source,{
-            ...values,name:files[index]?.name||urlFileName(source,editor.t(options.name)),batch
+            ...values,name:files[index]?.name||urlFileName(source,editor.t(options.name)),multiple
         })).join('');
         dialog.dismiss();
         editor.selection.range = range;
-        batch&&options.insertBatch?options.insertBatch(html):editor.insertHTML(html);
+        multiple&&options.insertMultiple?options.insertMultiple(html):editor.insertHTML(html);
     };
     let request = async function(){
         let version = revision;
@@ -216,10 +216,10 @@ export default function openMedia(editor,options,initialMode){
         if(mode==='resource'){request();}
     };
     let fields = {
-        upload:{'name':'file','label':batch===1?'选择{type}（最大 {size} MB）':
-            Number.isFinite(batch)?'选择{type}（最多 {count} 个，单个最大 {size} MB）':'选择{type}（不限数量，单个最大 {size} MB）',
-            'params':{type:options.name,size:options.size,count:batch},'type':'file',
-            'accept':options.accept||'','required':true,'multiple':batch>1},
+        upload:{'name':'file','label':limit===1?'选择{type}（最大 {size} MB）':
+            Number.isFinite(limit)?'选择{type}（最多 {count} 个，单个最大 {size} MB）':'选择{type}（不限数量，单个最大 {size} MB）',
+            'params':{type:options.name,size:options.size,count:limit},'type':'file',
+            'accept':options.accept||'','required':true,'multiple':limit>1},
         url:{'name':'url','label':options.name+'地址','type':'text','placeholder':'https://example.com/file','required':true},
         iframe:{'name':'iframe','label':'iframe 嵌入代码','type':'textarea','placeholder':'粘贴视频网站提供的 iframe 代码','required':true}
     };
@@ -276,7 +276,7 @@ export default function openMedia(editor,options,initialMode){
                 panelGroup.appendChild(element);
                 if(name==='resource'){
                     materials = createMaterials(editor,{
-                        ...options,limit:batch,
+                        ...options,limit,
                         onSelectionChange:count=>{selectedCount = count;updateNotice();dialog.updateSubmit();},
                         message:(...args)=>dialog.message(...args),
                         remove:url=>resolveResources('remove',[],url)

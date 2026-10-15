@@ -19,9 +19,9 @@ export default {
             'field':{'name':'alt','label':'图片描述','type':'text','placeholder':'图片的文字说明'},
             html(source,values){
                 let html = '<img src="'+escapeHTML(source)+'" alt="'+escapeHTML(String(values.alt||''))+'">';
-                return values.batch?'<p>'+html+'</p>':html;
+                return values.multiple?'<p>'+html+'</p>':html;
             },
-            insertBatch(html){
+            insertMultiple(html){
                 editor.history.record();
                 editor.transaction(()=>{
                     document.execCommand('insertHTML',false,sanitizeHTML(html));
