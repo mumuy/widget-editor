@@ -1055,7 +1055,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog
 .table-grid-cell:focus-visible{
     border-color: var(--button-active-color);
 }
-.editor-dialog .field.field-checkbox{
+:is(.editor-dialog,.link-toolbar) .field.field-checkbox{
     display: flex;
     align-items: center;
     flex-direction: row-reverse;
@@ -1066,15 +1066,15 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog
     display: grid;
     gap: 16px;
 }
-.editor-dialog .field{
+:is(.editor-dialog,.link-toolbar) .field{
     display: grid;
     gap: 7px;
     font-size: 13px;
 }
-.editor-dialog .field > span{
+:is(.editor-dialog,.link-toolbar) .field > span{
     color: var(--button-text-color);
 }
-.editor-dialog .field input,.field select,.editor-dialog .field textarea{
+:is(.editor-dialog,.link-toolbar) .field input,.field select,.editor-dialog .field textarea{
     width: 100%;
     min-width: 0;
     height: 38px;
@@ -1115,7 +1115,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog
 .editor-dialog .field input[type="file"]:disabled::file-selector-button{
     cursor: not-allowed;
 }
-.editor-dialog .field input[type="checkbox"]{
+:is(.editor-dialog,.link-toolbar) .field input[type="checkbox"]{
     width: 16px;
     height: 16px;
     margin: 0;
@@ -1145,7 +1145,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog
     border: 1px solid var(--panel-border-color);
     border-radius: 4px;
 }
-.dialog-foot .btn:hover,.link-actions .btn:hover:hover{
+.dialog-foot .btn:hover,.link-actions .btn:hover{
     background: var(--button-background-color);
 }
 .dialog-foot .btn-primary,.link-actions .btn-primary{
