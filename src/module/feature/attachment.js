@@ -1,7 +1,7 @@
 import {attachment as icon} from '../icon.js';
 import {escapeHTML,safeURL} from '../method/sanitize.js';
 import {fileName} from '../method/file.js';
-import openUpload from '../method/upload.js';
+import openMedia from '../method/media.js';
 
 export default {
     'name':'attachment',
@@ -29,7 +29,7 @@ export default {
         });
     },
     execute(editor){
-        openUpload(editor,{
+        openMedia(editor,{
             'name':'附件',
             'kind':'attachment',
             'size':20,

@@ -1,7 +1,7 @@
 import {video as icon} from '../icon.js';
 import sanitizeHTML,{escapeHTML} from '../method/sanitize.js';
 import {videoTypes} from '../method/file.js';
-import openUpload from '../method/upload.js';
+import openMedia from '../method/media.js';
 
 export default {
     'name':'video',
@@ -9,7 +9,7 @@ export default {
     'label':'插入视频',
     'type':'button',
     execute(editor){
-        openUpload(editor,{
+        openMedia(editor,{
             'name':'视频',
             'kind':'video',
             'size':50,

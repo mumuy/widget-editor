@@ -1,7 +1,7 @@
 import {image as icon} from '../icon.js';
 import sanitizeHTML,{escapeHTML} from '../method/sanitize.js';
 import {imageTypes} from '../method/file.js';
-import openUpload from '../method/upload.js';
+import openMedia from '../method/media.js';
 
 export default {
     'name':'image',
@@ -9,7 +9,7 @@ export default {
     'label':'插入图片',
     'type':'button',
     execute(editor){
-        openUpload(editor,{
+        openMedia(editor,{
             'name':'图片',
             'kind':'image',
             'size':5,

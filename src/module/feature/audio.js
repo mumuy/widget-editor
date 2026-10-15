@@ -1,7 +1,7 @@
 import {audio as icon} from '../icon.js';
 import {escapeHTML} from '../method/sanitize.js';
 import {audioTypes} from '../method/file.js';
-import openUpload from '../method/upload.js';
+import openMedia from '../method/media.js';
 
 export default {
     'name':'audio',
@@ -9,7 +9,7 @@ export default {
     'label':'插入音频',
     'type':'button',
     execute(editor){
-        openUpload(editor,{
+        openMedia(editor,{
             'name':'音频',
             'kind':'audio',
             'size':20,

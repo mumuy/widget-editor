@@ -39,7 +39,7 @@ button:disabled,input:disabled,select:disabled{
     cursor: not-allowed;
     opacity: .4;
 }
-input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields .field input:focus,.field select:focus,.dialog-fields .field textarea:focus{
+input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog .field input:focus,.field select:focus,.editor-dialog .field textarea:focus{
     border-color: var(--focus-color);
 }
 .mod-panel{
@@ -777,17 +777,27 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
 .dialog-close:hover{
     background: var(--button-background-color);
 }
-.insert-tabs{
-    position: sticky;
-    top: 0;
-    z-index: 9;
-    background: #fff;
+.media-dialog{
+    width: min(640px,calc(100vw - 32px));
+    height: min(480px,calc(100vh - 32px));
+    overflow: hidden;
+}
+.media-dialog .dialog-head,.media-dialog .dialog-foot{
+    flex-shrink: 0;
+}
+.media-dialog .dialog-body{
     display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.media-tabs{
+    display: flex;
+    flex-shrink: 0;
     gap: 10px;
     margin-bottom: 18px;
     border-bottom: 1px solid var(--panel-border-color);
 }
-.insert-tabs button{
+.media-tabs button{
     padding: 0 10px;
     background: transparent;
     color: var(--button-text-color);
@@ -795,42 +805,36 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     border-bottom: 2px solid transparent;
     line-height: 32px;
 }
-.insert-tabs button[aria-selected="true"]{
+.media-tabs button[aria-selected="true"]{
     color: var(--button-active-color);
     border-bottom-color: var(--button-active-color);
 }
-.insert-tabs button:disabled{
+.media-tabs button:disabled{
     opacity: .45;
 }
-.insert-panels{
+.media-panels{
     display: grid;
+    grid-template: minmax(0,1fr) / minmax(0,1fr);
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
 }
-.insert-panel{
-    display: grid;
+.media-panel{
+    display: flex;
+    flex-direction: column;
     grid-area: 1 / 1;
+    gap: 6px;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+.media-fields{
+    display: grid;
     align-content: start;
     gap: 16px;
-    min-width: 0;
-}
-/* 隐藏的标签页仍参与高度计算，同时保留隐藏和禁用状态。 */
-.insert-panel[hidden]{
-    display: grid !important;
-    visibility: hidden;
-}
-.upload-dialog{
-    width: min(640px,calc(100vw - 32px));
-    height: min(480px,calc(100vh - 32px));
-}
-.insert-panel[data-insert-panel="request"]{
-    grid-template-rows: minmax(0,1fr);
-    align-content: stretch;
-}
-.insert-panel[data-insert-panel="request"]:only-child{
-    height: 168px;
-}
-.material-field{
-    position: relative;
+    flex: 1;
     min-height: 0;
+    overflow: auto;
 }
 .material-list{
     display: grid;
@@ -838,6 +842,8 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     grid-auto-rows: 88px;
     align-content: start;
     gap: 6px;
+    flex: 1;
+    min-height: 0;
     overflow: auto;
     overscroll-behavior: contain;
 }
@@ -894,24 +900,28 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     text-align: center;
     font-size: 13px;
 }
-.insert-feedback{
+.upload-feedback{
     display: grid;
     align-items: center;
+    flex-shrink: 0;
     height: 20px;
-    margin-top: -10px;
     overflow: auto;
 }
-.insert-panel > .dialog-notice,.insert-feedback .upload-progress,.insert-feedback .dialog-notice{
+.media-panel .dialog-notice,.upload-feedback .upload-progress{
     margin: 0;
 }
-.upload-dialog .dialog-foot{
+.media-panel > .dialog-notice{
+    flex-shrink: 0;
+    max-height: 40px;
+    overflow: auto;
+}
+.media-dialog .dialog-foot{
     margin-top: 12px;
 }
 .upload-progress{
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-top: 18px;
     color: var(--button-text-color);
     font-size: 12px;
 }
@@ -1028,7 +1038,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
 .table-grid-cell:focus-visible{
     border-color: var(--button-active-color);
 }
-.dialog-fields .field.field-checkbox{
+.editor-dialog .field.field-checkbox{
     display: flex;
     align-items: center;
     flex-direction: row-reverse;
@@ -1039,15 +1049,15 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     display: grid;
     gap: 16px;
 }
-.dialog-fields .field{
+.editor-dialog .field{
     display: grid;
     gap: 7px;
     font-size: 13px;
 }
-.dialog-fields .field > span{
+.editor-dialog .field > span{
     color: var(--button-text-color);
 }
-.dialog-fields .field input,.field select,.dialog-fields .field textarea{
+.editor-dialog .field input,.field select,.editor-dialog .field textarea{
     width: 100%;
     min-width: 0;
     height: 38px;
@@ -1057,20 +1067,20 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     border: 1px solid var(--panel-border-color);
     border-radius: 4px;
 }
-.dialog-fields .field textarea{
+.editor-dialog .field textarea{
     min-height: 120px;
     padding: 8px 10px;
     line-height: 1.5;
     resize: vertical;
     font-family: Menlo,Monaco,Consolas,'Courier New',monospace;
 }
-.dialog-fields .field input[type="file"]{
+.editor-dialog .field input[type="file"]{
     padding: 0;
     font-size: 13px;
     line-height: 36px;
     cursor: pointer;
 }
-.dialog-fields .field input[type="file"]::file-selector-button{
+.editor-dialog .field input[type="file"]::file-selector-button{
     height: 36px;
     margin: 0 10px 0 0;
     padding: 0 14px;
@@ -1081,14 +1091,14 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.dialog-fields
     font: inherit;
     cursor: pointer;
 }
-.dialog-fields .field input[type="file"]:hover:not(:disabled)::file-selector-button{
+.editor-dialog .field input[type="file"]:hover:not(:disabled)::file-selector-button{
     background: var(--button-active-background);
     color: var(--button-active-color);
 }
-.dialog-fields .field input[type="file"]:disabled::file-selector-button{
+.editor-dialog .field input[type="file"]:disabled::file-selector-button{
     cursor: not-allowed;
 }
-.dialog-fields .field input[type="checkbox"]{
+.editor-dialog .field input[type="checkbox"]{
     width: 16px;
     height: 16px;
     margin: 0;

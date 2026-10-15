@@ -13,13 +13,10 @@ export function normalizeMaterial(value,kind){
 
 // 只管理素材展示与选择，数据请求、删除及插入交由共享弹框处理。
 export default function createMaterials(editor,options){
-    let field = document.createElement('div');
-    field.className = 'material-field';
     let list = document.createElement('div');
     list.className = 'material-list';
     editor.locale.set(list,'素材列表',{},'aria-label');
     list.setAttribute('role','group');
-    field.appendChild(list);
     let items = [];
     let selected = new Set();
     let busy = false;
@@ -33,7 +30,7 @@ export default function createMaterials(editor,options){
         list.replaceChildren(message);
     };
     return {
-        field,
+        element:list,
         status,
         values:()=>items.filter(item=>selected.has(item.original)).map(item=>item.original),
         busy(value){
@@ -105,7 +102,7 @@ export default function createMaterials(editor,options){
                         items = items.filter(value=>value!==item);
                         card.remove();
                         if(!items.length){status('暂无素材');}
-                        else if(!field.closest('[hidden]')){items[0].button.focus({preventScroll:true});}
+                        else if(!list.closest('[hidden]')){items[0].button.focus({preventScroll:true});}
                     }
                 };
                 card.append(select,remove);
