@@ -140,12 +140,6 @@
 .mod-guide .hd,.mod-params .hd,.mod-api .hd,.mod-upload .hd{
     margin-bottom: 16px;
 }
-.doc-grid{
-    display: grid;
-    grid-template-columns: repeat(2,minmax(0,1fr));
-    gap: 24px;
-    align-items: start;
-}
 .doc-block{
     min-width: 0;
     margin-bottom: 24px;
@@ -205,9 +199,6 @@
 .mod-params .table-scroll[data-columns="3"] tr > :last-child{
     width: 32%;
 }
-.mod-api .table-scroll[data-columns="2"] tr > :first-child{
-    width: 42%;
-}
 .table-scroll tbody th{
     color: #343b48;
     font-weight: 400;
@@ -236,10 +227,67 @@
     line-height: 22px;
 }
 widget-code:not(:defined){
+    white-space: pre;
     padding: 16px;
     background: #f6f8fa;
     border: 1px solid #e9edf1;
     border-radius: 6px;
+}
+.doc-tabs{
+    margin-bottom: 20px;
+    border: 1px solid #e9edf1;
+    border-radius: 6px;
+    overflow: hidden;
+}
+.doc-tab-list{
+    display: flex;
+    overflow-x: auto;
+    background: #f6f8fa;
+    border-bottom: 1px solid #e9edf1;
+    scrollbar-width: thin;
+}
+.doc-tab-list button{
+    position: relative;
+    flex-shrink: 0;
+    padding: 13px 18px;
+    background: transparent;
+    border: 0;
+    color: #57606a;
+    font: inherit;
+    font-size: 14px;
+    line-height: 22px;
+    white-space: nowrap;
+    cursor: pointer;
+    outline: none;
+}
+.doc-tab-list button:hover,.doc-tab-list button:focus-visible{
+    color: #2095f2;
+    background: #edf4fa;
+}
+.doc-tab-list button[aria-selected="true"]{
+    color: #2095f2;
+    background: #fff;
+}
+.doc-tab-list button[aria-selected="true"]::after{
+    content: '';
+    position: absolute;
+    right: 18px;
+    bottom: 0;
+    left: 18px;
+    height: 2px;
+    background: #2095f2;
+}
+.doc-tab-panel{
+    padding: 20px;
+}
+.doc-tab-panel[hidden]{
+    display: none;
+}
+.doc-tab-panel .table-scroll{
+    margin-bottom: 16px;
+}
+.doc-tab-panel > :last-child{
+    margin-bottom: 0;
 }
 .doc-details{
     margin-top: 12px;
@@ -284,10 +332,6 @@ widget-code:not(:defined){
     color: #343b48;
 }
 @media screen and (max-width: 760px){
-    .doc-grid{
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
     .doc-nav{
         margin: 20px 0 30px;
     }
@@ -308,10 +352,17 @@ widget-code:not(:defined){
         padding: 10px;
     }
     .table-scroll tr > :first-child{
-        width: 28%;
+        width: 31%;
     }
     .font-values{
         grid-template-columns: repeat(2,minmax(0,1fr));
+    }
+    .doc-tab-list button{
+        padding: 11px 13px;
+        font-size: 13px;
+    }
+    .doc-tab-panel{
+        padding: 14px 10px;
     }
 }
 

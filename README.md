@@ -15,16 +15,46 @@
     <h2>开始写作</h2>
     <p>选中文字，通过工具栏调整格式。</p>
 </widget-editor>
+
+<script>
+    customElements.whenDefined('widget-editor').then(function(){
+        let editor = document.querySelector('#editor');
+        editor.value = '<p>新的内容</p>';
+        console.log(editor.value,editor.text);
+
+        editor.addEventListener('change',function(event){
+            console.log(event.detail.value,event.detail.text);
+        });
+    });
+</script>
 ```
 
 ## 参数配置
 
 列表参数使用英文逗号分隔，排列顺序就是显示顺序。未设置时使用默认值，运行时修改立即生效；重复和无效选项会被忽略。
 
+### 配置示例
+
+```html
+<widget-editor
+    custom="heading,fontSize,bold,italic,color,link,insert"
+    insert="image,table,emoji"
+    heading="p,h2,h3"
+    fontsize="14,16,20,24"
+    image="upload,url,resource"
+    image-limit="9"
+    view="source,fullscreen">
+</widget-editor>
+```
+
 ### 基础设置
+
+`value`、`text` 为 JavaScript 属性，其余项目通过 HTML 属性配置。
 
 | 属性 | 作用 | 默认值 |
 | --- | --- | --- |
+| `value` | JS 属性：读写 HTML，空字符串可清空内容 | 标签内的初始内容 |
+| `text` | JS 属性：读取纯文本，只读 | 随内容生成 |
 | `placeholder` | 空白时的提示文字 | 在这里开始写作… |
 | `height` | 编辑区域高度，单位 px，范围 160～2000 | `480` |
 | `language` | 界面语言：zh-CN 简体、zh-HK 繁体、en-US 英语 | `zh-CN` |
@@ -60,17 +90,6 @@
 
 `disabled`、`required` 为布尔属性，存在即生效；取消时移除属性或将对应 JS 属性设为 `false`。`*-limit` 默认为单选，正整数表示上限，空值表示不限数量，同时约束上传和素材库选择。
 
-```html
-<widget-editor
-    custom="heading,fontSize,bold,italic,color,link,insert"
-    insert="image,table,emoji"
-    heading="p,h2,h3"
-    fontsize="14,16,20,24"
-    image="upload,url,resource"
-    image-limit="9"
-    view="source,fullscreen">
-</widget-editor>
-```
 
 ### 可选值
 
@@ -116,22 +135,8 @@
 
 ## 内容与方法
 
-```javascript
-customElements.whenDefined('widget-editor').then(function(){
-    let editor = document.querySelector('#editor');
-    editor.value = '<p>新的内容</p>';
-
-    editor.addEventListener('change',function(event){
-        let {value,text} = event.detail;
-        console.log(value,text);
-    });
-});
-```
-
 | 属性或方法 | 作用 |
 | --- | --- |
-| `value` | 读写 HTML，赋值空字符串可清空内容 |
-| `text` | 读取纯文本 |
 | `getHTML() / setHTML(html)` | 读取、设置 HTML |
 | `openInsertDialog(type,mode)` | 打开指定媒体插入弹框；省略 mode 时打开第一种方式 |
 | `focus()` | 聚焦编辑区域 |
@@ -293,36 +298,6 @@ onComplete([
 </details>
 
 截图和文件粘贴、拖入会复用上传流程。点击正文图片可编辑地址、描述、宽度、对齐或替换图片。视频及 iframe 按 16:9 显示。
-
-## Vue 与 React
-
-### Vue 3
-
-在 Vue 编译配置中设置 `isCustomElement: tag => tag === 'widget-editor'`。
-
-```vue
-<widget-editor
-    :value.prop="content"
-    :image-limit="imageLimit"
-    :disabled.prop="disabled"
-    @change="content = $event.detail.value"
-    @upload="handleUpload"
-/>
-```
-
-### React 19
-
-```jsx
-<widget-editor
-    value={content}
-    image-limit={imageLimit}
-    disabled={disabled}
-    onchange={event => setContent(event.detail.value)}
-    onupload={handleUpload}
-/>
-```
-
-`value` 通过 JS 属性传入，事件数据从 `event.detail` 读取。
 
 ## 外观与快捷键
 

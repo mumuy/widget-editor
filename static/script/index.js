@@ -7,6 +7,39 @@
         window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
     });
 
+    // 参数、方法、事件共用标签页切换与键盘导航。
+    document.querySelectorAll('[data-doc-tabs]').forEach(function(group){
+        let list = group.querySelector('[role="tablist"]');
+        let tabs = Array.from(list.querySelectorAll('[role="tab"]'));
+        let activate = function(tab,focus=false){
+            tabs.forEach(function(button){
+                let active = button===tab;
+                button.setAttribute('aria-selected',String(active));
+                button.tabIndex = active?0:-1;
+                let panel = document.getElementById(button.getAttribute('aria-controls'));
+                panel.hidden = !active;
+                panel.inert = !active;
+            });
+            if(focus){tab.focus({preventScroll:true});}
+            let rect = tab.getBoundingClientRect();
+            let bounds = list.getBoundingClientRect();
+            if(rect.left<bounds.left){list.scrollLeft += rect.left-bounds.left;}
+            else if(rect.right>bounds.right){list.scrollLeft += rect.right-bounds.right;}
+        };
+        list.addEventListener('click',function(event){
+            let tab = event.target.closest('[role="tab"]');
+            if(tab){activate(tab);}
+        });
+        list.addEventListener('keydown',function(event){
+            let index = tabs.indexOf(event.target);
+            if(index<0||!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){return;}
+            event.preventDefault();
+            let next = event.key==='Home'?0:event.key==='End'?tabs.length-1:
+                (index+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;
+            activate(tabs[next],true);
+        });
+    });
+
     // 演示页只在本地读取文件，正式使用时替换成自己的上传服务。
     let readFiles = async function(files,type,onProgress=()=>{}){
         let total = files.reduce((sum,file)=>sum+file.size,0);

@@ -115,38 +115,33 @@ console.log(editor.value);</code></pre>
                     <nav class="doc-nav" aria-label="使用文档导航">
                         <a href="#usage">快速使用</a>
                         <a href="#parameters">参数配置</a>
-                        <a href="#api">内容与表单</a>
-                        <a href="#uploads">上传与素材库</a>
+                        <a href="#api">常用方法</a>
+                        <a href="#uploads">事件</a>
                     </nav>
                     <section class="module mod-guide" id="usage" aria-labelledby="usage-title">
                         <div class="hd">
                             <span id="usage-title">快速使用</span>
                         </div>
                         <div class="bd">
-                            <p class="doc-lead">一个标签即可使用，内容以 HTML 读写；无需框架依赖。</p>
-                            <div class="doc-grid">
-                                <div class="doc-block">
-                                    <h3>引入组件</h3>
-                                    <widget-code language="html">&lt;script src="./widget-editor.min.js" defer&gt;&lt;/script&gt;
+                            <p class="doc-lead">引入组件、设置初始内容，并监听内容变化。</p>
+                            <widget-code language="html">&lt;script src="./widget-editor.min.js" defer&gt;&lt;/script&gt;
 
 &lt;widget-editor id="editor" placeholder="请输入内容…"&gt;
     &lt;h2&gt;开始写作&lt;/h2&gt;
     &lt;p&gt;选中文字，通过工具栏调整格式。&lt;/p&gt;
-&lt;/widget-editor&gt;</widget-code>
-                                </div>
-                                <div class="doc-block">
-                                    <h3>读取与设置</h3>
-                                    <widget-code language="javascript">customElements.whenDefined('widget-editor').then(function(){
-    let editor = document.querySelector('#editor');
-    editor.value = '&lt;p&gt;新的内容&lt;/p&gt;';
+&lt;/widget-editor&gt;
 
-    editor.addEventListener('change',function(event){
-        let {value,text} = event.detail;
-        console.log(value,text);
+&lt;script&gt;
+    customElements.whenDefined('widget-editor').then(function(){
+        let editor = document.querySelector('#editor');
+        editor.value = '&lt;p&gt;新的内容&lt;/p&gt;';
+        console.log(editor.value,editor.text);
+
+        editor.addEventListener('change',function(event){
+            console.log(event.detail.value,event.detail.text);
+        });
     });
-});</widget-code>
-                                </div>
-                            </div>
+&lt;/script&gt;</widget-code>
                         </div>
                     </section>
                     <section class="module mod-params" id="parameters" aria-labelledby="parameters-title">
@@ -154,163 +149,192 @@ console.log(editor.value);</code></pre>
                             <span id="parameters-title">参数配置</span>
                         </div>
                         <div class="bd">
-                            <p class="doc-lead">未设置时使用默认值；列表以英文逗号分隔，顺序即显示顺序，支持动态修改。</p>
+                            <p class="doc-lead">列表使用英文逗号分隔，顺序即显示顺序，支持动态修改。</p>
                             <div class="doc-block">
-                                <h3>基础设置</h3>
-                                <div class="table-scroll" data-columns="3" role="region" aria-label="基础设置" tabindex="0">
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">属性</th>
-                                                <th scope="col">说明</th>
-                                                <th scope="col">默认值</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <th scope="row"><code>placeholder</code></th>
-                                                <td>空白时的提示文字</td>
-                                                <td>在这里开始写作…</td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>height</code></th>
-                                                <td>编辑区域高度，单位 px，范围 160～2000</td>
-                                                <td><code>480</code></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>language</code></th>
-                                                <td>界面语言：zh-CN 简体、zh-HK 繁体、en-US 英语</td>
-                                                <td><code>zh-CN</code></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>name</code></th>
-                                                <td>表单提交字段名，提交值为 HTML</td>
-                                                <td>空字符串</td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>form</code></th>
-                                                <td>关联表单的 id，用于表单外的组件</td>
-                                                <td>最近的父级表单</td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>disabled</code></th>
-                                                <td>禁用编辑和操作，不参与表单提交及校验</td>
-                                                <td>不设置</td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>required</code></th>
-                                                <td>启用必填校验，图片等非文本内容也有效</td>
-                                                <td>不设置</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                <h3>配置示例</h3>
+                                <widget-code language="html">&lt;widget-editor
+    custom="heading,fontSize,bold,italic,color,link,insert"
+    insert="image,table,emoji"
+    heading="p,h2,h3"
+    fontsize="14,16,20,24"
+    image="upload,url,resource"
+    image-limit="9"
+    view="source,fullscreen"&gt;
+&lt;/widget-editor&gt;</widget-code>
                             </div>
-                            <div class="doc-block">
-                                <h3>工具栏与菜单</h3>
-                                <div class="table-scroll" data-columns="3" role="region" aria-label="工具栏与菜单" tabindex="0">
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">属性</th>
-                                                <th scope="col">说明</th>
-                                                <th scope="col">默认值</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <th scope="row"><code>custom</code></th>
-                                                <td>工具栏功能及顺序；撤销、重做固定显示</td>
-                                                <td>完整工具栏</td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>insert</code></th>
-                                                <td>插入菜单中的功能及顺序</td>
-                                                <td><code>divider,table,image,video,attachment,audio,emoji,code</code></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>view</code></th>
-                                                <td>底部操作及顺序：源码、全屏、手机模式</td>
-                                                <td><code>source,fullscreen,mobile</code></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>heading</code></th>
-                                                <td>标题菜单的选项及顺序</td>
-                                                <td><code>p,h1,h2,h3,h4,h5,h6</code></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>fontfamily</code></th>
-                                                <td>字体菜单的选项及顺序</td>
-                                                <td>全部字体，见可选值</td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>fontsize</code></th>
-                                                <td>字号菜单的选项及顺序，数字不带 px</td>
-                                                <td><code>12,14,16,18,20,24,28,32,36,48</code></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>alignment</code></th>
-                                                <td>对齐菜单：左、中、右、两端对齐</td>
-                                                <td><code>left,center,right,justify</code></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                            <div class="doc-tabs" data-doc-tabs>
+                                <div class="doc-tab-list" role="tablist" aria-label="参数分组">
+                                    <button type="button" role="tab" id="params-basic-tab" aria-controls="params-basic-panel" aria-selected="true" tabindex="0">基础设置</button>
+                                    <button type="button" role="tab" id="params-toolbar-tab" aria-controls="params-toolbar-panel" aria-selected="false" tabindex="-1">工具栏与菜单</button>
+                                    <button type="button" role="tab" id="params-media-tab" aria-controls="params-media-panel" aria-selected="false" tabindex="-1">媒体插入</button>
                                 </div>
-                            </div>
-                            <div class="doc-block">
-                                <h3>媒体插入</h3>
-                                <div class="table-scroll" data-columns="3" role="region" aria-label="媒体插入" tabindex="0">
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">属性</th>
-                                                <th scope="col">说明</th>
-                                                <th scope="col">默认值</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <th scope="row"><code>image</code></th>
-                                                <td>图片允许的插入方式及顺序</td>
-                                                <td><code>upload,url,resource</code></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>video</code></th>
-                                                <td>视频允许的插入方式及顺序</td>
-                                                <td><code>upload,url,iframe,resource</code></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>audio</code></th>
-                                                <td>音频允许的插入方式及顺序</td>
-                                                <td><code>upload,url,resource</code></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>attachment</code></th>
-                                                <td>附件允许的插入方式及顺序</td>
-                                                <td><code>upload,url,resource</code></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>image-limit</code></th>
-                                                <td>每次上传或选择图片的数量上限</td>
-                                                <td><code>1</code></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>video-limit</code></th>
-                                                <td>每次上传或选择视频的数量上限</td>
-                                                <td><code>1</code></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>audio-limit</code></th>
-                                                <td>每次上传或选择音频的数量上限</td>
-                                                <td><code>1</code></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>attachment-limit</code></th>
-                                                <td>每次上传或选择附件的数量上限</td>
-                                                <td><code>1</code></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                <div class="doc-tab-panel" role="tabpanel" id="params-basic-panel" aria-labelledby="params-basic-tab">
+                                    <div class="table-scroll" data-columns="3" role="region" aria-label="基础设置" tabindex="0">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">属性</th>
+                                                    <th scope="col">说明</th>
+                                                    <th scope="col">默认值</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row"><code>value</code></th>
+                                                    <td>JS 属性：读写 HTML，设为空字符串可清空内容</td>
+                                                    <td>标签内的初始内容</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>text</code></th>
+                                                    <td>JS 属性：读取纯文本，只读</td>
+                                                    <td>随内容生成</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>placeholder</code></th>
+                                                    <td>空白时的提示文字</td>
+                                                    <td>在这里开始写作…</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>height</code></th>
+                                                    <td>编辑区域高度，单位 px，范围 160～2000</td>
+                                                    <td><code>480</code></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>language</code></th>
+                                                    <td>界面语言：zh-CN 简体、zh-HK 繁体、en-US 英语</td>
+                                                    <td><code>zh-CN</code></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>name</code></th>
+                                                    <td>表单提交字段名，提交值为 HTML</td>
+                                                    <td>空字符串</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>form</code></th>
+                                                    <td>关联表单的 id，用于表单外的组件</td>
+                                                    <td>最近的父级表单</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>disabled</code></th>
+                                                    <td>禁用编辑和操作，不参与表单提交及校验</td>
+                                                    <td>不设置</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>required</code></th>
+                                                    <td>启用必填校验，图片等非文本内容也有效</td>
+                                                    <td>不设置</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <p class="doc-note"><code>value</code>、<code>text</code> 通过 JavaScript 访问；其他项目通过组件属性配置。布尔属性存在即生效。</p>
+                                </div>
+                                <div class="doc-tab-panel" role="tabpanel" id="params-toolbar-panel" aria-labelledby="params-toolbar-tab" hidden inert>
+                                    <div class="table-scroll" data-columns="3" role="region" aria-label="工具栏与菜单" tabindex="0">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">属性</th>
+                                                    <th scope="col">说明</th>
+                                                    <th scope="col">默认值</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row"><code>custom</code></th>
+                                                    <td>工具栏功能及顺序；撤销、重做固定显示</td>
+                                                    <td>完整工具栏</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>insert</code></th>
+                                                    <td>插入菜单中的功能及顺序</td>
+                                                    <td><code>divider,table,image,video,attachment,audio,emoji,code</code></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>view</code></th>
+                                                    <td>底部操作及顺序：源码、全屏、手机模式</td>
+                                                    <td><code>source,fullscreen,mobile</code></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>heading</code></th>
+                                                    <td>标题菜单的选项及顺序</td>
+                                                    <td><code>p,h1,h2,h3,h4,h5,h6</code></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>fontfamily</code></th>
+                                                    <td>字体菜单的选项及顺序</td>
+                                                    <td>全部字体，见可选值</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>fontsize</code></th>
+                                                    <td>字号菜单的选项及顺序，数字不带 px</td>
+                                                    <td><code>12,14,16,18,20,24,28,32,36,48</code></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>alignment</code></th>
+                                                    <td>对齐菜单：左、中、右、两端对齐</td>
+                                                    <td><code>left,center,right,justify</code></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <p class="doc-note">未设置时使用默认值。设置为空可隐藏对应菜单；<code>custom=""</code> 仅保留撤销与重做。</p>
+                                </div>
+                                <div class="doc-tab-panel" role="tabpanel" id="params-media-panel" aria-labelledby="params-media-tab" hidden inert>
+                                    <div class="table-scroll" data-columns="3" role="region" aria-label="媒体插入" tabindex="0">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">属性</th>
+                                                    <th scope="col">说明</th>
+                                                    <th scope="col">默认值</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row"><code>image</code></th>
+                                                    <td>图片允许的插入方式及顺序</td>
+                                                    <td><code>upload,url,resource</code></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>video</code></th>
+                                                    <td>视频允许的插入方式及顺序</td>
+                                                    <td><code>upload,url,iframe,resource</code></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>audio</code></th>
+                                                    <td>音频允许的插入方式及顺序</td>
+                                                    <td><code>upload,url,resource</code></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>attachment</code></th>
+                                                    <td>附件允许的插入方式及顺序</td>
+                                                    <td><code>upload,url,resource</code></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>image-limit</code></th>
+                                                    <td>每次上传或选择图片的数量上限</td>
+                                                    <td><code>1</code></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>video-limit</code></th>
+                                                    <td>每次上传或选择视频的数量上限</td>
+                                                    <td><code>1</code></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>audio-limit</code></th>
+                                                    <td>每次上传或选择音频的数量上限</td>
+                                                    <td><code>1</code></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>attachment-limit</code></th>
+                                                    <td>每次上传或选择附件的数量上限</td>
+                                                    <td><code>1</code></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <p class="doc-note"><code>*-limit</code> 默认为单选，正整数表示上限，空值表示不限数量，同时约束上传和素材库选择。媒体方式为空则禁用该类型插入。</p>
                                 </div>
                             </div>
                             <details class="doc-details">
@@ -371,66 +395,64 @@ console.log(editor.value);</code></pre>
                                     </div>
                                 </div>
                             </details>
-                            <details class="doc-details">
-                                <summary>配置示例</summary>
-                                <div>
-                                    <widget-code language="html">&lt;widget-editor
-    custom="heading,fontSize,bold,italic,color,link,insert"
-    insert="image,table,emoji"
-    heading="p,h2,h3"
-    fontsize="14,16,20,24"
-    image="upload,url,resource"
-    image-limit="9"
-    view="source,fullscreen"&gt;
-&lt;/widget-editor&gt;</widget-code>
-                                    <p><code>custom</code> 可配置全部功能，<code>insert</code> 配置插入菜单，<code>view</code> 配置底部按钮。设为空值可隐藏对应菜单；<code>custom=""</code> 仅保留撤销和重做，媒体方式为空则禁用该类型插入。</p>
-                                </div>
-                            </details>
                         </div>
                     </section>
                     <section class="module mod-api" id="api" aria-labelledby="api-title">
                         <div class="hd">
-                            <span id="api-title">内容与表单</span>
+                            <span id="api-title">常用方法</span>
                         </div>
                         <div class="bd">
-                            <div class="doc-grid">
-                                <div class="doc-block">
-                                    <h3>常用方法</h3>
-                                    <div class="table-scroll" data-columns="2" role="region" aria-label="组件方法" tabindex="0">
+                            <div class="doc-tabs" data-doc-tabs>
+                                <div class="doc-tab-list" role="tablist" aria-label="组件方法">
+                                    <button type="button" role="tab" id="methods-get-tab" aria-controls="methods-get-panel" aria-selected="true" tabindex="0">getHTML()</button>
+                                    <button type="button" role="tab" id="methods-set-tab" aria-controls="methods-set-panel" aria-selected="false" tabindex="-1">setHTML()</button>
+                                    <button type="button" role="tab" id="methods-insert-tab" aria-controls="methods-insert-panel" aria-selected="false" tabindex="-1">openInsertDialog()</button>
+                                    <button type="button" role="tab" id="methods-focus-tab" aria-controls="methods-focus-panel" aria-selected="false" tabindex="-1">focus()</button>
+                                </div>
+                                <div class="doc-tab-panel" role="tabpanel" id="methods-get-panel" aria-labelledby="methods-get-tab">
+                                    <p>读取当前内容的 HTML。</p>
+                                    <widget-code language="javascript">let html = editor.getHTML();
+console.log(html);</widget-code>
+                                </div>
+                                <div class="doc-tab-panel" role="tabpanel" id="methods-set-panel" aria-labelledby="methods-set-tab" hidden inert>
+                                    <p>设置 HTML，传入空字符串可清空内容，不触发 <code>change</code>。</p>
+                                    <widget-code language="javascript">editor.setHTML('&lt;p&gt;新的内容&lt;/p&gt;');</widget-code>
+                                </div>
+                                <div class="doc-tab-panel" role="tabpanel" id="methods-insert-panel" aria-labelledby="methods-insert-tab" hidden inert>
+                                    <p>打开媒体插入弹框，沿用当前光标或选区。省略 <code>mode</code> 时打开该类型配置的第一种方式，无法打开时返回 <code>null</code>。</p>
+                                    <div class="table-scroll" data-columns="2" role="region" aria-label="媒体弹框参数" tabindex="0">
                                         <table>
                                             <thead>
                                                 <tr>
-                                                    <th scope="col">属性或方法</th>
+                                                    <th scope="col">参数</th>
                                                     <th scope="col">说明</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <th scope="row"><code>value</code></th>
-                                                    <td>读写 HTML，赋值空字符串可清空内容</td>
+                                                    <th scope="row"><code>type</code></th>
+                                                    <td>image 图片、video 视频、audio 音频、attachment 附件</td>
                                                 </tr>
                                                 <tr>
-                                                    <th scope="row"><code>text</code></th>
-                                                    <td>读取纯文本</td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><code>getHTML() / setHTML(html)</code></th>
-                                                    <td>读取、设置 HTML</td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><code>openInsertDialog(type,mode)</code></th>
-                                                    <td>打开指定媒体插入弹框；省略 mode 时打开第一种方式</td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><code>focus()</code></th>
-                                                    <td>聚焦编辑区域</td>
+                                                    <th scope="row"><code>mode</code></th>
+                                                    <td>upload 上传、url 网络地址、resource 素材库；iframe 仅适用于视频，方式须在媒体属性中开放</td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
+                                    <widget-code language="javascript">editor.openInsertDialog('image','upload');
+editor.openInsertDialog('video','iframe');
+editor.openInsertDialog('audio','url');
+editor.openInsertDialog('attachment','resource');</widget-code>
                                 </div>
-                                <div class="doc-block">
-                                    <h3>原生表单</h3>
+                                <div class="doc-tab-panel" role="tabpanel" id="methods-focus-panel" aria-labelledby="methods-focus-tab" hidden inert>
+                                    <p>将焦点移到编辑区域。</p>
+                                    <widget-code language="javascript">editor.focus();</widget-code>
+                                </div>
+                            </div>
+                            <details class="doc-details">
+                                <summary>原生表单</summary>
+                                <div>
                                     <widget-code language="html">&lt;form id="article-form"&gt;
     &lt;widget-editor name="content" required&gt;&lt;/widget-editor&gt;
     &lt;button type="submit"&gt;保存&lt;/button&gt;
@@ -443,103 +465,100 @@ console.log(editor.value);</code></pre>
         console.log(html);
     };
 &lt;/script&gt;</widget-code>
-                                    <p>设置 <code>name</code> 即可提交 HTML；支持必填校验、禁用和重置。表单外的组件可用 <code>form="表单id"</code> 关联。</p>
-                                </div>
-                            </div>
-                            <p class="doc-note">设置 <code>value</code> 不触发 <code>change</code>。<code>openInsertDialog(type,mode)</code> 沿用当前光标或选区，插入方式须在媒体属性中开放。</p>
-                            <details class="doc-details">
-                                <summary>打开媒体弹框</summary>
-                                <div>
-                                    <widget-code language="javascript">editor.openInsertDialog('image','upload');
-editor.openInsertDialog('video','iframe');
-editor.openInsertDialog('audio','url');
-editor.openInsertDialog('attachment','resource');</widget-code>
-                                </div>
-                            </details>
-                            <details class="doc-details">
-                                <summary>Vue 3 / React 19 动态绑定</summary>
-                                <div>
-                                    <p>Vue 编译配置设置 <code>isCustomElement: tag =&gt; tag === 'widget-editor'</code>。</p>
-                                    <div class="doc-grid">
-                                        <div class="doc-block">
-                                            <h3>Vue 3</h3>
-                                            <widget-code language="html">&lt;widget-editor
-    :value.prop="content"
-    :image-limit="imageLimit"
-    @change="content = $event.detail.value"
-    @upload="handleUpload"
-/&gt;</widget-code>
-                                        </div>
-                                        <div class="doc-block">
-                                            <h3>React 19</h3>
-                                            <widget-code language="jsx">&lt;widget-editor
-    value={content}
-    image-limit={imageLimit}
-    onchange={event =&gt; setContent(event.detail.value)}
-    onupload={handleUpload}
-/&gt;</widget-code>
-                                        </div>
-                                    </div>
+                                    <p>设置 <code>name</code> 即可提交 HTML，支持必填校验、禁用和重置。表单外的组件用 <code>form="表单id"</code> 关联。</p>
                                 </div>
                             </details>
                         </div>
                     </section>
                     <section class="module mod-upload" id="uploads" aria-labelledby="uploads-title">
                         <div class="hd">
-                            <span id="uploads-title">上传与素材库</span>
+                            <span id="uploads-title">事件</span>
                         </div>
                         <div class="bd">
-                            <p class="doc-lead">组件负责选择、校验和插入，业务页面负责上传与素材管理。文件选择后触发事件，完成后由用户确认插入。</p>
-                            <div class="doc-block">
-                                <h3>事件一览</h3>
-                                <div class="table-scroll" data-columns="3" role="region" aria-label="组件事件" tabindex="0">
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">事件</th>
-                                                <th scope="col">触发时机</th>
-                                                <th scope="col">event.detail</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <th scope="row"><code>ready</code></th>
-                                                <td>组件首次初始化完成</td>
-                                                <td>无</td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>change</code></th>
-                                                <td>用户编辑内容或执行编辑操作</td>
-                                                <td>value、text</td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>upload</code></th>
-                                                <td>选择文件并通过校验</td>
-                                                <td>files、type、limit、onComplete、onError、onProgress</td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>request</code></th>
-                                                <td>打开素材库标签</td>
-                                                <td>type、limit、onComplete、onError</td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>add</code></th>
-                                                <td>在素材库中选择上传文件</td>
-                                                <td>与 upload 相同</td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row"><code>remove</code></th>
-                                                <td>点击素材的移除按钮</td>
-                                                <td>type、url、limit、onComplete、onError</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                            <p class="doc-lead">事件通过 <code>event.detail</code> 提供数据，并支持冒泡。上传与素材管理由业务页面处理。</p>
+                            <div class="doc-tabs" data-doc-tabs>
+                                <div class="doc-tab-list" role="tablist" aria-label="组件事件">
+                                    <button type="button" role="tab" id="events-ready-tab" aria-controls="events-ready-panel" aria-selected="true" tabindex="0">ready</button>
+                                    <button type="button" role="tab" id="events-change-tab" aria-controls="events-change-panel" aria-selected="false" tabindex="-1">change</button>
+                                    <button type="button" role="tab" id="events-upload-tab" aria-controls="events-upload-panel" aria-selected="false" tabindex="-1">upload</button>
+                                    <button type="button" role="tab" id="events-request-tab" aria-controls="events-request-panel" aria-selected="false" tabindex="-1">request</button>
+                                    <button type="button" role="tab" id="events-add-tab" aria-controls="events-add-panel" aria-selected="false" tabindex="-1">add</button>
+                                    <button type="button" role="tab" id="events-remove-tab" aria-controls="events-remove-panel" aria-selected="false" tabindex="-1">remove</button>
                                 </div>
-                            </div>
-                            <div class="doc-grid">
-                                <div class="doc-block">
-                                    <h3>文件上传</h3>
-                                    <p><code>upload</code> 与 <code>add</code> 共用处理函数。示例接口接收 <code>files</code> 和 <code>type</code>，返回 <code>{urls: [...]}</code>。</p>
+                                <div class="doc-tab-panel" role="tabpanel" id="events-ready-panel" aria-labelledby="events-ready-tab">
+                                    <p>组件首次加入页面并初始化完成时触发，无 <code>detail</code> 数据。监听后再将组件加入页面。</p>
+                                    <widget-code language="javascript">let editor = document.createElement('widget-editor');
+editor.addEventListener('ready',function(){
+    console.log(editor.value);
+});
+document.body.appendChild(editor);</widget-code>
+                                </div>
+                                <div class="doc-tab-panel" role="tabpanel" id="events-change-panel" aria-labelledby="events-change-tab" hidden inert>
+                                    <p>用户编辑内容或执行编辑操作时触发。程序设置 <code>value</code> 或调用 <code>setHTML()</code> 不触发此事件。</p>
+                                    <div class="table-scroll" data-columns="2" role="region" aria-label="内容变化数据" tabindex="0">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">detail 字段</th>
+                                                    <th scope="col">说明</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row"><code>value</code></th>
+                                                    <td>当前 HTML</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>text</code></th>
+                                                    <td>当前纯文本</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <widget-code language="javascript">editor.addEventListener('change',function(event){
+    let {value,text} = event.detail;
+    console.log(value,text);
+});</widget-code>
+                                </div>
+                                <div class="doc-tab-panel" role="tabpanel" id="events-upload-panel" aria-labelledby="events-upload-tab" hidden inert>
+                                    <p>选择文件并通过校验后触发。业务上传成功后返回素材数组，数量和顺序须与 <code>files</code> 一致；用户确认后插入。</p>
+                                    <div class="table-scroll" data-columns="2" role="region" aria-label="上传数据" tabindex="0">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">detail 字段</th>
+                                                    <th scope="col">说明</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row"><code>files</code></th>
+                                                    <td>File[]，单文件也是数组</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>type</code></th>
+                                                    <td>image、video、audio、attachment</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>limit</code></th>
+                                                    <td>上传或选择的数量上限；不限数量时为 Infinity</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>onComplete(items)</code></th>
+                                                    <td>成功时返回素材数组，支持 URL 字符串或 {original,thumbnail}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>onError(error)</code></th>
+                                                    <td>失败时传入 Error 或错误消息</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>onProgress(percent)</code></th>
+                                                    <td>更新上传进度，范围 0～100</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <p>示例接口接收 <code>files</code> 和 <code>type</code>，返回 <code>{urls: [...]}</code>。处理函数可由 <code>upload</code> 和 <code>add</code> 共用。</p>
                                     <widget-code language="javascript">let editor = document.querySelector('#editor');
 
 async function upload(event){
@@ -559,9 +578,36 @@ async function upload(event){
 editor.addEventListener('upload',upload);
 editor.addEventListener('add',upload);</widget-code>
                                 </div>
-                                <div class="doc-block">
-                                    <h3>素材库</h3>
-                                    <p>配置 <code>image="upload,url,resource"</code> 等属性，切换到素材库时触发 <code>request</code>。</p>
+                                <div class="doc-tab-panel" role="tabpanel" id="events-request-panel" aria-labelledby="events-request-tab" hidden inert>
+                                    <p>切换到素材库时触发；若素材库是配置的第一项，打开弹框即请求。返回数组用于展示，空数组表示暂无素材。</p>
+                                    <div class="table-scroll" data-columns="2" role="region" aria-label="素材加载数据" tabindex="0">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">detail 字段</th>
+                                                    <th scope="col">说明</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row"><code>type</code></th>
+                                                    <td>image、video、audio、attachment</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>limit</code></th>
+                                                    <td>上传或选择的数量上限；不限数量时为 Infinity</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>onComplete(items)</code></th>
+                                                    <td>成功时返回素材数组，支持 URL 字符串或 {original,thumbnail}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>onError(error)</code></th>
+                                                    <td>失败时传入 Error 或错误消息</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                     <widget-code language="javascript">editor.addEventListener('request',async function(event){
     let {type,onComplete,onError} = event.detail;
     try{
@@ -573,17 +619,55 @@ editor.addEventListener('add',upload);</widget-code>
         onError(error);
     }
 });</widget-code>
-                                    <p>“上传素材”触发 <code>add</code>，新素材显示在列表前面；移除触发 <code>remove</code>，成功调用 <code>onComplete()</code> 后更新列表。</p>
                                 </div>
-                            </div>
-                            <details class="doc-details">
-                                <summary>回调参数与素材格式</summary>
-                                <div>
-                                    <div class="table-scroll" data-columns="2" role="region" aria-label="事件回调参数" tabindex="0">
+                                <div class="doc-tab-panel" role="tabpanel" id="events-add-panel" aria-labelledby="events-add-tab" hidden inert>
+                                    <p>在素材库点击“上传素材”并选择文件后触发，参数与 <code>upload</code> 相同，可共用上传处理函数。成功后新素材显示在列表前面，仍需用户确认插入。</p>
+                                    <div class="table-scroll" data-columns="2" role="region" aria-label="素材上传数据" tabindex="0">
                                         <table>
                                             <thead>
                                                 <tr>
-                                                    <th scope="col">字段</th>
+                                                    <th scope="col">detail 字段</th>
+                                                    <th scope="col">说明</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row"><code>files</code></th>
+                                                    <td>File[]，单文件也是数组</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>type</code></th>
+                                                    <td>image、video、audio、attachment</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>limit</code></th>
+                                                    <td>上传或选择的数量上限；不限数量时为 Infinity</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>onComplete(items)</code></th>
+                                                    <td>成功时返回素材数组，支持 URL 字符串或 {original,thumbnail}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>onError(error)</code></th>
+                                                    <td>失败时传入 Error 或错误消息</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><code>onProgress(percent)</code></th>
+                                                    <td>更新上传进度，范围 0～100</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <widget-code language="javascript">// upload 为 upload 标签页示例中的上传处理函数。
+editor.addEventListener('add',upload);</widget-code>
+                                </div>
+                                <div class="doc-tab-panel" role="tabpanel" id="events-remove-panel" aria-labelledby="events-remove-tab" hidden inert>
+                                    <p>点击素材右上角的移除按钮时触发。业务删除成功后调用 <code>onComplete()</code> 更新列表，不影响文档中已插入的内容。</p>
+                                    <div class="table-scroll" data-columns="2" role="region" aria-label="素材移除数据" tabindex="0">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">detail 字段</th>
                                                     <th scope="col">说明</th>
                                                 </tr>
                                             </thead>
@@ -594,45 +678,23 @@ editor.addEventListener('add',upload);</widget-code>
                                                 </tr>
                                                 <tr>
                                                     <th scope="row"><code>limit</code></th>
-                                                    <td>本次上传或选择数量上限；不限数量时为 Infinity</td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><code>files</code></th>
-                                                    <td>File[]，单文件也是数组；仅 upload、add 提供</td>
+                                                    <td>上传或选择的数量上限；不限数量时为 Infinity</td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="row"><code>url</code></th>
-                                                    <td>待移除素材的原地址；仅 remove 提供</td>
+                                                    <td>待移除素材的原地址</td>
                                                 </tr>
                                                 <tr>
-                                                    <th scope="row"><code>onComplete(items)</code></th>
-                                                    <td>上传、加载或新增完成，传入素材数组；移除完成时不传参数</td>
+                                                    <th scope="row"><code>onComplete()</code></th>
+                                                    <td>移除成功，无需传参</td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="row"><code>onError(error)</code></th>
-                                                    <td>失败时传入 Error 或错误消息</td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><code>onProgress(percent)</code></th>
-                                                    <td>更新上传进度，范围 0～100；仅 upload、add 提供</td>
+                                                    <td>移除失败时传入 Error 或错误消息</td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
-                                    <p>素材支持 URL 字符串或原图、缩略图对象。上传、新增需按文件顺序返回相同数量的素材；加载素材库可返回任意数量，空数组表示暂无素材。</p>
-                                    <widget-code language="javascript">onComplete([
-    'https://example.com/photo.jpg',
-    {
-        original:'https://example.com/original.jpg',
-        thumbnail:'https://example.com/thumbnail.jpg'
-    }
-]);</widget-code>
-                                    <p>缩略图用于预览，原图用于插入。省略缩略图则使用原地址，视频、音频、附件也可设置预览图片。</p>
-                                </div>
-                            </details>
-                            <details class="doc-details">
-                                <summary>移除素材</summary>
-                                <div>
                                     <widget-code language="javascript">editor.addEventListener('remove',async function(event){
     let {type,url,onComplete,onError} = event.detail;
     try{
@@ -647,7 +709,19 @@ editor.addEventListener('add',upload);</widget-code>
         onError(error);
     }
 });</widget-code>
-                                    <p>移除只更新素材列表，不影响文档中已插入的内容。失败时调用 <code>onError(error)</code>。</p>
+                                </div>
+                            </div>
+                            <details class="doc-details">
+                                <summary>素材格式</summary>
+                                <div>
+                                    <p>上传、新增和加载素材均支持以下格式：缩略图用于预览，原图用于插入；省略缩略图时使用原地址。</p>
+                                    <widget-code language="javascript">onComplete([
+    'https://example.com/photo.jpg',
+    {
+        original:'https://example.com/original.jpg',
+        thumbnail:'https://example.com/thumbnail.jpg'
+    }
+]);</widget-code>
                                 </div>
                             </details>
                             <details class="doc-details">
