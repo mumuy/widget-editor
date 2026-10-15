@@ -10,8 +10,8 @@ export default class EditorHistory {
         this.index = -1;
         this.record();
     }
-    record(){
-        let entry = {value:this.editor.contentHTML(),selection:this.editor.selection.bookmark()};
+    record(value=this.editor.contentHTML()){
+        let entry = {value,selection:this.editor.selection.bookmark()};
         if(this.entries[this.index]?.value===entry.value){
             this.entries[this.index].selection = entry.selection;
             return;

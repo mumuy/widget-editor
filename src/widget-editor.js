@@ -31,7 +31,7 @@ class WidgetEditor extends HTMLElement {
         this._onSelection = ()=>{
             if(this.selection?.current()){
                 this.saveSelection();
-                this.updateToolbar();
+                this.scheduleToolbarUpdate();
             }else{
                 this.links?.refresh();
                 this.codes?.refresh();
@@ -72,6 +72,8 @@ class WidgetEditor extends HTMLElement {
         document.addEventListener('selectionchange',this._onSelection);
     }
     disconnectedCallback(){
+        cancelAnimationFrame(this._toolbarFrame);
+        this._toolbarFrame = null;
         this.mobile?.disconnect();
         this.fullscreen?.disconnect();
         this.dropdown?.disconnect();
@@ -140,7 +142,7 @@ class WidgetEditor extends HTMLElement {
         if(!this._initialized){
             return this._pendingValue===null?this.innerHTML:this._pendingValue;
         }
-        return formatHTML(this.source?this.sourceArea.value:this.contentHTML());
+        return this.formatValue(this.source?this.sourceArea.value:this.contentHTML());
     }
     set value(value){
         if(!this._initialized){
@@ -150,7 +152,7 @@ class WidgetEditor extends HTMLElement {
         this._dialog?.dismiss();
         this.content.innerHTML = sanitizeHTML(value);
         normalizeTableCells(this.content,true);
-        this.sourceArea.value = formatHTML(this.content.innerHTML);
+        this.sourceArea.value = this.formatValue(this.content.innerHTML);
         this.selection.range = null;
         this.normalizeContent(false,null);
         this.cancelPainter();
@@ -207,6 +209,12 @@ class WidgetEditor extends HTMLElement {
         if(!this.formControl.disabled){
             (this.source?this.sourceArea:this.content)?.focus(options);
         }
+    }
+    formatValue(html){
+        if(this._formatted?.html!==html){
+            this._formatted = {html,value:formatHTML(html)};
+        }
+        return this._formatted.value;
     }
     getText(value=this.value){
         let template = document.createElement('template');
@@ -330,7 +338,7 @@ class WidgetEditor extends HTMLElement {
                     this.applyStyle(styles);
                 }
             }
-            this.updateToolbar();
+            this.scheduleToolbarUpdate();
         }));
         this.content.addEventListener('paste',event=>{
             event.preventDefault();
@@ -371,12 +379,13 @@ class WidgetEditor extends HTMLElement {
         if(feature.type==='dropdown'&&!feature.options.some(option=>String(option.value)===String(value))){
             return;
         }
+        let revision = this._toolbarRevision;
         this.saveSelection();
         feature.execute(this,value,event);
         if(feature.insertion&&this._dialog){
             this._dialog.dataset.insert = feature.name;
         }
-        this.updateToolbar();
+        if(this._toolbarRevision===revision){this.updateToolbar();}
     }
     openInsertDialog(type,mode){
         if(!this.isConnected||!this._initialized||this.formControl.disabled||this.source||this.codes?.selected()){
@@ -439,11 +448,10 @@ class WidgetEditor extends HTMLElement {
         if(this.source||this.formControl.disabled){
             return;
         }
-        this.restoreSelection();
-        document.execCommand('styleWithCSS',false,css);
-        document.execCommand(name,false,value);
-        this.saveSelection();
-        this.update();
+        this.transaction(()=>{
+            document.execCommand('styleWithCSS',false,css);
+            document.execCommand(name,false,value);
+        });
     }
     query(name){
         try{
@@ -454,16 +462,19 @@ class WidgetEditor extends HTMLElement {
     }
     transaction(callback){
         if(this.formControl.disabled){return;}
-        this.restoreSelection();
-        // 原生命令可能触发 input，事务结束时统一保存和更新。
+        let nested = !!this._transaction;
+        if(!nested){this.restoreSelection();}
+        // 原生 input 与嵌套命令不重复提交，最外层事务统一更新。
         this._transaction = true;
         try{
             callback();
         }finally{
-            this._transaction = false;
+            this._transaction = nested;
         }
-        this.saveSelection();
-        this.update();
+        if(!nested){
+            this.saveSelection();
+            this.update();
+        }
     }
     insertHTML(html){
         if(this.formControl.disabled){return;}
@@ -471,10 +482,7 @@ class WidgetEditor extends HTMLElement {
         if(!safe){
             return;
         }
-        this.restoreSelection();
-        document.execCommand('insertHTML',false,safe);
-        this.saveSelection();
-        this.update();
+        this.transaction(()=>document.execCommand('insertHTML',false,safe));
     }
     applyStyle(styles){
         this.transaction(()=>{
@@ -491,6 +499,7 @@ class WidgetEditor extends HTMLElement {
         this.updateToolbar();
     }
     cancelPainter(){
+        if(!this.painter){return;}
         this.painter = null;
         this.content?.classList.remove('painting');
         if(this._initialized){
@@ -544,7 +553,8 @@ class WidgetEditor extends HTMLElement {
             }
         });
         // 自动排版输出及源码，保留编辑节点和当前选区。
-        let value = this.value;
+        let html = this.source?null:this.contentHTML();
+        let value = this.formatValue(this.source?this.sourceArea.value:html);
         let text = this.getText(value);
         if(!this.source){
             this.sourceArea.value = value;
@@ -553,17 +563,27 @@ class WidgetEditor extends HTMLElement {
         this.updateCount(text);
         this.formControl.update(value);
         if(record){
-            this.history.record();
+            this.history.record(this.source?undefined:html);
         }
         this.updateToolbar();
         if(emit){
             this.dispatchEvent(new CustomEvent('change',{detail:{value,text},bubbles:true,composed:true}));
         }
     }
+    scheduleToolbarUpdate(){
+        if(this._toolbarFrame||!this.isConnected){return;}
+        this._toolbarFrame = requestAnimationFrame(()=>{
+            this._toolbarFrame = null;
+            this.updateToolbar();
+        });
+    }
     updateToolbar(){
         if(!this.history){
             return;
         }
+        cancelAnimationFrame(this._toolbarFrame);
+        this._toolbarFrame = null;
+        this._toolbarRevision = (this._toolbarRevision||0)+1;
         this.table?.refresh();
         this.links?.refresh();
         this.codes?.refresh();
