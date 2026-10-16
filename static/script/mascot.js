@@ -50,6 +50,7 @@
         if(active===running){return;}
         running = active;
         if(active){
+            mascot.classList.add('awake');
             bounds = null;
             document.addEventListener('pointermove',track,{passive:true});
             document.addEventListener('pointerleave',resetGaze);
@@ -64,7 +65,7 @@
             clearTimeout(timer);
             cancelAnimationFrame(frame);
             frame = null;
-            mascot.classList.remove('blinking','panting');
+            mascot.classList.remove('awake','blinking','panting');
             resetGaze();
         }
     }

@@ -772,7 +772,7 @@ section .caption::before {
 .mascot-eyelids {
     opacity: 0;
 }
-.mascot-tongue {
+.mascot-mouth,.mascot-tongue {
     opacity: 0;
     transform: scaleY(0);
     transform-box: fill-box;
@@ -781,16 +781,36 @@ section .caption::before {
 .mascot.blinking .mascot-eyelids {
     animation: mascot-blink .24s linear;
 }
+.mascot.awake .mascot-tail {
+    transform-box: view-box;
+    transform-origin: 89% 76%;
+    animation: mascot-wag 2.8s ease-in-out infinite;
+}
+.mascot.panting .mascot-mouth {
+    animation: mascot-mouth 1.8s ease-in-out;
+}
 .mascot.panting .mascot-tongue {
-    animation: mascot-tongue 1.2s ease-in-out;
+    animation: mascot-tongue 1.8s ease-in-out;
 }
 @keyframes mascot-blink {
     0%,100% {opacity: 0;}
     35%,65% {opacity: 1;}
 }
+@keyframes mascot-wag {
+    0%,55%,100% {transform: rotate(0);}
+    9%,27% {transform: rotate(-5deg);}
+    18%,36% {transform: rotate(7deg);}
+    45% {transform: rotate(-2deg);}
+}
+@keyframes mascot-mouth {
+    0%,100% {opacity: 0;transform: scaleY(.35);}
+    12%,88% {opacity: 1;transform: scaleY(1);}
+}
 @keyframes mascot-tongue {
-    0%,100% {opacity: 0;transform: scaleY(0);}
-    20%,75% {opacity: 1;transform: scaleY(1);}
+    0%,8%,100% {opacity: 0;transform: scaleY(0);}
+    26%,50%,74% {opacity: 1;transform: translateY(0) scaleY(1);}
+    38%,62% {opacity: 1;transform: translateY(4px) scaleY(1);}
+    88% {opacity: 1;transform: scaleY(.65);}
 }
 @media(prefers-reduced-motion: reduce) {
     .mascot-gaze {
@@ -798,6 +818,8 @@ section .caption::before {
         transform: none;
     }
     .mascot.blinking .mascot-eyelids,
+    .mascot.awake .mascot-tail,
+    .mascot.panting .mascot-mouth,
     .mascot.panting .mascot-tongue {
         animation: none;
     }

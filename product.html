@@ -51,12 +51,17 @@
                     <div class="bd">
                         <svg class="mascot" viewBox="0 0 1523 1033" aria-hidden="true" focusable="false">
                             <defs>
+                                <image id="mascot-artwork" href="static/image/mascot-puppy.webp" width="1523" height="1033"/>
+                                <clipPath id="mascot-tail-clip"><path d="M1250 430H1523V810H1348C1390 725 1310 645 1250 600Z"/></clipPath>
+                                <mask id="mascot-body-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1523" height="1033"><path fill="#fff" d="M0 0H1523V1033H0Z"/><path fill="#000" d="M1250 430H1523V810H1348C1390 725 1310 645 1250 600Z"/><path fill="#fff" d="M1270 624C1335 650 1390 724 1380 805H1338C1358 736 1304 665 1270 624Z"/></mask>
+                                <linearGradient id="mascot-tongue-color" x2="0" y2="1"><stop stop-color="#fbb0bc"/><stop offset="1" stop-color="#e97991"/></linearGradient>
                                 <clipPath id="mascot-left-eye"><path d="M392 474C387 449 402 425 428 417C451 409 479 406 490 430C502 457 495 486 481 502C453 513 423 505 405 497C395 494 392 487 392 474Z"/></clipPath>
                                 <clipPath id="mascot-right-eye"><path d="M650 520C655 492 671 474 692 471C720 468 740 486 743 514C749 540 737 558 725 565C694 572 663 560 650 547Z"/></clipPath>
                                 <radialGradient id="mascot-iris"><stop stop-color="#8b542b"/><stop offset="1" stop-color="#35180b"/></radialGradient>
                                 <linearGradient id="mascot-lid" x2="0" y2="1"><stop stop-color="#eda94e"/><stop offset="1" stop-color="#ffd185"/></linearGradient>
                             </defs>
-                            <image href="static/image/mascot-puppy.webp" width="1523" height="1033"/>
+                            <g class="mascot-tail" clip-path="url(#mascot-tail-clip)"><use href="#mascot-artwork"/></g>
+                            <use href="#mascot-artwork" mask="url(#mascot-body-mask)"/>
                             <g clip-path="url(#mascot-left-eye)">
                                 <path fill="#fffaf1" d="M380 400H510V520H380Z"/>
                                 <g class="mascot-gaze">
@@ -77,7 +82,14 @@
                                 <g clip-path="url(#mascot-left-eye)"><path fill="url(#mascot-lid)" d="M380 400H510V520H380Z"/><path d="M390 464Q445 490 499 459" fill="none" stroke="#74401e" stroke-width="7" stroke-linecap="round"/></g>
                                 <g clip-path="url(#mascot-right-eye)"><path fill="url(#mascot-lid)" d="M640 460H755V580H640Z"/><path d="M647 521Q696 553 749 524" fill="none" stroke="#74401e" stroke-width="7" stroke-linecap="round"/></g>
                             </g>
-                            <g class="mascot-tongue"><path d="M539 646Q559 657 581 657L581 687C581 711 548 712 544 689Z" fill="#ee8e9e" stroke="#743c24" stroke-width="4" stroke-linejoin="round"/><path d="M560 661L565 688" fill="none" stroke="#cc6479" stroke-width="3" stroke-linecap="round"/></g>
+                            <g class="mascot-mouth">
+                                <path d="M482 634Q518 651 546 647Q572 654 603 651C596 684 577 710 551 710C521 710 497 683 482 634Z" fill="#613022" stroke="#743c24" stroke-width="5" stroke-linejoin="round"/>
+                                <g class="mascot-tongue">
+                                    <path d="M513 680Q549 670 582 683L579 719C576 754 529 755 522 723Z" fill="url(#mascot-tongue-color)" stroke="#ae5366" stroke-width="4" stroke-linejoin="round"/>
+                                    <path d="M548 688Q555 704 552 722" fill="none" stroke="#d16b83" stroke-width="3" stroke-linecap="round"/>
+                                    <path d="M530 698Q532 718 538 724" fill="none" stroke="#ffd1d8" stroke-width="4" stroke-linecap="round"/>
+                                </g>
+                            </g>
                         </svg>
                         <widget-editor id="product-editor" name="content" height="520" image-limit="9" video-limit="3" audio-limit="3" attachment-limit="9" placeholder="写下你的第一段内容……">
                             <h1>把想法，变成清晰的内容</h1>
