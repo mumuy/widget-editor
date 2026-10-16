@@ -37,6 +37,9 @@ try {
     await run(`select('a');e.command('unlink');`);
     assert.equal(await run(`return !e.content.querySelector('a')&&e.text==='Alpha Beta';`), true);
     console.log('PASS formatting/link commands without toolbar, nested atomic undo, selection and FormData');
+    await run(`reset('<p class="editor-only" data-table-selected="" style="width: 375px; height: 667px;"><span style=""><span>A</span></span><span style="color:#2876df">B</span><span style="color:#2876df">C</span><span style="font-size:24px"></span></p>');`);
+    assert.equal(await run(`return e.value;`), '<p>A<span style="color: #2876df;">BC</span></p>', 'output removes internal attributes, computed dimensions and redundant spans');
+    assert.equal(await run(`return new FormData(document.querySelector('form')).get('content')===e.value;`), true, 'form uses compact output');
     await run(`reset();select('p',true);e.command('insertMedia',{type:'image',sources:['https://example.com/1.png'],values:{alt:'description'}});window.image=e.content.querySelector('img');e.command('updateImage',{image,width:'240',alignment:2});`);
     assert.equal(await run(`return image.alt==='description'&&image.getAttribute('width')==='240'&&e.value.includes('margin-left: auto;')&&!e._dialog;`), true);
     await run(`reset();e.setAttribute('image-limit','2');select('p',true);e.command('insertMedia',{type:'image',sources:['https://example.com/1.png','https://example.com/2.png']});`);

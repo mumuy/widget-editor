@@ -13,6 +13,23 @@ export default function formatHTML(html){
     // 空行直接输出 br；编辑时的段落占位不写入 HTML。
     normalizeEmptyLines(template.content);
     normalizeTableCells(template.content);
+    // 清理编辑命令留下的空样式外壳，不读取布局或计算样式。
+    Array.from(template.content.querySelectorAll('span')).reverse().forEach(span=>{
+        if(span.closest('code')){return;}
+        if(!span.attributes.length){
+            span.replaceWith(...span.childNodes);
+            return;
+        }
+        if(!span.hasChildNodes()){
+            span.remove();
+            return;
+        }
+        let next = span.nextSibling;
+        if(next?.nodeName==='SPAN'&&span.getAttribute('style')===next.getAttribute('style')){
+            span.append(...next.childNodes);
+            next.remove();
+        }
+    });
     let blockOnly = function(parent){
         return parent.children.length>0 && Array.from(parent.childNodes).every(function(node){
             return node.nodeType===Node.ELEMENT_NODE ? blockTags.has(node.localName) :
