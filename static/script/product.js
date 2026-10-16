@@ -1,17 +1,7 @@
 (function(){
     const editor = document.querySelector('#product-editor');
     const resources = new Map();
-    const output = document.querySelector('#html-output');
-    const readButton = document.querySelector('#read-html');
 
-    readButton.addEventListener('click',function(){
-        output.hidden = !output.hidden;
-        readButton.setAttribute('aria-expanded',String(!output.hidden));
-        if(!output.hidden){output.querySelector('code').textContent = editor.value;}
-    });
-    editor.addEventListener('change',function(){
-        if(!output.hidden){output.querySelector('code').textContent = editor.value;}
-    });
     document.querySelector('.copy-button').addEventListener('click',async function(){
         const button = this;
         try{

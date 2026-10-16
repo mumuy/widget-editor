@@ -25,29 +25,23 @@
             </div>
         </header>
         <main>
-            <section class="experience-section" id="experience">
-                <div class="container">
-                    <div class="section-heading">
-                        <div><p class="eyebrow">亲手体验，而不止于了解</p><h1>富文本编辑器</h1></div>
-                        <p>直接编辑下方内容，试试排版、表格与媒体插入。<br>也可以在状态栏切换源代码、全屏或手机编辑模式。</p>
-                    </div>
-                    <div class="editor-frame">
-                        <div class="editor-caption"><span>产品内容工作台</span><span>实时编辑 · HTML 输出</span></div>
-                        <widget-editor id="product-editor" name="content" height="520" image-limit="9" video-limit="3" audio-limit="3" attachment-limit="9" placeholder="写下你的第一段内容……">
-                            <h1>把想法，变成清晰的内容</h1>
-                            <p>一份项目说明、一篇产品文章，或一则团队公告。好的内容工具，让每一次表达都更从容。</p>
-                            <h2>新版本内容发布计划</h2>
-                            <p>选中这段文字，尝试<strong>加粗</strong>、<span style="color:#2563eb">文字颜色</span>或<span style="background-color:#fff0bd">背景着色</span>，也可以使用格式刷，让全文风格保持一致。</p>
-                            <blockquote><p>把时间留给内容，把排版交给编辑器。</p></blockquote>
-                            <h3>本次发布关注什么？</h3>
-                            <ul><li>用清晰的标题和列表，组织内容结构。</li><li>通过表格汇总信息，让协作安排一目了然。</li><li>插入图片、视频或附件，补充完整的内容背景。</li></ul>
-                            <table><thead><tr><th>阶段</th><th>工作内容</th><th>状态</th></tr></thead><tbody><tr><td>内容准备</td><td>整理发布说明与素材</td><td>已完成</td></tr><tr><td>团队审阅</td><td>核对信息与内容排版</td><td>进行中</td></tr><tr><td>正式发布</td><td>保存内容并提交业务系统</td><td>待开始</td></tr></tbody></table>
-                            <p>点击表格单元格，可体验行列增删、单元格合并与拆分。继续在这里写下你的想法。</p>
-                        </widget-editor>
-                        <div class="demo-actions"><p>演示文件仅保留在当前页面，不会上传至服务器。</p><button class="text-link" id="read-html" type="button" aria-controls="html-output" aria-expanded="false">查看生成的 HTML <span aria-hidden="true">↗</span></button></div>
-                        <pre class="html-output" id="html-output" tabindex="0" aria-label="当前编辑内容的 HTML" hidden><code></code></pre>
-                    </div>
+            <section class="experience-section container" id="experience">
+                <div class="experience-heading">
+                    <h1>富文本编辑器</h1>
+                    <p>一个标签，承载完整的内容编辑体验。</p>
                 </div>
+                <widget-editor id="product-editor" name="content" height="520" image-limit="9" video-limit="3" audio-limit="3" attachment-limit="9" placeholder="写下你的第一段内容……">
+                    <h1>把想法，变成清晰的内容</h1>
+                    <p>一份项目说明、一篇产品文章，或一则团队公告。好的内容工具，让每一次表达都更从容。</p>
+                    <h2>新版本内容发布计划</h2>
+                    <p>选中这段文字，尝试<strong>加粗</strong>、<span style="color:#2563eb">文字颜色</span>或<span style="background-color:#fff0bd">背景着色</span>，也可以使用格式刷，让全文风格保持一致。</p>
+                    <blockquote><p>把时间留给内容，把排版交给编辑器。</p></blockquote>
+                    <h3>本次发布关注什么？</h3>
+                    <ul><li>用清晰的标题和列表，组织内容结构。</li><li>通过表格汇总信息，让协作安排一目了然。</li><li>插入图片、视频或附件，补充完整的内容背景。</li></ul>
+                    <table><thead><tr><th>阶段</th><th>工作内容</th><th>状态</th></tr></thead><tbody><tr><td>内容准备</td><td>整理发布说明与素材</td><td>已完成</td></tr><tr><td>团队审阅</td><td>核对信息与内容排版</td><td>进行中</td></tr><tr><td>正式发布</td><td>保存内容并提交业务系统</td><td>待开始</td></tr></tbody></table>
+                    <p>点击表格单元格，可体验行列增删、单元格合并与拆分。继续在这里写下你的想法。</p>
+                </widget-editor>
+                <p class="demo-note">演示文件仅保留在当前页面，不会上传至服务器。</p>
             </section>
             <section class="hero container">
                 <div class="hero-copy">
