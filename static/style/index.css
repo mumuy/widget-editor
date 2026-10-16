@@ -212,11 +212,11 @@
     outline: none;
 }
 .doc-tab-list button:hover,.doc-tab-list button:focus-visible{
-    background: #00000008;
+    background: #00000006;
 }
 .doc-tab-list button[aria-selected="true"]{
     font-weight: bold;
-    color: #2095f2;
+    color: #333333;
 }
 .doc-tab-list button[aria-selected="true"]::after{
     position: absolute;
