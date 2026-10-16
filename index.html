@@ -154,7 +154,7 @@ console.log(editor.value);</code></pre>
                                         <table>
                                             <thead>
                                                 <tr>
-                                                    <th scope="col">属性</th>
+                                                    <th scope="col" width="160">属性</th>
                                                     <th scope="col">说明</th>
                                                     <th scope="col">默认值</th>
                                                 </tr>
@@ -214,7 +214,7 @@ console.log(editor.value);</code></pre>
                                         <table>
                                             <thead>
                                                 <tr>
-                                                    <th scope="col">属性</th>
+                                                    <th scope="col" width="160">属性</th>
                                                     <th scope="col">说明</th>
                                                     <th scope="col">默认值</th>
                                                 </tr>
@@ -264,7 +264,7 @@ console.log(editor.value);</code></pre>
                                         <table>
                                             <thead>
                                                 <tr>
-                                                    <th scope="col">属性</th>
+                                                    <th scope="col" width="200">属性</th>
                                                     <th scope="col">说明</th>
                                                     <th scope="col">默认值</th>
                                                 </tr>
@@ -322,7 +322,7 @@ console.log(editor.value);</code></pre>
                                         <table>
                                             <thead>
                                                 <tr>
-                                                    <th scope="col">分组</th>
+                                                    <th scope="col" width="100">分组</th>
                                                     <th scope="col">字段与功能</th>
                                                 </tr>
                                             </thead>
@@ -396,7 +396,7 @@ console.log(html);</widget-code>
                                                 </tr>
                                                 <tr>
                                                     <th scope="row"><code>mode</code></th>
-                                                    <td>upload 上传、url 网络地址、resource 素材库；iframe 仅适用于视频，方式须在媒体属性中开放</td>
+                                                    <td>upload 上传、url 网络地址、resource 素材库；iframe 仅适用于视频</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -414,7 +414,8 @@ editor.openInsertDialog('attachment','resource');</widget-code>
                             <details class="doc-details">
                                 <summary>原生表单</summary>
                                 <div>
-                                    <widget-code language="html">&lt;form id="article-form"&gt;
+                                    <div class="code-container">
+                                        <widget-code language="html">&lt;form id="article-form"&gt;
     &lt;widget-editor name="content" required&gt;&lt;/widget-editor&gt;
     &lt;button type="submit"&gt;保存&lt;/button&gt;
 &lt;/form&gt;
@@ -426,6 +427,7 @@ editor.openInsertDialog('attachment','resource');</widget-code>
         console.log(html);
     };
 &lt;/script&gt;</widget-code>
+                                    </div>
                                     <p>设置 <code>name</code> 即可提交 HTML，支持必填校验、禁用和重置。表单外的组件用 <code>form="表单id"</code> 关联。</p>
                                 </div>
                             </details>
@@ -448,11 +450,13 @@ editor.openInsertDialog('attachment','resource');</widget-code>
                                 </div>
                                 <div class="doc-tab-panel" role="tabpanel" id="events-ready-panel" aria-labelledby="events-ready-tab">
                                     <p>组件首次加入页面并初始化完成时触发，无 <code>detail</code> 数据。监听后再将组件加入页面。</p>
-                                    <widget-code language="javascript">let editor = document.createElement('widget-editor');
+                                    <div class="code-container">
+                                        <widget-code language="javascript">let editor = document.createElement('widget-editor');
 editor.addEventListener('ready',function(){
     console.log(editor.value);
 });
 document.body.appendChild(editor);</widget-code>
+                                    </div>
                                 </div>
                                 <div class="doc-tab-panel" role="tabpanel" id="events-change-panel" aria-labelledby="events-change-tab" hidden inert>
                                     <p>用户编辑内容或执行编辑操作时触发。程序设置 <code>value</code> 或调用 <code>setHTML()</code> 不触发此事件。</p>
@@ -519,7 +523,6 @@ document.body.appendChild(editor);</widget-code>
                                             </tbody>
                                         </table>
                                     </div>
-                                    <p>示例接口接收 <code>files</code> 和 <code>type</code>，返回 <code>{urls: [...]}</code>。处理函数可由 <code>upload</code> 和 <code>add</code> 共用。</p>
                                     <widget-code language="javascript">let editor = document.querySelector('#editor');
 
 async function upload(event){

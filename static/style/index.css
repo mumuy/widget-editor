@@ -137,18 +137,24 @@
     margin-bottom: 20px;
 }
 .table-inner{
+    margin-bottom: 20px;
     overflow-x: auto;
-    border-radius: 6px;
     outline: none;
+}
+.table-inner:last-child{
+    margin-bottom: 0;
 }
 .table-inner table{
     width: 100%;
     min-width: 600px;
-    table-layout: fixed;
+    table-layout: auto;
     line-height: 24px;
 }
 .table-inner tr{
     border-bottom: 1px solid #f0f0f0;
+}
+.table-inner tbody tr:last-child{
+    border-bottom: none;
 }
 .table-inner th,.table-inner td{
     box-sizing: border-box;
@@ -236,7 +242,7 @@
 .doc-tab-panel .table-inner{
     margin-bottom: 16px;
 }
-.doc-tab-panel > :last-child{
+.doc-tab-panel .table-inner:last-child{
     margin-bottom: 0;
 }
 .doc-details{
@@ -273,10 +279,6 @@
 .doc-details > div{
     padding: 20px;
 }
-.doc-details .table-inner{
-    overflow-x: auto;
-    margin-bottom: 20px;
-}
 
 
 @media screen and (max-width: 760px){
@@ -291,9 +293,6 @@
     }
     .table-inner th,.table-inner td{
         padding: 10px;
-    }
-    .table-inner tr > :first-child{
-        width: 31%;
     }
     .font-values{
         grid-template-columns: repeat(2,minmax(0,1fr));
