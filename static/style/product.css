@@ -114,10 +114,10 @@ header .brand,footer .brand {
     font-weight: 600;
     white-space: nowrap;
 }
-header .brand img,footer .brand img {
-    width: 66px;
-    height: 44px;
-    object-fit: contain;
+header .brand svg,footer .brand svg {
+    width: 32px;
+    height: 32px;
+    color: var(--accent);
 }
 header .brand span,footer .brand span {
     color: var(--accent);
@@ -220,7 +220,7 @@ section .caption::before {
     width: 210px;
     aspect-ratio: 3 / 2;
     background: url('../image/mascot-puppy.webp') center / contain no-repeat;
-    transform: translateY(16%);
+    transform: translateY(13%);
     pointer-events: none;
 }
 .mod-experience .hd h1 {
