@@ -11,7 +11,7 @@ export function normalizeMaterial(value,kind){
     return original&&thumbnail?{original,thumbnail}:null;
 }
 
-// 素材数据与可见卡片分开管理，滚动时只创建可视区域及相邻两行。
+// 素材按数据顺序渲染，尺寸和排列交给 CSS Grid。
 export default function createMaterials(editor,options){
     let list = document.createElement('div');
     list.className = 'material-list';
@@ -21,11 +21,6 @@ export default function createMaterials(editor,options){
     let selected = new Set();
     let busy = false;
     let cards = new Map();
-    let viewport;
-    let frame;
-    let columns = 1;
-    let width = 0;
-    let windowKey = '';
     let updateSelection = ()=>{
         cards.forEach((card,index)=>card.querySelector('.material-select').setAttribute('aria-pressed',String(selected.has(items[index].original))));
         options.onSelectionChange?.(selected.size);
@@ -34,8 +29,6 @@ export default function createMaterials(editor,options){
         items = [];
         selected.clear();
         cards.clear();
-        windowKey = '';
-        list.style.removeProperty('--material-rows');
         let message = document.createElement('p');
         message.className = 'material-empty';
         message.setAttribute('role','status');
@@ -82,52 +75,17 @@ export default function createMaterials(editor,options){
         card.append(select,remove);
         return card;
     };
-    let renderWindow = function(force=false){
-        if(!items.length||!list.clientWidth||list.closest('[hidden]')){return;}
-        if(width!==list.clientWidth){
-            width = list.clientWidth;
-            force = true;
-            // 清除旧列定位，避免窄屏下产生隐式列，影响 CSS 实际列数。
-            cards.forEach(card=>{
-                card.style.removeProperty('grid-column');
-                card.style.removeProperty('grid-row');
-            });
-        }
-        columns = getComputedStyle(list).gridTemplateColumns.split(' ').length;
-        list.style.setProperty('--material-rows',Math.ceil(items.length/columns));
-        let offset = Math.max(0,viewport.getBoundingClientRect().top-list.getBoundingClientRect().top);
-        let start = Math.max(0,Math.floor(offset/94)-2)*columns;
-        let end = Math.min(items.length,(Math.ceil((offset+viewport.clientHeight)/94)+2)*columns);
-        let focused = editor.shadowRoot.activeElement?.closest('.material-item');
-        let focusIndex = focused&&list.contains(focused)?Number(focused.dataset.index):-1;
-        let key = [start,end,columns,focusIndex].join(':');
-        if(!force&&key===windowKey){return;}
-        windowKey = key;
-        cards.forEach((card,index)=>{
-            if((index<start||index>=end)&&index!==focusIndex){card.remove();cards.delete(index);}
+    let renderCards = function(){
+        cards.clear();
+        let fragment = document.createDocumentFragment();
+        items.forEach((item,index)=>{
+            let card = createCard(item,index);
+            cards.set(index,card);
+            fragment.appendChild(card);
         });
-        for(let index=start;index<end;index++){
-            if(!cards.has(index)){
-                let card = createCard(items[index],index);
-                cards.set(index,card);
-                list.appendChild(card);
-            }
-        }
-        // DOM 顺序和视觉顺序一致，Tab 不会跳到前一行。
-        let next = null;
-        Array.from(cards.keys()).sort((a,b)=>b-a).forEach(index=>{
-            let card = cards.get(index);
-            card.style.gridRow = Math.floor(index/columns)+1;
-            card.style.gridColumn = index%columns+1;
-            if(next!==card.nextElementSibling){list.insertBefore(card,next);}
-            next = card;
-        });
+        list.replaceChildren(fragment);
+        updateSelection();
     };
-    let schedule = ()=>{
-        if(!frame){frame = requestAnimationFrame(()=>{frame = null;renderWindow();});}
-    };
-    let observer = new ResizeObserver(schedule);
-    observer.observe(list);
     list.addEventListener('click',async event=>{
         let button = event.target.closest('button');
         let card = button?.closest('.material-item');
@@ -138,7 +96,7 @@ export default function createMaterials(editor,options){
                 selected.delete(item.original);
                 items = items.filter(value=>value!==item);
                 if(!items.length){status('暂无素材');return;}
-                cards.clear();list.replaceChildren();renderWindow(true);updateSelection();
+                renderCards();
                 list.querySelector('.material-select')?.focus({preventScroll:true});
             }
             return;
@@ -156,6 +114,7 @@ export default function createMaterials(editor,options){
     });
     list.addEventListener('keydown',event=>{
         if(event.isComposing||busy||!event.target.matches('.material-select')){return;}
+        let columns = getComputedStyle(list).gridTemplateColumns.split(' ').length;
         let index = Number(event.target.parentElement.dataset.index);
         let next = event.key==='ArrowRight'?index+1:event.key==='ArrowLeft'?index-1:
             event.key==='ArrowDown'?index+columns:event.key==='ArrowUp'?index-columns:
@@ -163,21 +122,14 @@ export default function createMaterials(editor,options){
         if(next===null){return;}
         event.preventDefault();
         next = Math.max(0,Math.min(items.length-1,next));
-        let top = list.getBoundingClientRect().top-viewport.getBoundingClientRect().top+viewport.scrollTop+Math.floor(next/columns)*94;
-        if(top<viewport.scrollTop){viewport.scrollTop = top;}
-        else if(top+88>viewport.scrollTop+viewport.clientHeight){viewport.scrollTop = top+88-viewport.clientHeight;}
-        renderWindow(true);
-        cards.get(next)?.querySelector('.material-select').focus({preventScroll:true});
+        let button = cards.get(next)?.querySelector('.material-select');
+        button?.focus({preventScroll:true});
+        button?.scrollIntoView({block:'nearest',inline:'nearest'});
     });
     return {
         element:list,
         status,
         values:()=>items.filter(item=>selected.has(item.original)).map(item=>item.original),
-        destroy(){
-            observer.disconnect();
-            viewport?.removeEventListener('scroll',schedule);
-            cancelAnimationFrame(frame);
-        },
         busy(value){
             busy = value;
             list.setAttribute('aria-busy',String(value));
@@ -195,15 +147,8 @@ export default function createMaterials(editor,options){
             items = materials;
             selected = new Set(items.filter(item=>selection.has(item.original)).map(item=>item.original));
             if(!items.length){return;}
-            list.replaceChildren();
-            if(viewport!==list.parentElement){
-                viewport?.removeEventListener('scroll',schedule);
-                viewport = list.parentElement;
-                viewport.addEventListener('scroll',schedule,{passive:true});
-            }
-            viewport.scrollTop = 0;
-            renderWindow(true);
-            updateSelection();
+            list.parentElement.scrollTop = 0;
+            renderCards();
         }
     };
 }

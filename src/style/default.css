@@ -872,7 +872,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog
 .material-list{
     display: grid;
     grid-template-columns: repeat(auto-fill,minmax(min(120px,100%),1fr));
-    grid-template-rows: repeat(var(--material-rows,1),88px);
+    grid-auto-rows: 88px;
     gap: 6px;
     flex: 0 0 auto;
     min-height: 88px;
@@ -894,6 +894,8 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog
 }
 .material-item{
     position: relative;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 88px;
     min-width: 0;
 }
 .material-select{

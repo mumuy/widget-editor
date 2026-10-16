@@ -172,9 +172,9 @@ try {
     await run(`e._dialog.querySelector('[data-media-tab=resource]').click();materialRequest.onComplete(Array.from({length:5000},(_,i)=>({original:'https://example.com/'+i+'.png',thumbnail:'/thumb'})));`);
     await b.delay(80);
     let initial = await run(`return {cards:e._dialog.querySelectorAll('.material-item').length,height:e._dialog.querySelector('.material-list').offsetHeight};`);
-    assert.ok(initial.cards > 0 && initial.cards < 100);
+    assert.ok(initial.cards === 5000);
     assert.ok(initial.height > 100000);
-    assert.equal(await run(`let list=e._dialog.querySelector('.material-list');return getComputedStyle(list).display==='grid'&&getComputedStyle(list).gridTemplateColumns.split(' ').length===4&&[...list.querySelectorAll('.material-item')].every(card=>!card.style.width&&!card.style.left&&!card.style.top);`), true, 'CSS grid owns card widths and layout');
+    assert.equal(await run(`let list=e._dialog.querySelector('.material-list');return getComputedStyle(list).display==='grid'&&getComputedStyle(list).gridTemplateColumns.split(' ').length===4&&[...list.querySelectorAll('.material-item')].every(card=>!card.hasAttribute('style'));`), true, 'CSS grid owns card widths and layout');
     await b.send('Emulation.setDeviceMetricsOverride', {width:390,height:800,deviceScaleFactor:1,mobile:false});
     await b.delay(80);
     assert.equal(await run(`let list=e._dialog.querySelector('.material-list');return getComputedStyle(list).gridTemplateColumns.split(' ').length===2&&list.parentElement.scrollWidth<=list.parentElement.clientWidth;`), true, 'CSS grid adapts to narrow viewport without horizontal overflow');
@@ -183,18 +183,18 @@ try {
     assert.equal(await run(`let list=e._dialog.querySelector('.material-list');return !list.querySelector('.material-empty svg')&&list.getAttribute('aria-busy')==='false'&&list.parentElement.scrollWidth<=list.parentElement.clientWidth;`), true, 'loaded grid has only vertical scrolling');
     await run(`e._dialog.querySelector('.material-select').click();let panel=e._dialog.querySelector('[data-media-panel=resource]');panel.scrollTop=panel.scrollHeight;panel.dispatchEvent(new Event('scroll'));`);
     await b.delay(80);
-    await waitFor(`return !!e._dialog.querySelector('[data-index="4999"]')&&e._dialog.querySelectorAll('.material-item').length<100;`, 'bounded cards after scroll');
+    await waitFor(`return !!e._dialog.querySelector('[data-index="4999"]')&&e._dialog.querySelectorAll('.material-item').length===5000;`, 'CSS grid cards after scroll');
     await run(`e._dialog.querySelector('[data-index="4999"] .material-select').click();`);
     assert.equal(await run(`return e._dialog.querySelector('[data-count]').textContent;`), '已选 2 项', 'selection preserved across windows');
     await run(`let button=e._dialog.querySelector('[data-index="4999"] .material-select');button.focus();button.dispatchEvent(new KeyboardEvent('keydown',{key:'Home',bubbles:true}));`);
-    assert.equal(await run(`let card=e.shadowRoot.activeElement.closest('.material-item');let panel=e._dialog.querySelector('[data-media-panel=resource]');return card?.dataset.index==='0'&&card.getBoundingClientRect().top>=panel.getBoundingClientRect().top;`), true, 'virtual grid Home focuses visible card');
+    assert.equal(await run(`let card=e.shadowRoot.activeElement.closest('.material-item');let panel=e._dialog.querySelector('[data-media-panel=resource]');return card?.dataset.index==='0'&&card.getBoundingClientRect().top>=panel.getBoundingClientRect().top;`), true, 'grid Home focuses visible card');
     await run(`e._dialog.querySelector('[data-index="0"] .material-remove').click();`);
     await b.delay(50);
-    assert.equal(await run(`return removals.length===1&&e._dialog.querySelector('[data-count]').textContent==='已选 1 项';`), true, 'remove virtual item');
+    assert.equal(await run(`return removals.length===1&&e._dialog.querySelector('[data-count]').textContent==='已选 1 项';`), true, 'remove material item');
     await run(`e._dialog.querySelector('form').requestSubmit();`);
     await b.delay(30);
     assert.equal(await run(`return e.content.querySelector('img').getAttribute('src');`), 'https://example.com/4999.png', 'insert original outside initial window');
-    console.log('PASS 5000 materials, bounded DOM, scrolling, keyboard, persistent selection, remove and insert');
+    console.log('PASS 5000 materials, CSS grid, scrolling, keyboard, persistent selection, remove and insert');
     await run(`reset(Array.from({length:400},(_,i)=>'<p>Paragraph '+i+'</p>').join('')+'<pre><code data-language="javascript">const stable = true;</code></pre>');window.unchangedCode=e.content.querySelector('code');caret('p');`);
     await b.send('Input.insertText', {
         text: ' edited'
