@@ -22,7 +22,6 @@ export default {
                 return values.multiple?'<p>'+html+'</p>':html;
             },
             insertMultiple(html){
-                editor.history.record();
                 editor.transaction(()=>{
                     document.execCommand('insertHTML',false,sanitizeHTML(html));
                     // 将插入点后原有的文字移到下一段，保证图片段落独立。

@@ -3,9 +3,19 @@ export default class EditorSelection {
         this.editor = editor;
         this.range = null;
     }
+    get native(){
+        // 各浏览器对 Shadow DOM 选区的入口不同，统一在此处理。
+        return this.editor.shadowRoot.getSelection?.()||window.getSelection();
+    }
+    select(range){
+        let selection = this.native;
+        selection.removeAllRanges();
+        selection.addRange(range);
+        this.range = range.cloneRange();
+        return range;
+    }
     current(){
-        let root = this.editor.shadowRoot;
-        let selection = root.getSelection?root.getSelection():window.getSelection();
+        let selection = this.native;
         if(selection&&selection.rangeCount){
             let range = selection.getRangeAt(0);
             if(this.editor.content.contains(range.commonAncestorContainer)){
@@ -35,11 +45,7 @@ export default class EditorSelection {
             range.selectNodeContents(last?.matches('p,h1,h2,h3,h4,h5,h6')?last:content);
             range.collapse(false);
         }
-        let selection = window.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(range);
-        this.range = range.cloneRange();
-        return range;
+        return this.select(range);
     }
     ensureVisible(){
         let editor = this.editor;

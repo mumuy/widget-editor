@@ -65,9 +65,7 @@ export default class EditorDropdown {
         this.opened = group;
         let menu = group.querySelector('.tool-menu');
         menu.hidden = false;
-        if(menu.showPopover){
-            menu.showPopover();
-        }
+        menu.showPopover();
         button.setAttribute('aria-expanded','true');
         let rect = button.getBoundingClientRect();
         let below = window.innerHeight-rect.bottom-8;
@@ -89,7 +87,7 @@ export default class EditorDropdown {
         }
         let group = this.opened;
         let menu = group.querySelector('.tool-menu');
-        if(menu.hidePopover&&menu.matches(':popover-open')){
+        if(menu.matches(':popover-open')){
             menu.hidePopover();
         }
         menu.hidden = true;

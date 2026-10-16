@@ -153,15 +153,12 @@ export default class EditorCode {
     normalize(range=this.editor.getRange()){
         let editor = this.editor;
         if(range&&!editor.content.contains(range.commonAncestorContainer)){range = null;}
-        if(normalizeCode(editor.content,true,range)&&range){
+        if(normalizeCode(editor.content,true,range,editor.normalizer?.collect())&&range){
             this.select(range);
         }
     }
     select(range){
-        let selection = this.editor.shadowRoot.getSelection?.()||window.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(range);
-        this.editor.selection.range = range.cloneRange();
+        this.editor.selection.select(range);
     }
     beforeInput(event){
         let code = this.selected();
@@ -188,7 +185,6 @@ export default class EditorCode {
         if(!code||this.editor.source){return;}
         let range = this.editor.getRange();
         let result = callback(codeText(code),codeOffset(code,range.startContainer,range.startOffset),codeOffset(code,range.endContainer,range.endOffset));
-        this.editor.history.record();
         this.editor.transaction(()=>{
             code.textContent = result.text;
             delete code._highlight;
@@ -235,7 +231,6 @@ export default class EditorCode {
         code.textContent = editor.getRange()?.toString()||'';
         pre.appendChild(code);
         renderCode(code);
-        editor.history.record();
         editor.transaction(()=>{
             document.execCommand('insertHTML',false,pre.outerHTML);
         });
@@ -256,7 +251,6 @@ export default class EditorCode {
     choose(language){
         let code = this.target;
         if(!code||!this.editor.content.contains(code)||this.editor.source){return;}
-        this.editor.history.record();
         this.editor.transaction(()=>{
             code.setAttribute('data-language',language);
             this.toggle(false);
@@ -266,7 +260,7 @@ export default class EditorCode {
     toggle(opened){
         let previous = this.opened;
         this.opened = opened;
-        if(!opened&&this.menu.hidePopover&&this.menu.matches(':popover-open')){this.menu.hidePopover();}
+        if(!opened&&this.menu.matches(':popover-open')){this.menu.hidePopover();}
         if(!opened&&this.menu.contains(this.editor.shadowRoot.activeElement)){this.trigger.focus({preventScroll:true});}
         this.menu.hidden = !opened;
         this.trigger.setAttribute('aria-expanded',String(opened));
@@ -281,10 +275,10 @@ export default class EditorCode {
         this.blocked = this.selected()?this.range().cloneRange():null;
         this.target = null;
         this.opened = false;
-        if(this.menu.hidePopover&&this.menu.matches(':popover-open')){this.menu.hidePopover();}
+        if(this.menu.matches(':popover-open')){this.menu.hidePopover();}
         this.menu.hidden = true;
         this.trigger.setAttribute('aria-expanded','false');
-        if(this.toolbar.hidePopover&&this.toolbar.matches(':popover-open')){this.toolbar.hidePopover();}
+        if(this.toolbar.matches(':popover-open')){this.toolbar.hidePopover();}
         this.toolbar.hidden = true;
     }
     refresh(){
@@ -317,7 +311,7 @@ export default class EditorCode {
             button.setAttribute('part','dropdown-option'+(selected?' dropdown-option-selected':''));
         });
         this.toolbar.hidden = false;
-        if(this.toolbar.showPopover&&!this.toolbar.matches(':popover-open')){this.toolbar.showPopover();}
+        if(!this.toolbar.matches(':popover-open')){this.toolbar.showPopover();}
         let size = this.toolbar.getBoundingClientRect();
         this.toolbar.style.left = Math.max(8,Math.min(rect.right-size.width-8,width-size.width-8))+'px';
         let top = Math.max(body.top-size.height-8,Math.min(rect.top-size.height-8,body.bottom-size.height-8));
@@ -325,7 +319,7 @@ export default class EditorCode {
         if(this.opened){this.positionMenu();}
     }
     positionMenu(){
-        if(this.menu.showPopover&&!this.menu.matches(':popover-open')){this.menu.showPopover();}
+        if(!this.menu.matches(':popover-open')){this.menu.showPopover();}
         let rect = this.trigger.getBoundingClientRect();
         let width = document.documentElement.clientWidth;
         let below = document.documentElement.clientHeight-rect.bottom-8;

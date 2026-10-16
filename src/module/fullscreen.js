@@ -56,10 +56,8 @@ export default class EditorFullscreen {
         editor.style.setProperty('height',editor.getBoundingClientRect().height+'px','important');
         this.state.styles.forEach(({element,name})=>element.style.setProperty(name,'hidden','important'));
         this.panel.classList.add('fullscreen');
-        if(this.panel.showPopover){
-            this.panel.setAttribute('popover','manual');
-            this.panel.showPopover();
-        }
+        this.panel.setAttribute('popover','manual');
+        this.panel.showPopover();
         active = this;
         this.update(true);
         editor.mobile?.fit();

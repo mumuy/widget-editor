@@ -53,10 +53,7 @@ export default class EditorBlocks {
         return paragraph;
     }
     select(range){
-        let selection = this.editor.shadowRoot.getSelection?.()||window.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(range);
-        this.editor.selection.range = range.cloneRange();
+        this.editor.selection.select(range);
     }
     range(){
         let editor = this.editor;
@@ -78,7 +75,6 @@ export default class EditorBlocks {
     }
     exit(block){
         let paragraph = block.nextElementSibling;
-        this.editor.history.record();
         this.editor.transaction(()=>{
             if(!paragraph?.matches(paragraphTags)){
                 paragraph = this.paragraph();
@@ -91,7 +87,6 @@ export default class EditorBlocks {
     remove(block,paragraph,end=false){
         let editor = this.editor;
         let range = editor.getRange()?.cloneRange();
-        editor.history.record();
         editor.transaction(()=>{
             if(!paragraph){
                 paragraph = this.sibling(block);
@@ -111,7 +106,6 @@ export default class EditorBlocks {
     }
     join(left,right){
         let editor = this.editor;
-        editor.history.record();
         editor.transaction(()=>{
             let range = document.createRange();
             if(right.matches('p')){
@@ -137,7 +131,6 @@ export default class EditorBlocks {
         let range = editor.getRange().cloneRange();
         let node = range.startContainer;
         let offset = range.startOffset;
-        editor.history.record();
         editor.transaction(()=>{
             let tail = quote.cloneNode(false);
             while(paragraph.nextSibling){
@@ -208,7 +201,6 @@ export default class EditorBlocks {
             let blocks = Array.from(editor.content.querySelectorAll(blockTags+','+containerTags)).filter(node=>this.covers(node,range));
             if(!blocks.length){return false;}
             event.preventDefault();
-            editor.history.record();
             editor.transaction(()=>{
                 range.deleteContents();
                 blocks.forEach(node=>node.remove());

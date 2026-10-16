@@ -3,6 +3,11 @@ import http from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { browser } from './browser.mjs';
 const server = http.createServer(async (req, res) => {
+    if(req.url==='/style.css'){
+        res.setHeader('Content-Type','text/css');
+        res.end(await readFile(new URL('../src/style/default.css',import.meta.url)));
+        return;
+    }
     res.setHeader('Content-Type', req.url === '/build.js' ? 'text/javascript' : 'text/html');
     res.end(req.url === '/build.js' ? await readFile(new URL('../dist/widget-editor.min.js', import.meta.url)) : req.url === '/' ? '<!doctype html><meta charset="utf-8"><form><widget-editor name="content" image-limit=""></widget-editor></form><script src="/build.js"></script>' : '');
 });
@@ -11,6 +16,8 @@ let b;
 try {
     b = await browser('http://127.0.0.1:' + server.address().port);
     const run = b.evaluate;
+    await run(`let sheet=new CSSStyleSheet();sheet.replaceSync(await(await fetch('/style.css')).text());let before=[...sheet.cssRules].map(rule=>rule.cssText);let after=[...document.querySelector('widget-editor').shadowRoot.adoptedStyleSheets[0].cssRules].map(rule=>rule.cssText);if(JSON.stringify(before)!==JSON.stringify(after))throw Error('Compressed stylesheet differs from source');`);
+    console.log('PASS compressed CSS preserves all browser stylesheet rules');
     const waitFor = async (expression,message)=>{
         for(let attempt=0;attempt<50;attempt++){
             if(await run(expression)){return;}
@@ -185,6 +192,9 @@ try {
     await run(`e.content.querySelector('p').innerHTML='<div>Direct DOM</div>';await Promise.resolve();e.normalizeContent();`);
     assert.equal(await run(`return !e.content.querySelector('p div')&&e.value.includes('Direct DOM');`), true, 'observer sees external DOM changes');
     console.log('PASS long document output, unchanged code nodes and external DOM normalization');
+    await run(`e.update();let supports=CSS.supports;let calls=0;CSS.supports=function(...args){calls++;return supports.apply(this,args);};try{e.codes.normalize();if(calls)throw Error('Unchanged code palette was recalculated');let code=e.content.querySelector('code');code.style.setProperty('--code-keyword','#123456');e.update();if(!calls||code.style.getPropertyValue('--code-keyword')!=='#123456')throw Error('Changed palette was skipped');code.textContent='const updated = 2;';e.update();if(!code.querySelector('span')||!e.value.includes('updated'))throw Error('Changed code was skipped');}finally{CSS.supports=supports;}let create=document.createElement;let templates=0;document.createElement=function(tag,...args){if(tag==='template')templates++;return create.call(this,tag,...args);};try{for(let i=0;i<12;i++){void e.text;}if(templates)throw Error('Repeated text reads reparsed HTML');}finally{document.createElement=create;}`);
+    console.log('PASS unchanged code skip, code/palette invalidation and cached text reads');
+
     await run(`reset();for(let kind of ['image','video','audio','attachment']){let attr=kind+'-limit';if(e.config.get(attr)!==1&&kind!=='image')throw Error('Default limit');e.setAttribute(attr,'2');if(e.config.get(attr)!==2)throw Error('Configured limit');let dialog=e.openInsertDialog(kind,'upload');if(!dialog.querySelector('[name=file]').multiple)throw Error('Multiple file input');e.setAttribute(attr,'1');if(e._dialog!==null)throw Error('Changing limit must close dialog');e.setAttribute(attr,'');if(e.config.get(attr)!==Infinity)throw Error('Empty limit');e.setAttribute(attr,'0');if(e.config.get(attr)!==1)throw Error('Invalid limit');e.removeAttribute(attr);if(e.config.get(attr)!==1)throw Error('Default restored');}`);
     console.log('PASS image/video/audio/attachment limit attributes, file inputs and dynamic invalidation');
     await run(`reset();e.value='';if(['checkValidity','reportValidity','setCustomValidity','validity','validationMessage','willValidate'].some(name=>name in e))throw Error('Unexpected validation API');if('message' in e.formControl)throw Error('Custom validation state remains');e.required=true;if(document.querySelector('form').checkValidity())throw Error('Required form validation');e.value='<p>已填写</p>';if(!document.querySelector('form').checkValidity())throw Error('Filled form validation');e.required=false;`);

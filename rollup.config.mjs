@@ -1,6 +1,4 @@
-import resolve from '@rollup/plugin-node-resolve';          // 使用node_modules包
 import terser from '@rollup/plugin-terser';                 // 代码压缩
-import babel from '@rollup/plugin-babel';                   // ECMAScript兼容
 import css from "rollup-plugin-import-css";
 import pkg from './package.json' with { type:'json' };     // 获取package信息
 
@@ -21,14 +19,10 @@ const banner = `/*!
  * Created on: ${date}
  */`;
 
+// 面向现代浏览器保留原生语法，仅压缩 JS 和 CSS。
 const commonPlugins = [
-    resolve(),
-    css(),
-    babel({
-        babelHelpers: 'runtime',
-        exclude:'node_modules/**'
-    }),
-    terser()
+    css({minify:true}),
+    terser({ecma:2022})
 ];
 
  export default [{

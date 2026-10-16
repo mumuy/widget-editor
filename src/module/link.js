@@ -199,7 +199,6 @@ export default class EditorLink {
         let url = safeURL(String(values.url||'').trim());
         if(!url||editor.source||editor.formControl.disabled||link&&!this.link(link)){return false;}
         let text = String(values.text||'').trim()||url;
-        editor.history.record();
         if(link){
             editor.transaction(()=>{
                 link.setAttribute('href',url);
@@ -235,7 +234,7 @@ export default class EditorLink {
         this.hover = null;
         this.target = null;
         this.point = null;
-        if(this.toolbar.hidePopover&&this.toolbar.matches(':popover-open')){
+        if(this.toolbar.matches(':popover-open')){
             this.toolbar.hidePopover();
         }
         this.toolbar.hidden = true;
@@ -273,7 +272,7 @@ export default class EditorLink {
         this.target = link;
         editor.table?.hide();
         this.toolbar.hidden = false;
-        if(this.toolbar.showPopover&&!this.toolbar.matches(':popover-open')){
+        if(!this.toolbar.matches(':popover-open')){
             this.toolbar.showPopover();
         }
         if(this.focused()){return;}
@@ -293,7 +292,6 @@ export default class EditorLink {
             return;
         }
         if(!this.focused()){editor.saveSelection();}
-        editor.history.record();
         editor.transaction(()=>{
             let range = editor.getRange().cloneRange();
             let offset = (node,value)=>{
@@ -316,10 +314,7 @@ export default class EditorLink {
             if(end!==null){
                 range.setEnd(text,end);
             }
-            let selection = editor.shadowRoot.getSelection?.()||window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-            editor.selection.range = range.cloneRange();
+            editor.selection.select(range);
             if(start!==null&&end!==null){
                 document.execCommand('removeFormat');
             }

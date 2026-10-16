@@ -4,8 +4,8 @@ import normalizeParagraphs from './method/normalizeParagraphs.js';
 export default class EditorNormalizer {
     constructor(editor){
         this.editor = editor;
-        this.records = [];
-        this.observer = new MutationObserver(records=>this.records.push(...records));
+        this.dirty = new Set();
+        this.observer = new MutationObserver(records=>this.mark(records));
     }
     connect(){
         this.full = true;
@@ -13,25 +13,32 @@ export default class EditorNormalizer {
     }
     disconnect(){
         this.observer.disconnect();
-        this.records = [];
+        this.dirty.clear();
         this.full = true;
+    }
+    mark(records){
+        let content = this.editor.content;
+        records.forEach(record=>{
+            for(let node=record.target;node&&node!==content.parentNode;node=node.parentNode){this.dirty.add(node);}
+            record.addedNodes.forEach(node=>{
+                this.dirty.add(node);
+                node.querySelectorAll?.('*').forEach(child=>this.dirty.add(child));
+            });
+        });
+    }
+    collect(){
+        this.mark(this.observer.takeRecords());
+        return this.full?null:this.dirty;
     }
     normalize(range,ensure){
         let content = this.editor.content;
-        let records = this.records.splice(0).concat(this.observer.takeRecords());
-        let dirty = new Set();
-        records.forEach(record=>{
-            for(let node=record.target;node&&node!==content.parentNode;node=node.parentNode){dirty.add(node);}
-            record.addedNodes.forEach(node=>{
-                dirty.add(node);
-                node.querySelectorAll?.('*').forEach(child=>dirty.add(child));
-            });
-        });
+        let dirty = this.collect();
         let changed = false;
-        if(this.full||dirty.size||ensure&&!content.childNodes.length){
-            changed = normalizeParagraphs(content,range,ensure,this.full?null:dirty);
+        if(!dirty||dirty.size||ensure&&!content.childNodes.length){
+            changed = normalizeParagraphs(content,range,ensure,dirty);
         }
         this.full = false;
+        this.dirty.clear();
         this.observer.takeRecords();
         return changed;
     }

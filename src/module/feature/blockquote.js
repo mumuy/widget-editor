@@ -66,9 +66,7 @@ export default {
                 range.selectNodeContents(quote.isConnected?quote:editor.content);
                 range.collapse(false);
             }
-            let selection = editor.content.getRootNode().getSelection?.()||window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
+            editor.selection.select(range);
         });
     },
     active(editor){

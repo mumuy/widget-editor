@@ -170,7 +170,7 @@ export default class TableEditor {
         this.hide();
     }
     hide(){
-        if(this.toolbar.hidePopover&&this.toolbar.matches(':popover-open')){
+        if(this.toolbar.matches(':popover-open')){
             this.toolbar.hidePopover();
         }
         this.toolbar.hidden = true;
@@ -210,7 +210,7 @@ export default class TableEditor {
             return;
         }
         this.toolbar.hidden = false;
-        if(this.toolbar.showPopover&&!this.toolbar.matches(':popover-open')){
+        if(!this.toolbar.matches(':popover-open')){
             this.toolbar.showPopover();
         }
         let cell = this.last.getBoundingClientRect();
@@ -280,7 +280,6 @@ export default class TableEditor {
         if(action==='merge'&&(!area.complete||area.items.length<2)){
             return;
         }
-        this.editor.history.record();
         let point = this.point;
         this.editor.transaction(()=>{
             this.clear();

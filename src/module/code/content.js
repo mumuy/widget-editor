@@ -99,9 +99,10 @@ export function renderCode(code,editing=false){
     return true;
 }
 
-export function normalizeCode(content,editing=false,range=null){
+export function normalizeCode(content,editing=false,range=null,dirty=null){
     let changed = false;
     content.querySelectorAll('pre').forEach(pre=>{
+        if(dirty&&!dirty.has(pre)&&pre.firstElementChild?._highlight){return;}
         let start = range&&codeOffset(pre,range.startContainer,range.startOffset);
         let end = range&&codeOffset(pre,range.endContainer,range.endOffset);
         let code = pre.children.length===1&&pre.firstElementChild.tagName==='CODE'?pre.firstElementChild:null;

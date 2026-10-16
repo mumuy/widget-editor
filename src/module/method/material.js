@@ -104,13 +104,14 @@ export default function createMaterials(editor,options){
             }
         }
         // DOM 顺序和视觉顺序一致，Tab 不会跳到前一行。
-        Array.from(cards.keys()).sort((a,b)=>a-b).forEach(index=>{
+        let next = null;
+        Array.from(cards.keys()).sort((a,b)=>b-a).forEach(index=>{
             let card = cards.get(index);
             card.style.left = (index%columns*(cardWidth+6))+'px';
             card.style.top = (Math.floor(index/columns)*94)+'px';
             card.style.width = cardWidth+'px';
-            let next = Array.from(list.children).find(node=>Number(node.dataset.index)>index);
-            if(next!==card.nextElementSibling){list.insertBefore(card,next||null);}
+            if(next!==card.nextElementSibling){list.insertBefore(card,next);}
+            next = card;
         });
     };
     let schedule = ()=>{

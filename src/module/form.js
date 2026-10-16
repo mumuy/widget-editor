@@ -26,11 +26,10 @@ export default class EditorForm {
         value = value??editor.value;
         this.internals.setFormValue(value,value);
         let missing = false;
-        if(editor.required){
+        if(editor.required&&!editor.getText(value).replace(/[\s\u200b-\u200d\ufeff]/g,'')){
             let template = document.createElement('template');
             template.innerHTML = value;
-            missing = !(template.content.textContent||'').replace(/[\s\u200b-\u200d\ufeff]/g,'')&&
-                !template.content.querySelector('img,video,audio,iframe,table,hr');
+            missing = !template.content.querySelector('img,video,audio,iframe,table,hr');
         }
         let message = missing?editor.t('请填写内容'):'';
         this.internals.setValidity({valueMissing:missing},message,

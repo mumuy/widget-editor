@@ -1,6 +1,6 @@
 # widget-editor
 
-轻量的 Web Component 富文本编辑器。一个标签即可使用，支持文字排版、表格、媒体插入和代码高亮，输出 HTML，无第三方运行时依赖。
+轻量的 Web Component 富文本编辑器。一个标签即可使用，支持文字排版、表格、媒体插入和代码高亮，输出 HTML，无第三方运行时依赖。面向现代 Chrome、Edge、Firefox 和 Safari，使用原生 Web Component、Popover 和表单关联能力。
 
 [在线演示](https://passer-by.com/widget-editor/) · [下载组件](https://github.com/mumuy/widget-editor/raw/refs/heads/main/dist/widget-editor.min.js)
 

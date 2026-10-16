@@ -212,9 +212,12 @@ class WidgetEditor extends HTMLElement {
         return this._formatted.value;
     }
     getText(value=this.value){
+        if(value===this._formatted?.value&&this._formatted.text!==undefined){return this._formatted.text;}
         let template = document.createElement('template');
         template.innerHTML = value;
-        return (template.content.textContent||'').replace(/\u200b/g,'');
+        let text = (template.content.textContent||'').replace(/\u200b/g,'');
+        if(value===this._formatted?.value){this._formatted.text = text;}
+        return text;
     }
     getHTML(){
         return this.value;
@@ -239,15 +242,7 @@ class WidgetEditor extends HTMLElement {
         this.value = value;
     }
     addStyle(){
-        this.shadowRoot.querySelector('style[data-widget-editor]')?.remove();
-        if(this.shadowRoot.adoptedStyleSheets){
-            this.shadowRoot.adoptedStyleSheets = [styleSheet];
-        }else{
-            const $style = document.createElement('style');
-            $style.dataset.widgetEditor = '1';
-            $style.textContent = [...styleSheet.cssRules].map(item=>item.cssText).join('');
-            this.shadowRoot.appendChild($style);
-        }
+        this.shadowRoot.adoptedStyleSheets = [styleSheet];
     }
     render(){
         let toolbar = this.tools.render();
@@ -452,9 +447,7 @@ class WidgetEditor extends HTMLElement {
         if(range&&changed){
             this.selection.range = range.cloneRange();
             if(current){
-                let selection = this.shadowRoot.getSelection?.()||window.getSelection();
-                selection.removeAllRanges();
-                selection.addRange(range);
+                this.selection.select(range);
             }
         }
     }
@@ -513,10 +506,7 @@ class WidgetEditor extends HTMLElement {
     applyStyle(styles){
         this.transaction(()=>{
             let range = applyStyle(this.content,this.getRange(),styles);
-            let selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-            this.selection.range = range.cloneRange();
+            this.selection.select(range);
         });
     }
     setPainter(styles){
