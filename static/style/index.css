@@ -44,13 +44,14 @@
     display: inline-block;
     padding: 0 8px;
     margin: 0 5px;
-    background: rgba(255, 255, 255,0.8);
+    background: #ff980024;
     line-height: 26px;
     vertical-align: middle;
     font-size: 13px;
-    color: #2095f2;
+    color: #FF9800;
     border-radius: 4px;
-    box-shadow: 0 1px 5px 0 rgba(0,0,0,0.03);
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.03);
+    backdrop-filter: blur(5px);
 }
 .mod-poster .bd p{
     margin-bottom: 10px;
@@ -138,6 +139,9 @@
 }
 .mod-poster .btn-orange:hover{
     background: #e18309;
+}
+.mod-poster .btn:focus-visible{
+    outline: none;
 }
 
 .mod-demo{
@@ -389,6 +393,15 @@
 }
 
 @media screen and (max-width: 640px) {
+    .mod-poster .advantages{
+        gap: 8px;
+    }
+    .mod-poster .advantages li{
+        padding: 10px 16px; 
+    }
+    .mod-poster .advantages span{
+        line-height: 20px;
+    }
     .mod-poster .buttons{
         margin-bottom: 10px;
         padding: 10px 0;
@@ -403,6 +416,13 @@
     }
     .mod-poster .btn img{
         display: none;
+    }
+
+    .mod-demo .bd{
+        padding: 0;
+    }
+    .mod-demo .insert-demo-note{
+        padding: 0 10px 12px;
     }
 }
 
@@ -424,15 +444,4 @@
 .github-button:hover{
     background: #e6ebf1;
     text-decoration: none;
-}
-.mod-poster .btn:focus-visible{
-    outline: none;
-}
-@media screen and (max-width: 640px) {
-    .mod-demo .bd{
-        padding: 10px;
-    }
-    .mod-demo .insert-demo-note{
-        padding: 0 10px 12px;
-    }
 }
