@@ -114,10 +114,10 @@ header .brand,footer .brand {
     font-weight: 600;
     white-space: nowrap;
 }
-header .brand svg,footer .brand svg {
-    width: 32px;
-    height: 32px;
-    color: var(--accent);
+header .brand img,footer .brand img {
+    width: 66px;
+    height: 44px;
+    object-fit: contain;
 }
 header .brand span,footer .brand span {
     color: var(--accent);
@@ -207,6 +207,21 @@ section .caption::before {
 
 .mod-experience {
     margin: 80px 0 40px;
+}
+.mod-experience .bd {
+    position: relative;
+}
+.mod-experience .bd::before {
+    content: "";
+    position: absolute;
+    right: 36px;
+    bottom: 100%;
+    z-index: 1;
+    width: 210px;
+    aspect-ratio: 3 / 2;
+    background: url('../image/mascot-puppy.webp') center / contain no-repeat;
+    transform: translateY(16%);
+    pointer-events: none;
 }
 .mod-experience .hd h1 {
     font-size: 36px;
@@ -662,6 +677,13 @@ section .caption::before {
     }
     .mod-experience {
         margin: 32px 0 40px;
+    }
+    .mod-experience .hd {
+        margin-bottom: 76px;
+    }
+    .mod-experience .bd::before {
+        right: 8px;
+        width: 144px;
     }
     .mod-experience .hd h1 {
         font-size: 32px;
