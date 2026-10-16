@@ -9,6 +9,7 @@
         <script src="https://passer-by.com/widget-code/dist/widget-code.min.js" defer></script>
         <script src="dist/widget-editor.min.js" defer></script>
         <script src="static/script/product.js" defer></script>
+        <script src="static/script/mascot.js" defer></script>
     </head>
     <body>
         <div class="mod-bg" aria-hidden="true">
@@ -48,6 +49,36 @@
                         <p>一个标签，承载完整的内容编辑体验。</p>
                     </div>
                     <div class="bd">
+                        <svg class="mascot" viewBox="0 0 1523 1033" aria-hidden="true" focusable="false">
+                            <defs>
+                                <clipPath id="mascot-left-eye"><path d="M392 474C387 449 402 425 428 417C451 409 479 406 490 430C502 457 495 486 481 502C453 513 423 505 405 497C395 494 392 487 392 474Z"/></clipPath>
+                                <clipPath id="mascot-right-eye"><path d="M650 520C655 492 671 474 692 471C720 468 740 486 743 514C749 540 737 558 725 565C694 572 663 560 650 547Z"/></clipPath>
+                                <radialGradient id="mascot-iris"><stop stop-color="#8b542b"/><stop offset="1" stop-color="#35180b"/></radialGradient>
+                                <linearGradient id="mascot-lid" x2="0" y2="1"><stop stop-color="#eda94e"/><stop offset="1" stop-color="#ffd185"/></linearGradient>
+                            </defs>
+                            <image href="static/image/mascot-puppy.webp" width="1523" height="1033"/>
+                            <g clip-path="url(#mascot-left-eye)">
+                                <path fill="#fffaf1" d="M380 400H510V520H380Z"/>
+                                <g class="mascot-gaze">
+                                    <ellipse cx="452" cy="457" rx="42" ry="50" fill="url(#mascot-iris)"/>
+                                    <ellipse cx="455" cy="451" rx="27" ry="35" fill="#1e0b04"/>
+                                    <circle cx="470" cy="439" r="10" fill="#fff"/><circle cx="434" cy="482" r="4" fill="#b28462"/>
+                                </g>
+                            </g>
+                            <g clip-path="url(#mascot-right-eye)">
+                                <path fill="#fffaf1" d="M640 460H755V580H640Z"/>
+                                <g class="mascot-gaze">
+                                    <ellipse cx="693" cy="520" rx="42" ry="50" fill="url(#mascot-iris)"/>
+                                    <ellipse cx="691" cy="512" rx="27" ry="35" fill="#1e0b04"/>
+                                    <circle cx="705" cy="498" r="10" fill="#fff"/><circle cx="675" cy="544" r="4" fill="#b28462"/>
+                                </g>
+                            </g>
+                            <g class="mascot-eyelids">
+                                <g clip-path="url(#mascot-left-eye)"><path fill="url(#mascot-lid)" d="M380 400H510V520H380Z"/><path d="M390 464Q445 490 499 459" fill="none" stroke="#74401e" stroke-width="7" stroke-linecap="round"/></g>
+                                <g clip-path="url(#mascot-right-eye)"><path fill="url(#mascot-lid)" d="M640 460H755V580H640Z"/><path d="M647 521Q696 553 749 524" fill="none" stroke="#74401e" stroke-width="7" stroke-linecap="round"/></g>
+                            </g>
+                            <g class="mascot-tongue"><path d="M539 646Q559 657 581 657L581 687C581 711 548 712 544 689Z" fill="#ee8e9e" stroke="#743c24" stroke-width="4" stroke-linejoin="round"/><path d="M560 661L565 688" fill="none" stroke="#cc6479" stroke-width="3" stroke-linecap="round"/></g>
+                        </svg>
                         <widget-editor id="product-editor" name="content" height="520" image-limit="9" video-limit="3" audio-limit="3" attachment-limit="9" placeholder="写下你的第一段内容……">
                             <h1>把想法，变成清晰的内容</h1>
                             <p>一份项目说明、一篇产品文章，或一则团队公告。好的内容工具，让每一次表达都更从容。</p>
