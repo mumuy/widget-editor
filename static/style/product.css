@@ -51,12 +51,11 @@ button:focus-visible,a:focus-visible,summary:focus-visible,pre:focus-visible{
 }
 .button:hover{background: #1b85da;}
 .button-small{padding: 8px 17px;font-size: 14px;gap: 18px;}
-.hero{display: grid;grid-template-columns: 1.18fr 1fr;align-items: center;gap: 64px;padding-block: 100px 82px;}
+.hero{display: grid;grid-template-columns: 1.18fr 1fr;align-items: center;gap: 64px;padding-block: 112px 104px;}
 .eyebrow{display: flex;align-items: center;gap: 9px;margin-bottom: 20px;font-size: 14px;font-weight: 600;letter-spacing: 1.8px;color: var(--accent);}
 .hero .eyebrow::before,.card-caption::before{content: "";display: inline-block;width: 6px;height: 6px;border-radius: 50%;background: #42b993;flex-shrink: 0;}
 .hero-title{font-size: clamp(28px,3vw,40px);line-height: 1.4;letter-spacing: -1px;font-weight: 750;}
 .hero-title>span{color: var(--accent);}
-.hero-description{max-width: 490px;margin-top: 24px;color: var(--muted);font-size: 16px;line-height: 1.9;}
 .hero-actions{display: flex;align-items: center;gap: 28px;margin-top: 32px;}
 .text-link{padding: 0;border: 0;background: transparent;font-size: 14px;font-weight: 600;color: #4b535d;}
 .text-link>span{margin-left: 10px;}
@@ -79,16 +78,13 @@ code{font-family: "SFMono-Regular",Consolas,"Liberation Mono",monospace;font-siz
 .integration-card pre{padding: 22px 18px;border-radius: 8px;background: #f6f8fa;color: #4b535d;}
 .syntax-comment{color: #6e7781;}
 .card-foot{display: flex;justify-content: space-between;gap: 12px;margin-top: 20px;color: #8190a6;font-size: 14px;}
-.compatibility{display: flex;align-items: center;justify-content: space-between;gap: 24px;padding-block: 23px;border-top: 1px solid var(--border);border-bottom: 1px solid var(--border);}
-.compatibility p{color: #8290a2;font-size: 14px;}
-.compatibility ul{display: flex;flex-wrap: wrap;gap: 32px;font-size: 14px;font-weight: 600;color: #57606a;}
-.section{padding-block: 88px;}
-.section-heading{display: flex;align-items: flex-end;justify-content: space-between;gap: 40px;margin-bottom: 38px;}
+.section{padding-block: 96px;}
+.section-heading{display: flex;align-items: flex-end;justify-content: space-between;gap: 48px;margin-bottom: 48px;}
 .section-heading .eyebrow{margin-bottom: 12px;}
 h2{font-size: clamp(27px,2.7vw,36px);line-height: 1.5;font-weight: 650;letter-spacing: -1px;}
 .section-heading>p{font-size: 14px;color: var(--muted);line-height: 1.9;}
-.feature-grid{display: grid;grid-template-columns: repeat(3,minmax(0,1fr));gap: 18px;}
-.feature-card{display: flex;flex-direction: column;align-items: flex-start;padding: 28px 25px;border: 1px solid var(--border);border-radius: 9px;}
+.feature-grid{display: grid;grid-template-columns: repeat(3,minmax(0,1fr));gap: 24px;}
+.feature-card{display: flex;flex-direction: column;align-items: flex-start;padding: 32px 28px;border: 1px solid var(--border);border-radius: 9px;}
 .feature-number{color: #8795aa;font-size: 14px;letter-spacing: 1px;}
 h3{font-size: 17px;font-weight: 650;line-height: 1.6;}
 .feature-card h3{margin-block: 18px 12px;}
@@ -112,7 +108,7 @@ widget-editor{display: block;}
 .copy-button{padding: 3px 8px;border: 1px solid #dce2ec;border-radius: 4px;background: #fff;color: #57606a;font-size: 14px;}
 .copy-button:hover{color: var(--accent);border-color: var(--accent);}
 .code-card pre{padding: 22px;color: #4b535d;}
-.integration-details{margin-top: 44px;border-top: 1px solid var(--border);}
+.integration-details{margin-top: 56px;border-top: 1px solid var(--border);}
 details{border-bottom: 1px solid var(--border);}
 summary{padding: 22px 4px;cursor: pointer;font-size: 15px;font-weight: 600;}
 summary::marker{color: #8998ac;}
@@ -125,13 +121,13 @@ td code{font-size: 14px;white-space: nowrap;}
 .detail-body{padding: 0 20px 24px;}
 .detail-body p{margin-bottom: 18px;color: var(--muted);font-size: 16px;}
 .detail-body pre{margin-bottom: 18px;padding: 22px;border-radius: 7px;background: #f6f8fa;color: #4b535d;}
-.scenarios{display: grid;grid-template-columns: 1fr 1.8fr;gap: 64px;padding: 52px 40px;background: #f6f8fa;border: 1px solid var(--border);border-radius: 12px;}
+.scenarios{display: grid;grid-template-columns: 1fr 1.8fr;gap: 64px;padding: 64px 40px;background: #f6f8fa;border: 1px solid var(--border);border-radius: 12px;}
 .scenarios .eyebrow{margin-bottom: 12px;}
 .scenarios h2{font-size: 28px;}
 .scenario-grid{display: grid;grid-template-columns: repeat(3,minmax(0,1fr));gap: 25px;align-items: center;}
 .scenario-grid h3{font-size: 15px;margin-bottom: 12px;}
 .scenario-grid p{font-size: 16px;color: var(--muted);line-height: 1.9;}
-.closing{text-align: center;padding-block: 86px;}
+.closing{text-align: center;padding-block: 104px;}
 .closing .eyebrow{justify-content: center;}
 .closing .button{margin-top: 28px;}
 .site-footer{display: flex;align-items: center;justify-content: space-between;gap: 24px;padding-block: 28px;border-top: 1px solid var(--border);}
@@ -141,7 +137,6 @@ td code{font-size: 14px;white-space: nowrap;}
     .hero{gap: 30px;padding-block: 70px;}
     .integration-card{padding: 20px;}
     .integration-card>p{font-size: 22px;}
-    .compatibility{align-items: flex-start;flex-direction: column;gap: 14px;}
     .feature-grid{grid-template-columns: repeat(2,minmax(0,1fr));}
     .guide-grid{gap: 32px;}
     .scenarios{grid-template-columns: 1fr;gap: 32px;}
@@ -157,22 +152,20 @@ td code{font-size: 14px;white-space: nowrap;}
     .hero{grid-template-columns: minmax(0,1fr);gap: 38px;padding-block: 54px 46px;}
     .hero-title{font-size: clamp(28px,5vw,34px);letter-spacing: -1.3px;}
     .eyebrow{font-size: 14px;letter-spacing: 1px;}
-    .hero-description{font-size: 14px;}
     .hero-actions{gap: 23px;}
     .hero-points{gap: 13px;font-size: 14px;}
     .integration-card{transform: none;}
-    .compatibility ul{gap: 12px 22px;font-size: 14px;}
-    .section{padding-block: 56px;}
-    .section-heading{display: block;margin-bottom: 28px;}
+    .section{padding-block: 64px;}
+    .section-heading{display: block;margin-bottom: 32px;}
     .section-heading>p{margin-top: 16px;font-size: 14px;}
-    .feature-grid{gap: 12px;}
+    .feature-grid{gap: 20px;}
     .feature-card{padding: 22px 18px;}
     .feature-card h3{font-size: 16px;}
     .experience-section{padding-block: 28px 36px;}
     .guide-grid{grid-template-columns: minmax(0,1fr);}
     .steps{gap: 25px;}
     .steps p{max-width: none;}
-    .integration-details{margin-top: 30px;}
+    .integration-details{margin-top: 40px;}
     summary span{display: block;margin-left: 18px;margin-top: 4px;}
     .detail-body{padding-inline: 0;}
     .scenarios{padding: 30px 24px;}
