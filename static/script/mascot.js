@@ -2,6 +2,7 @@
     const mascot = document.querySelector('.mascot');
     if(!mascot){return;}
     const wag = mascot.querySelector('#mascot-wag');
+    const nod = mascot.querySelector('#mascot-nod');
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     let visible = false;
     let running = false;
@@ -42,7 +43,12 @@
     }
     function idle(){
         timer = setTimeout(()=>{
-            mascot.classList.add(Math.random()<.7?'blinking':'panting');
+            const action = Math.random();
+            if(action<.25){
+                nod.beginElement();
+            }else{
+                mascot.classList.add(action<.75?'blinking':'panting');
+            }
             idle();
         },3500+Math.random()*5000);
     }
@@ -67,6 +73,7 @@
             cancelAnimationFrame(frame);
             frame = null;
             wag.endElement();
+            nod.endElement();
             mascot.classList.remove('blinking','panting');
             resetGaze();
         }

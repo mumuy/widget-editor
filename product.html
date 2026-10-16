@@ -57,39 +57,47 @@
                                         <animate id="mascot-wag" attributeName="scale" values="0;-42;48;-42;48;-16;0;0" keyTimes="0;.09;.18;.27;.36;.45;.55;1" dur="2.8s" repeatCount="indefinite" begin="indefinite"/>
                                     </feDisplacementMap>
                                 </filter>
+                                <filter id="mascot-head-motion" filterUnits="userSpaceOnUse" x="-100" y="-100" width="1723" height="1233" color-interpolation-filters="sRGB">
+                                    <feImage href="static/image/mascot-head-field.svg" x="-100" y="-100" width="1723" height="1233" result="head-field"/>
+                                    <feDisplacementMap in="SourceGraphic" in2="head-field" scale="0" xChannelSelector="R" yChannelSelector="G">
+                                        <animate id="mascot-nod" attributeName="scale" values="0;-16;18;-6;0" keyTimes="0;.25;.55;.8;1" calcMode="spline" keySplines=".42 0 .58 1;.42 0 .58 1;.42 0 .58 1;.42 0 .58 1" dur="2.2s" begin="indefinite"/>
+                                    </feDisplacementMap>
+                                </filter>
                                 <linearGradient id="mascot-tongue-color" x2="0" y2="1"><stop stop-color="#fbb0bc"/><stop offset="1" stop-color="#e97991"/></linearGradient>
                                 <clipPath id="mascot-left-eye"><path d="M392 474C387 449 402 425 428 417C451 409 479 406 490 430C502 457 495 486 481 502C453 513 423 505 405 497C395 494 392 487 392 474Z"/></clipPath>
                                 <clipPath id="mascot-right-eye"><path d="M650 520C655 492 671 474 692 471C720 468 740 486 743 514C749 540 737 558 725 565C694 572 663 560 650 547Z"/></clipPath>
                                 <radialGradient id="mascot-iris"><stop stop-color="#8b542b"/><stop offset="1" stop-color="#35180b"/></radialGradient>
                                 <linearGradient id="mascot-lid" x2="0" y2="1"><stop stop-color="#eda94e"/><stop offset="1" stop-color="#ffd185"/></linearGradient>
                             </defs>
-                            <image href="static/image/mascot-puppy.webp" width="1523" height="1033" filter="url(#mascot-tail-motion)"/>
-                            <g clip-path="url(#mascot-left-eye)">
-                                <path fill="#fffaf1" d="M380 400H510V520H380Z"/>
-                                <g class="mascot-gaze">
-                                    <ellipse cx="452" cy="457" rx="42" ry="50" fill="url(#mascot-iris)"/>
-                                    <ellipse cx="455" cy="451" rx="27" ry="35" fill="#1e0b04"/>
-                                    <circle cx="470" cy="439" r="10" fill="#fff"/><circle cx="434" cy="482" r="4" fill="#b28462"/>
+                            <g filter="url(#mascot-head-motion)">
+                                <image href="static/image/mascot-puppy.webp" width="1523" height="1033" filter="url(#mascot-tail-motion)"/>
+                                <g clip-path="url(#mascot-left-eye)">
+                                    <path fill="#fffaf1" d="M380 400H510V520H380Z"/>
+                                    <g class="mascot-gaze">
+                                        <ellipse cx="452" cy="457" rx="42" ry="50" fill="url(#mascot-iris)"/>
+                                        <ellipse cx="455" cy="451" rx="27" ry="35" fill="#1e0b04"/>
+                                        <circle cx="470" cy="439" r="10" fill="#fff"/><circle cx="434" cy="482" r="4" fill="#b28462"/>
+                                    </g>
                                 </g>
-                            </g>
-                            <g clip-path="url(#mascot-right-eye)">
-                                <path fill="#fffaf1" d="M640 460H755V580H640Z"/>
-                                <g class="mascot-gaze">
-                                    <ellipse cx="693" cy="520" rx="42" ry="50" fill="url(#mascot-iris)"/>
-                                    <ellipse cx="691" cy="512" rx="27" ry="35" fill="#1e0b04"/>
-                                    <circle cx="705" cy="498" r="10" fill="#fff"/><circle cx="675" cy="544" r="4" fill="#b28462"/>
+                                <g clip-path="url(#mascot-right-eye)">
+                                    <path fill="#fffaf1" d="M640 460H755V580H640Z"/>
+                                    <g class="mascot-gaze">
+                                        <ellipse cx="693" cy="520" rx="42" ry="50" fill="url(#mascot-iris)"/>
+                                        <ellipse cx="691" cy="512" rx="27" ry="35" fill="#1e0b04"/>
+                                        <circle cx="705" cy="498" r="10" fill="#fff"/><circle cx="675" cy="544" r="4" fill="#b28462"/>
+                                    </g>
                                 </g>
-                            </g>
-                            <g class="mascot-eyelids">
-                                <g clip-path="url(#mascot-left-eye)"><path fill="url(#mascot-lid)" d="M380 400H510V520H380Z"/><path d="M390 464Q445 490 499 459" fill="none" stroke="#74401e" stroke-width="7" stroke-linecap="round"/></g>
-                                <g clip-path="url(#mascot-right-eye)"><path fill="url(#mascot-lid)" d="M640 460H755V580H640Z"/><path d="M647 521Q696 553 749 524" fill="none" stroke="#74401e" stroke-width="7" stroke-linecap="round"/></g>
-                            </g>
-                            <g class="mascot-mouth">
-                                <path d="M482 634Q518 651 546 647Q572 654 603 651C596 684 577 710 551 710C521 710 497 683 482 634Z" fill="#613022" stroke="#743c24" stroke-width="5" stroke-linejoin="round"/>
-                                <g class="mascot-tongue">
-                                    <path d="M513 680Q549 670 582 683L579 719C576 754 529 755 522 723Z" fill="url(#mascot-tongue-color)" stroke="#ae5366" stroke-width="4" stroke-linejoin="round"/>
-                                    <path d="M548 688Q555 704 552 722" fill="none" stroke="#d16b83" stroke-width="3" stroke-linecap="round"/>
-                                    <path d="M530 698Q532 718 538 724" fill="none" stroke="#ffd1d8" stroke-width="4" stroke-linecap="round"/>
+                                <g class="mascot-eyelids">
+                                    <g clip-path="url(#mascot-left-eye)"><path fill="url(#mascot-lid)" d="M380 400H510V520H380Z"/><path d="M390 464Q445 490 499 459" fill="none" stroke="#74401e" stroke-width="7" stroke-linecap="round"/></g>
+                                    <g clip-path="url(#mascot-right-eye)"><path fill="url(#mascot-lid)" d="M640 460H755V580H640Z"/><path d="M647 521Q696 553 749 524" fill="none" stroke="#74401e" stroke-width="7" stroke-linecap="round"/></g>
+                                </g>
+                                <g class="mascot-mouth">
+                                    <path d="M482 634Q518 651 546 647Q572 654 603 651C596 684 577 710 551 710C521 710 497 683 482 634Z" fill="#613022" stroke="#743c24" stroke-width="5" stroke-linejoin="round"/>
+                                    <g class="mascot-tongue">
+                                        <path d="M513 680Q549 670 582 683L579 719C576 754 529 755 522 723Z" fill="url(#mascot-tongue-color)" stroke="#ae5366" stroke-width="4" stroke-linejoin="round"/>
+                                        <path d="M548 688Q555 704 552 722" fill="none" stroke="#d16b83" stroke-width="3" stroke-linecap="round"/>
+                                        <path d="M530 698Q532 718 538 724" fill="none" stroke="#ffd1d8" stroke-width="4" stroke-linecap="round"/>
+                                    </g>
                                 </g>
                             </g>
                         </svg>
