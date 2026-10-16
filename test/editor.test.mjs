@@ -174,6 +174,12 @@ try {
     let initial = await run(`return {cards:e._dialog.querySelectorAll('.material-item').length,height:e._dialog.querySelector('.material-list').offsetHeight};`);
     assert.ok(initial.cards > 0 && initial.cards < 100);
     assert.ok(initial.height > 100000);
+    assert.equal(await run(`let list=e._dialog.querySelector('.material-list');return getComputedStyle(list).display==='grid'&&getComputedStyle(list).gridTemplateColumns.split(' ').length===4&&[...list.querySelectorAll('.material-item')].every(card=>!card.style.width&&!card.style.left&&!card.style.top);`), true, 'CSS grid owns card widths and layout');
+    await b.send('Emulation.setDeviceMetricsOverride', {width:390,height:800,deviceScaleFactor:1,mobile:false});
+    await b.delay(80);
+    assert.equal(await run(`let list=e._dialog.querySelector('.material-list');return getComputedStyle(list).gridTemplateColumns.split(' ').length===2&&list.parentElement.scrollWidth<=list.parentElement.clientWidth;`), true, 'CSS grid adapts to narrow viewport without horizontal overflow');
+    await b.send('Emulation.setDeviceMetricsOverride', {width:1000,height:800,deviceScaleFactor:1,mobile:false});
+    await b.delay(80);
     assert.equal(await run(`let list=e._dialog.querySelector('.material-list');return !list.querySelector('.material-empty svg')&&list.getAttribute('aria-busy')==='false'&&list.parentElement.scrollWidth<=list.parentElement.clientWidth;`), true, 'loaded grid has only vertical scrolling');
     await run(`e._dialog.querySelector('.material-select').click();let panel=e._dialog.querySelector('[data-media-panel=resource]');panel.scrollTop=panel.scrollHeight;panel.dispatchEvent(new Event('scroll'));`);
     await b.delay(80);

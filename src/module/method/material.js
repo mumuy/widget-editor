@@ -24,6 +24,7 @@ export default function createMaterials(editor,options){
     let viewport;
     let frame;
     let columns = 1;
+    let width = 0;
     let windowKey = '';
     let updateSelection = ()=>{
         cards.forEach((card,index)=>card.querySelector('.material-select').setAttribute('aria-pressed',String(selected.has(items[index].original))));
@@ -34,7 +35,7 @@ export default function createMaterials(editor,options){
         selected.clear();
         cards.clear();
         windowKey = '';
-        list.style.height = '';
+        list.style.removeProperty('--material-rows');
         let message = document.createElement('p');
         message.className = 'material-empty';
         message.setAttribute('role','status');
@@ -83,17 +84,23 @@ export default function createMaterials(editor,options){
     };
     let renderWindow = function(force=false){
         if(!items.length||!list.clientWidth||list.closest('[hidden]')){return;}
-        let width = list.clientWidth;
-        columns = Math.max(1,Math.floor((width+6)/126));
-        let cardWidth = (width-(columns-1)*6)/columns;
-        let rows = Math.ceil(items.length/columns);
-        list.style.height = (rows*94-6)+'px';
+        if(width!==list.clientWidth){
+            width = list.clientWidth;
+            force = true;
+            // 清除旧列定位，避免窄屏下产生隐式列，影响 CSS 实际列数。
+            cards.forEach(card=>{
+                card.style.removeProperty('grid-column');
+                card.style.removeProperty('grid-row');
+            });
+        }
+        columns = getComputedStyle(list).gridTemplateColumns.split(' ').length;
+        list.style.setProperty('--material-rows',Math.ceil(items.length/columns));
         let offset = Math.max(0,viewport.getBoundingClientRect().top-list.getBoundingClientRect().top);
         let start = Math.max(0,Math.floor(offset/94)-2)*columns;
         let end = Math.min(items.length,(Math.ceil((offset+viewport.clientHeight)/94)+2)*columns);
         let focused = editor.shadowRoot.activeElement?.closest('.material-item');
         let focusIndex = focused&&list.contains(focused)?Number(focused.dataset.index):-1;
-        let key = [start,end,width,focusIndex].join(':');
+        let key = [start,end,columns,focusIndex].join(':');
         if(!force&&key===windowKey){return;}
         windowKey = key;
         cards.forEach((card,index)=>{
@@ -110,9 +117,8 @@ export default function createMaterials(editor,options){
         let next = null;
         Array.from(cards.keys()).sort((a,b)=>b-a).forEach(index=>{
             let card = cards.get(index);
-            card.style.left = (index%columns*(cardWidth+6))+'px';
-            card.style.top = (Math.floor(index/columns)*94)+'px';
-            card.style.width = cardWidth+'px';
+            card.style.gridRow = Math.floor(index/columns)+1;
+            card.style.gridColumn = index%columns+1;
             if(next!==card.nextElementSibling){list.insertBefore(card,next);}
             next = card;
         });

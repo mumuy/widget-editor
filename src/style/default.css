@@ -870,7 +870,10 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog
     overflow: auto;
 }
 .material-list{
-    position: relative;
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(min(120px,100%),1fr));
+    grid-template-rows: repeat(var(--material-rows,1),88px);
+    gap: 6px;
     flex: 0 0 auto;
     min-height: 88px;
 }
@@ -890,8 +893,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog
     flex-shrink: 0;
 }
 .material-item{
-    position: absolute;
-    height: 88px;
+    position: relative;
     min-width: 0;
 }
 .material-select{
@@ -936,6 +938,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog
 .material-remove:hover{background: #dc3545cc;}
 .material-list button:disabled{opacity: .5;}
 .material-empty{
+    grid-column: 1 / -1;
     display: flex;
     align-items: center;
     justify-content: center;
