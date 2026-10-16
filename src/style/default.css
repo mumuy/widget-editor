@@ -626,7 +626,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog
     border: 0;
     border-radius: 0;
     outline: none;
-    resize: vertical;
+    resize: none;
 }
 .mod-panel .ft{
     display: flex;
