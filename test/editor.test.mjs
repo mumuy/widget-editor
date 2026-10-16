@@ -26,6 +26,10 @@ try {
         assert.fail(message);
     };
     await run(`window.e=document.querySelector('widget-editor');window.caret=(selector='p',end=true)=>{let r=document.createRange();r.selectNodeContents(e.content.querySelector(selector));r.collapse(!end);e.blocks.select(r);e.content.focus();};window.reset=(html='<p>Start</p>')=>{e._dialog?.dismiss();e.images.dismiss();e.value=html;caret();};window.key=(key,code)=>e.content.dispatchEvent(new KeyboardEvent('keydown',{key,code,bubbles:true}));reset();`);
+    for(const language of ['zh-CN','en-US','zh-HK','zh-CN']){
+        await run(`e.setAttribute('language',${JSON.stringify(language)});`);
+        assert.equal(await run(`return e.panel.lang===${JSON.stringify(language)}&&!e.toolbar.hasAttribute('lang')&&!e.footer.hasAttribute('lang')&&e.toolbar.matches(':lang('+e.panel.lang+')');`), true, 'toolbar and footer inherit language without duplicate attributes');
+    }
     for (const text of ['a', 'b', 'c']) await b.send('Input.insertText', {
         text
     });

@@ -151,7 +151,7 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog
     text-align: left;
     text-overflow: ellipsis;
 }
-.toolbar[lang="en-US"] [data-dropdown="fontFamily"] .tool-label{
+.toolbar:lang(en-US) [data-dropdown="fontFamily"] .tool-label{
     flex-basis: 8em;
     width: 8em;
 }

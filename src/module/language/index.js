@@ -55,7 +55,9 @@ export default class EditorLanguage {
             return;
         }
         if(deep){
-            root.lang = this.name;
+            let parent = root.parentElement?.closest('[lang]')||root.getRootNode().host?.closest('[lang]');
+            if(parent?.lang===this.name){root.removeAttribute('lang');}
+            else if(root.lang!==this.name){root.lang = this.name;}
         }
         let translate = node=>{
             if(node.nodeType===Node.TEXT_NODE){
