@@ -563,7 +563,7 @@ document.body.appendChild(editor);</widget-code>
     editor.addEventListener('add',upload);</widget-code>
                                     </div>
                                     <div class="tabs-panel" role="tabpanel" id="events-request-panel" aria-labelledby="events-request-tab" hidden inert>
-                                        <p>切换到素材库从 page=1 请求。hasNext 为 true 时显示“加载更多”，滚动到底部或点击后加载下一页并追加；false 或省略表示已加载完。</p>
+                                        <p>切换到素材库发起request事件请求资源，用户可以在获取素材后执行回调方法展示素材和分页。</p>
                                         <div class="table-inner" data-columns="2" role="region" aria-label="素材加载数据" tabindex="0">
                                             <table>
                                                 <thead>
