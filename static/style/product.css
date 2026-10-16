@@ -213,6 +213,7 @@ section .caption::before {
 }
 .mod-experience .mascot {
     position: absolute;
+    overflow: visible;
     right: 36px;
     bottom: 100%;
     z-index: 1;
