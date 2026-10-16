@@ -21,14 +21,20 @@ export default function createMaterials(editor,options){
     let selected = new Set();
     let busy = false;
     let cards = new Map();
+    let indices = new WeakMap();
+    let painted = new Set();
     let updateSelection = ()=>{
-        cards.forEach((card,index)=>card.querySelector('.material-select').setAttribute('aria-pressed',String(selected.has(items[index].original))));
+        new Set([...painted,...selected]).forEach(url=>{
+            cards.get(url)?.querySelector('.material-select').setAttribute('aria-pressed',String(selected.has(url)));
+        });
+        painted = new Set(selected);
         options.onSelectionChange?.(selected.size);
     };
     let status = function(text,pending=false){
         items = [];
         selected.clear();
         cards.clear();
+        painted.clear();
         let message = document.createElement('p');
         message.className = 'material-empty';
         message.setAttribute('role','status');
@@ -42,7 +48,7 @@ export default function createMaterials(editor,options){
     let createCard = function(item,index){
         let card = document.createElement('div');
         card.className = 'material-item';
-        card.dataset.index = index;
+        indices.set(card,index);
         let select = document.createElement('button');
         select.type = 'button';
         select.className = 'material-select';
@@ -80,7 +86,7 @@ export default function createMaterials(editor,options){
         let fragment = document.createDocumentFragment();
         items.forEach((item,index)=>{
             let card = createCard(item,index);
-            cards.set(index,card);
+            cards.set(item.original,card);
             fragment.appendChild(card);
         });
         list.replaceChildren(fragment);
@@ -90,7 +96,7 @@ export default function createMaterials(editor,options){
         let button = event.target.closest('button');
         let card = button?.closest('.material-item');
         if(!card||busy){return;}
-        let item = items[Number(card.dataset.index)];
+        let item = items[indices.get(card)];
         if(button.classList.contains('material-remove')){
             if(await options.remove(item.original)&&items.includes(item)){
                 selected.delete(item.original);
@@ -115,14 +121,14 @@ export default function createMaterials(editor,options){
     list.addEventListener('keydown',event=>{
         if(event.isComposing||busy||!event.target.matches('.material-select')){return;}
         let columns = getComputedStyle(list).gridTemplateColumns.split(' ').length;
-        let index = Number(event.target.parentElement.dataset.index);
+        let index = indices.get(event.target.parentElement);
         let next = event.key==='ArrowRight'?index+1:event.key==='ArrowLeft'?index-1:
             event.key==='ArrowDown'?index+columns:event.key==='ArrowUp'?index-columns:
             event.key==='Home'?0:event.key==='End'?items.length-1:null;
         if(next===null){return;}
         event.preventDefault();
         next = Math.max(0,Math.min(items.length-1,next));
-        let button = cards.get(next)?.querySelector('.material-select');
+        let button = cards.get(items[next].original)?.querySelector('.material-select');
         button?.focus({preventScroll:true});
         button?.scrollIntoView({block:'nearest',inline:'nearest'});
     });

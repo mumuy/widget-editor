@@ -140,7 +140,7 @@ class WidgetEditor extends HTMLElement {
             this.toolbar.innerHTML = this.tools.render();
             this.tools.items.forEach(feature=>feature.bindToolbar?.(this));
             this.locale.apply(this.toolbar);
-            if(this._dialog?.dataset.insert&&this._dialog.dataset.insertSource!=='api'&&!this.canInsert(this._dialog.dataset.insert)){
+            if(this._dialog?.dataset.insert&&this._dialog.insertSource!=='api'&&!this.canInsert(this._dialog.dataset.insert)){
                 this._dialog.dismiss();
             }
             this.updateToolbar();
@@ -422,7 +422,7 @@ class WidgetEditor extends HTMLElement {
         this.saveSelection();
         let dialog = this.tools.get(type).execute(this,mode);
         if(!dialog?.isConnected){return null;}
-        dialog.dataset.insertSource = 'api';
+        dialog.insertSource = 'api';
         this.updateToolbar();
         return dialog;
     }

@@ -13,10 +13,10 @@ export default function tablePicker(editor,dialog,onChange){
         selectedColumn = column;
         onChange(row,column);
         editor.locale.set(picker.querySelector('.table-size'),confirmed?'{columns} 列 × {rows} 行（已确认）':'{columns} 列 × {rows} 行',{columns:column,rows:row});
-        cells.forEach(cell=>{
-            let active = Number(cell.dataset.row)<=row&&Number(cell.dataset.column)<=column;
+        cells.forEach(({cell,row:y,column:x})=>{
+            let active = y<=row&&x<=column;
             cell.classList.toggle('active',active);
-            cell.tabIndex = Number(cell.dataset.row)===row&&Number(cell.dataset.column)===column?0:-1;
+            cell.tabIndex = y===row&&x===column?0:-1;
         });
     };
     for(let row=1;row<=8;row++){
@@ -24,8 +24,6 @@ export default function tablePicker(editor,dialog,onChange){
             let cell = document.createElement('button');
             cell.type = 'button';
             cell.className = 'table-grid-cell';
-            cell.dataset.row = row;
-            cell.dataset.column = column;
             editor.locale.set(cell,'{columns} 列 × {rows} 行',{columns:column,rows:row},'aria-label');
             cell.addEventListener('pointerenter',event=>{
                 if(event.pointerType==='touch'||confirmed&&(row>selectedRow||column>selectedColumn)){
@@ -51,10 +49,10 @@ export default function tablePicker(editor,dialog,onChange){
                     let x = Math.max(1,Math.min(8,column+offset[1]));
                     confirmed = false;
                     select(y,x);
-                    cells[(y-1)*8+x-1].focus({preventScroll:true});
+                    cells[(y-1)*8+x-1].cell.focus({preventScroll:true});
                 }
             });
-            cells.push(cell);
+            cells.push({cell,row,column});
             grid.appendChild(cell);
         }
     }

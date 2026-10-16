@@ -64,13 +64,15 @@ export default function colorFeature(name,label,property,icon){
         },
         update(editor,value){
             let group = editor.toolbar.querySelector('[data-dropdown="'+name+'"]');
-            group.querySelector('[data-action]').style.setProperty('--selected-color',value);
+            let trigger = group.querySelector('[data-action]');
+            if(trigger.style.getPropertyValue('--selected-color')!==value){trigger.style.setProperty('--selected-color',value);}
             // 选色期间不改写输入框，也不恢复编辑区焦点。
             if(editor.dropdown.opened!==group){
                 group.querySelector('input').value = value==='transparent'?'':value;
             }
             group.querySelectorAll('[data-color]').forEach(button=>{
-                button.setAttribute('aria-pressed',String(button.dataset.color===value));
+                let pressed = String(button.dataset.color===value);
+                if(button.getAttribute('aria-pressed')!==pressed){button.setAttribute('aria-pressed',pressed);}
             });
         },
         execute(editor,value){

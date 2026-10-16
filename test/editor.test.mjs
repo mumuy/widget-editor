@@ -165,6 +165,12 @@ try {
         mobile: false
     });
     console.log('PASS image toolbar, size, description, alignment, form, undo and source roundtrip');
+    await run(`reset();e.execute('table');window.gridCell=e._dialog.querySelectorAll('.table-grid-cell')[18];gridCell.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true}));e._dialog.querySelector('form').requestSubmit();`);
+    assert.equal(await run(`return e.content.querySelectorAll('tr').length===4&&e.content.querySelectorAll('tr')[0].children.length===3;`), true, 'table picker keyboard works without row/column attributes');
+    await run(`reset();e.execute('emoji');window.emoji=e._dialog.querySelectorAll('.emoji-button')[1];window.emojiText=emoji.textContent;emoji.click();`);
+    assert.equal(await run(`return !emoji.hasAttribute('data-emoji')&&!e.value.includes(emojiText);`), true, 'emoji selection uses text without immediate insertion');
+    await run(`e._dialog.querySelector('form').requestSubmit();`);
+    assert.equal(await run(`return e.value.includes(emojiText);`), true, 'emoji inserts after confirmation');
     await run(`reset();window.removals=[];e.addEventListener('request',event=>{window.materialRequest=event.detail;});e.addEventListener('remove',event=>{removals.push(event.detail.url);event.detail.onComplete();});e.openInsertDialog('image','resource');`);
     assert.equal(await run(`let list=e._dialog.querySelector('.material-list');let panel=list.parentElement;return list.getAttribute('aria-busy')==='true'&&!!list.querySelector('.material-empty svg')&&getComputedStyle(panel).overflowX==='hidden'&&panel.scrollWidth<=panel.clientWidth;`), true, 'request shows loading SVG without horizontal overflow');
     await run(`materialRequest.onError('Load failed');`);
@@ -183,12 +189,12 @@ try {
     assert.equal(await run(`let list=e._dialog.querySelector('.material-list');return !list.querySelector('.material-empty svg')&&list.getAttribute('aria-busy')==='false'&&list.parentElement.scrollWidth<=list.parentElement.clientWidth;`), true, 'loaded grid has only vertical scrolling');
     await run(`e._dialog.querySelector('.material-select').click();let panel=e._dialog.querySelector('[data-media-panel=resource]');panel.scrollTop=panel.scrollHeight;panel.dispatchEvent(new Event('scroll'));`);
     await b.delay(80);
-    await waitFor(`return !!e._dialog.querySelector('[data-index="4999"]')&&e._dialog.querySelectorAll('.material-item').length===5000;`, 'CSS grid cards after scroll');
-    await run(`e._dialog.querySelector('[data-index="4999"] .material-select').click();`);
+    await waitFor(`return !!e._dialog.querySelectorAll('.material-item')[4999]&&e._dialog.querySelectorAll('.material-item').length===5000;`, 'CSS grid cards after scroll');
+    await run(`e._dialog.querySelectorAll('.material-select')[4999].click();`);
     assert.equal(await run(`return e._dialog.querySelector('[data-count]').textContent;`), '已选 2 项', 'selection preserved across windows');
-    await run(`let button=e._dialog.querySelector('[data-index="4999"] .material-select');button.focus();button.dispatchEvent(new KeyboardEvent('keydown',{key:'Home',bubbles:true}));`);
-    assert.equal(await run(`let card=e.shadowRoot.activeElement.closest('.material-item');let panel=e._dialog.querySelector('[data-media-panel=resource]');return card?.dataset.index==='0'&&card.getBoundingClientRect().top>=panel.getBoundingClientRect().top;`), true, 'grid Home focuses visible card');
-    await run(`e._dialog.querySelector('[data-index="0"] .material-remove').click();`);
+    await run(`let button=e._dialog.querySelectorAll('.material-select')[4999];button.focus();button.dispatchEvent(new KeyboardEvent('keydown',{key:'Home',bubbles:true}));`);
+    assert.equal(await run(`let card=e.shadowRoot.activeElement.closest('.material-item');let panel=e._dialog.querySelector('[data-media-panel=resource]');return card===e._dialog.querySelector('.material-item')&&card.getBoundingClientRect().top>=panel.getBoundingClientRect().top;`), true, 'grid Home focuses visible card');
+    await run(`e._dialog.querySelector('.material-remove').click();`);
     await b.delay(50);
     assert.equal(await run(`return removals.length===1&&e._dialog.querySelector('[data-count]').textContent==='已选 1 项';`), true, 'remove material item');
     await run(`e._dialog.querySelector('form').requestSubmit();`);

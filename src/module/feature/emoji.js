@@ -51,14 +51,14 @@ export default {
                 let panel = picker.querySelector('.emoji-panel');
                 let grid = picker.querySelector('.emoji-grid');
                 let update = ()=>{
-                    let current = Array.from(grid.children).findIndex(button=>button.dataset.emoji===selected);
+                    let current = Array.from(grid.children).findIndex(button=>button.textContent===selected);
                     Array.from(grid.children).forEach((button,index)=>{
                         button.setAttribute('aria-pressed',String(index===current));
                         button.tabIndex = index===Math.max(0,current)?0:-1;
                     });
                 };
                 let select = button=>{
-                    selected = button.dataset.emoji;
+                    selected = button.textContent;
                     update();
                 };
                 let show = index=>{
@@ -73,7 +73,6 @@ export default {
                         let button = document.createElement('button');
                         button.type = 'button';
                         button.className = 'emoji-button';
-                        button.dataset.emoji = value;
                         button.textContent = value;
                         let label = labels.get(value)||'{category}：{emoji}';
                         let params = {category:group.name,emoji:value};
@@ -107,11 +106,11 @@ export default {
                     tabs.appendChild(button);
                 });
                 grid.addEventListener('click',event=>{
-                    let button = event.target.closest('[data-emoji]');
+                    let button = event.target.closest('.emoji-button');
                     if(button){select(button);}
                 });
                 grid.addEventListener('keydown',event=>{
-                    let button = event.target.closest('[data-emoji]');
+                    let button = event.target.closest('.emoji-button');
                     if(!button){return;}
                     let index = Array.from(grid.children).indexOf(button);
                     let offsets = {ArrowLeft:-1,ArrowRight:1,ArrowUp:-8,ArrowDown:8};
