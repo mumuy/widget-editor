@@ -854,8 +854,12 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog
     padding: 18px 0;
     min-width: 0;
     min-height: 0;
+    overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
+}
+.media-panel[data-media-panel="resource"]{
+    scrollbar-gutter: stable;
 }
 .media-fields{
     display: grid;
@@ -932,11 +936,24 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog
 .material-remove:hover{background: #dc3545cc;}
 .material-list button:disabled{opacity: .5;}
 .material-empty{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     margin: 0;
     padding: 32px 0;
     color: var(--muted-text-color);
     text-align: center;
     font-size: 13px;
+}
+.material-empty svg{
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    animation: material-loading .8s linear infinite;
+}
+@keyframes material-loading{
+    to{transform: rotate(360deg);}
 }
 .upload-feedback{
     display: grid;

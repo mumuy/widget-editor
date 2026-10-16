@@ -1,4 +1,4 @@
-import {audio,attachment,close,renderIcon} from '../icon.js';
+import {audio,attachment,close,loading,renderIcon} from '../icon.js';
 import {urlFileName} from './file.js';
 import {safeURL} from './sanitize.js';
 
@@ -29,7 +29,7 @@ export default function createMaterials(editor,options){
         cards.forEach((card,index)=>card.querySelector('.material-select').setAttribute('aria-pressed',String(selected.has(items[index].original))));
         options.onSelectionChange?.(selected.size);
     };
-    let status = function(text){
+    let status = function(text,pending=false){
         items = [];
         selected.clear();
         cards.clear();
@@ -38,7 +38,10 @@ export default function createMaterials(editor,options){
         let message = document.createElement('p');
         message.className = 'material-empty';
         message.setAttribute('role','status');
-        editor.locale.set(message,text);
+        let label = document.createElement('span');
+        editor.locale.set(label,text);
+        if(pending){message.innerHTML = renderIcon(loading);}
+        message.appendChild(label);
         list.replaceChildren(message);
         options.onSelectionChange?.(0);
     };

@@ -165,11 +165,16 @@ try {
         mobile: false
     });
     console.log('PASS image toolbar, size, description, alignment, form, undo and source roundtrip');
-    await run(`reset();window.removals=[];e.addEventListener('request',event=>event.detail.onComplete(Array.from({length:5000},(_,i)=>({original:'https://example.com/'+i+'.png',thumbnail:'/thumb'}))));e.addEventListener('remove',event=>{removals.push(event.detail.url);event.detail.onComplete();});e.openInsertDialog('image','resource');`);
+    await run(`reset();window.removals=[];e.addEventListener('request',event=>{window.materialRequest=event.detail;});e.addEventListener('remove',event=>{removals.push(event.detail.url);event.detail.onComplete();});e.openInsertDialog('image','resource');`);
+    assert.equal(await run(`let list=e._dialog.querySelector('.material-list');let panel=list.parentElement;return list.getAttribute('aria-busy')==='true'&&!!list.querySelector('.material-empty svg')&&getComputedStyle(panel).overflowX==='hidden'&&panel.scrollWidth<=panel.clientWidth;`), true, 'request shows loading SVG without horizontal overflow');
+    await run(`materialRequest.onError('Load failed');`);
+    assert.equal(await run(`return !e._dialog.querySelector('.material-empty svg')&&e._dialog.querySelector('.material-list').getAttribute('aria-busy')==='false';`), true, 'request error clears loading');
+    await run(`e._dialog.querySelector('[data-media-tab=resource]').click();materialRequest.onComplete(Array.from({length:5000},(_,i)=>({original:'https://example.com/'+i+'.png',thumbnail:'/thumb'})));`);
     await b.delay(80);
     let initial = await run(`return {cards:e._dialog.querySelectorAll('.material-item').length,height:e._dialog.querySelector('.material-list').offsetHeight};`);
     assert.ok(initial.cards > 0 && initial.cards < 100);
     assert.ok(initial.height > 100000);
+    assert.equal(await run(`let list=e._dialog.querySelector('.material-list');return !list.querySelector('.material-empty svg')&&list.getAttribute('aria-busy')==='false'&&list.parentElement.scrollWidth<=list.parentElement.clientWidth;`), true, 'loaded grid has only vertical scrolling');
     await run(`e._dialog.querySelector('.material-select').click();let panel=e._dialog.querySelector('[data-media-panel=resource]');panel.scrollTop=panel.scrollHeight;panel.dispatchEvent(new Event('scroll'));`);
     await b.delay(80);
     await waitFor(`return !!e._dialog.querySelector('[data-index="4999"]')&&e._dialog.querySelectorAll('.material-item').length<100;`, 'bounded cards after scroll');

@@ -198,7 +198,7 @@ export default function openMedia(editor,options,initialMode){
     };
     let request = async function(){
         let version = revision;
-        materials.status('加载中…');
+        materials.status('加载中…',true);
         let sources = await resolveResources('request');
         if(current()&&mode==='resource'&&version===revision){
             sources?materials.render(sources):materials.status('暂无素材');
