@@ -118,7 +118,7 @@ console.log(editor.value);</code></pre>
                             <p>引入组件、设置初始内容，并监听内容变化。</p>
                         </div>
                         <div class="bd">    
-                            <widget-code language="html">&lt;script src="./widget-editor.min.js" defer&gt;&lt;/script&gt;
+<widget-code language="html">&lt;script src="./widget-editor.min.js" defer&gt;&lt;/script&gt;
 
 &lt;widget-editor id="editor" placeholder="请输入内容…"&gt;
     &lt;h2&gt;开始写作&lt;/h2&gt;
@@ -133,7 +133,7 @@ console.log(editor.value);</code></pre>
                         </div>
                         <div class="bd">
                             <div class="code-container">
-                                <widget-code language="html">&lt;widget-editor
+<widget-code language="html">&lt;widget-editor
     custom="heading,fontSize,bold,italic,color,link,insert"
     insert="image,table,emoji"
     heading="p,h2,h3"
@@ -376,7 +376,7 @@ console.log(editor.value);</code></pre>
                                 <div class="tabs-panels">
                                     <div class="tabs-panel" role="tabpanel" id="methods-get-panel" aria-labelledby="methods-get-tab">
                                         <p>读取当前内容的 HTML。</p>
-                                        <widget-code language="javascript">let html = editor.getHTML();
+<widget-code language="javascript">let html = editor.getHTML();
 console.log(html);</widget-code>
                                     </div>
                                     <div class="tabs-panel" role="tabpanel" id="methods-set-panel" aria-labelledby="methods-set-tab" hidden inert>
@@ -390,7 +390,7 @@ console.log(html);</widget-code>
                                     <div class="tabs-panel" role="tabpanel" id="methods-command-panel" aria-labelledby="methods-command-tab" hidden inert>
                                         <p>直接执行内容命令，无需打开弹框或显示工具栏按钮。命令共用选区、撤销、HTML 整理和 <code>change</code> 事件。</p>
                                         <div class="code-container">
-                                            <widget-code language="javascript">editor.command('bold');
+<widget-code language="javascript">editor.command('bold');
 editor.command('heading','h2');
 editor.command('fontSize',24);
 editor.command('color','#2876df');
@@ -423,10 +423,10 @@ editor.command('insertCode',{language:'javascript',text:'const value = 1;'});</w
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <widget-code language="javascript">editor.openInsertDialog('image','upload');
-    editor.openInsertDialog('video','iframe');
-    editor.openInsertDialog('audio','url');
-    editor.openInsertDialog('attachment','resource');</widget-code>
+<widget-code language="javascript">editor.openInsertDialog('image','upload');
+editor.openInsertDialog('video','iframe');
+editor.openInsertDialog('audio','url');
+editor.openInsertDialog('attachment','resource');</widget-code>
                                     </div>
                                 </div>
                             </div>
@@ -434,7 +434,7 @@ editor.command('insertCode',{language:'javascript',text:'const value = 1;'});</w
                                 <summary>原生表单</summary>
                                 <div>
                                     <div class="code-container">
-                                        <widget-code language="html">&lt;form id="article-form"&gt;
+<widget-code language="html">&lt;form id="article-form"&gt;
     &lt;widget-editor name="content" required&gt;&lt;/widget-editor&gt;
     &lt;button type="submit"&gt;保存&lt;/button&gt;
 &lt;/form&gt;
@@ -471,7 +471,7 @@ editor.command('insertCode',{language:'javascript',text:'const value = 1;'});</w
                                     <div class="tabs-panel" role="tabpanel" id="events-ready-panel" aria-labelledby="events-ready-tab">
                                         <p>组件首次加入页面并初始化完成时触发，无 <code>detail</code> 数据。监听后再将组件加入页面。</p>
                                         <div class="code-container">
-                                            <widget-code language="javascript">let editor = document.createElement('widget-editor');
+<widget-code language="javascript">let editor = document.createElement('widget-editor');
 editor.addEventListener('ready',function(){
     console.log(editor.value);
 });
@@ -704,7 +704,7 @@ document.body.appendChild(editor);</widget-code>
                                 <summary><span>素材格式</span></summary>
                                 <div>
                                     <p>上传、新增和加载素材均支持以下格式：缩略图用于预览，原图用于插入；省略缩略图时使用原地址。</p>
-                                    <widget-code language="javascript">onComplete([
+<widget-code language="javascript">onComplete([
     'https://example.com/photo.jpg',
     {
         original:'https://example.com/original.jpg',
