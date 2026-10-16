@@ -2,6 +2,14 @@
     const editor = document.querySelector('#product-editor');
     const resources = new Map();
 
+    // 优先使用 CSS 滚动动画；未支持的浏览器只切换状态，由 CSS 完成渐变。
+    if(!CSS.supports('animation-timeline','scroll()')){
+        const header = document.querySelector('.site-header');
+        const updateHeader = ()=>header.classList.toggle('scrolled',window.scrollY>0);
+        window.addEventListener('scroll',updateHeader,{passive:true});
+        updateHeader();
+    }
+
     // 演示文件仅在当前页面读取；正式接入时由业务服务返回资源 URL。
     async function upload(event){
         const {files,type,onComplete,onError,onProgress} = event.detail;
