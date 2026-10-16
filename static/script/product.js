@@ -2,17 +2,6 @@
     const editor = document.querySelector('#product-editor');
     const resources = new Map();
 
-    document.querySelector('.copy-button').addEventListener('click',async function(){
-        const button = this;
-        try{
-            await navigator.clipboard.writeText(document.getElementById(button.value).textContent);
-            button.textContent = '已复制';
-        }catch(error){
-            button.textContent = '请选中下方代码复制';
-        }
-        setTimeout(()=>{button.textContent = '复制代码';},2500);
-    });
-
     // 演示文件仅在当前页面读取；正式接入时由业务服务返回资源 URL。
     async function upload(event){
         const {files,type,onComplete,onError,onProgress} = event.detail;
