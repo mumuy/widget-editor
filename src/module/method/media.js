@@ -1,6 +1,7 @@
 import {fileType} from './file.js';
 import {safeURL} from './sanitize.js';
 import createMaterials,{normalizeMaterial} from './material.js';
+import {loading,renderIcon} from '../icon.js';
 
 // 上传与素材库共用回调校验、取消状态及插入流程。
 export default function openMedia(editor,options,initialMode){
@@ -15,6 +16,10 @@ export default function openMedia(editor,options,initialMode){
     let pendingType;
     let revision = 0;
     let materials;
+    let page = 0;
+    let hasNext = false;
+    let more;
+    let observer;
     let addButton;
     let addInput;
     let selectedCount = 0;
@@ -79,6 +84,12 @@ export default function openMedia(editor,options,initialMode){
         addButton.disabled = busy;
         addInput.disabled = busy||mode!=='resource';
         materials?.busy(busy);
+        if(more){
+            more.hidden = !hasNext;
+            more.disabled = busy;
+            more.querySelector('svg').hidden = !busy||pendingType!=='request';
+            editor.locale.set(more.querySelector('span'),busy&&pendingType==='request'?'加载中…':'加载更多');
+        }
         dialog.updateSubmit();
     };
     let setBusy = function(value,name){
@@ -93,7 +104,7 @@ export default function openMedia(editor,options,initialMode){
             dialog.message('');
         }
     };
-    let resolveResources = function(name,files=[],url){
+    let resolveResources = function(name,{files=[],url,page}={}){
         let uploading = ['upload','add'].includes(name);
         setBusy(true,name);
         return new Promise(resolve=>{
@@ -118,7 +129,7 @@ export default function openMedia(editor,options,initialMode){
             let detail = {
                 type:options.kind,
                 limit,
-                onComplete(urls){
+                onComplete(urls,hasNext=false){
                     if(!active()){
                         return;
                     }
@@ -133,10 +144,11 @@ export default function openMedia(editor,options,initialMode){
                         return;
                     }
                     let seen = new Set();
-                    finish(name==='request'?sources.filter(item=>!seen.has(item.original)&&seen.add(item.original)):sources);
+                    finish(name==='request'?{sources:sources.filter(item=>!seen.has(item.original)&&seen.add(item.original)),hasNext:hasNext===true}:sources);
                 },
                 onError:error
             };
+            if(name==='request'){detail.page = page;}
             if(name==='remove'){detail.url = url;}
             if(uploading){
                 detail.files = files.slice();
@@ -182,7 +194,7 @@ export default function openMedia(editor,options,initialMode){
             return;
         }
         let version = revision;
-        let sources = await resolveResources(name,files);
+        let sources = await resolveResources(name,{files});
         if(!current()||version!==revision){return;}
         if(sources){
             if(name==='upload'){uploaded = {files,sources:sources.map(item=>item.original)};}
@@ -196,12 +208,27 @@ export default function openMedia(editor,options,initialMode){
         editor.selection.range = range;
         editor.command('insertMedia',{type:options.kind,sources,files,values});
     };
-    let request = async function(){
+    let request = async function(reset=true){
+        if(!reset&&(busy||!hasNext||mode!=='resource'||!current())){return;}
+        if(reset){
+            page = 0;
+            hasNext = false;
+            materials.status('加载中…',true);
+        }
         let version = revision;
-        materials.status('加载中…',true);
-        let sources = await resolveResources('request');
+        let nextPage = page+1;
+        let result = await resolveResources('request',{page:nextPage});
         if(current()&&mode==='resource'&&version===revision){
-            sources?materials.render(sources):materials.status('暂无素材');
+            if(result){
+                page = nextPage;
+                hasNext = result.hasNext;
+                if(reset){materials.render(result.sources);}
+                else{materials.append(result.sources);}
+                // 追加后仍未填满面板时，允许继续请求下一页。
+                observer.unobserve(more);
+                observer.observe(more);
+            }else if(reset){materials.status('暂无素材');}
+            setMode(mode);
         }
     };
     let activate = function(value,focus=false){
@@ -275,9 +302,19 @@ export default function openMedia(editor,options,initialMode){
                         ...options,limit,
                         onSelectionChange:count=>{selectedCount = count;updateNotice();dialog.updateSubmit();},
                         message:(...args)=>dialog.message(...args),
-                        remove:url=>resolveResources('remove',[],url)
+                        remove:url=>resolveResources('remove',{url})
                     });
                     element.appendChild(materials.element);
+                    more = document.createElement('button');
+                    more.type = 'button';
+                    more.className = 'material-more';
+                    more.hidden = true;
+                    more.innerHTML = renderIcon(loading)+'<span></span>';
+                    more.onclick = ()=>request(false);
+                    element.appendChild(more);
+                    observer = new IntersectionObserver(entries=>{
+                        if(entries.some(entry=>entry.isIntersecting)){request(false);}
+                    },{root:element});
                 }else{
                     panel.fields = document.createElement('div');
                     panel.fields.className = 'media-fields';
@@ -319,6 +356,7 @@ export default function openMedia(editor,options,initialMode){
             setMode(mode);
         },
         onClose(){
+            observer?.disconnect();
             revision++;
             cancelPending?.();
         },

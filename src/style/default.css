@@ -951,11 +951,23 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog
     text-align: center;
     font-size: 13px;
 }
-.material-empty svg{
+.material-empty svg,.material-more svg{
     flex-shrink: 0;
     width: 20px;
     height: 20px;
     animation: material-loading .8s linear infinite;
+}
+.material-more{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-shrink: 0;
+    min-height: 32px;
+    padding: 4px 12px;
+    border: 0;
+    background: transparent;
+    color: var(--button-active-color);
 }
 @keyframes material-loading{
     to{transform: rotate(360deg);}

@@ -123,6 +123,7 @@ export default {
     '请选择素材':'Choose assets',
     '加载中…':'Loading…',
     '暂无素材':'No assets',
+    '加载更多':'Load more',
     '素材加载失败，请重试':'Could not load assets. Please try again.',
     '素材删除失败，请重试':'Could not delete this asset. Please try again.',
     '请返回有效的素材列表，请重试':'Return a valid asset list. Please try again.',
