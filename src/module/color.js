@@ -1,5 +1,5 @@
 import {renderIcon} from './icon.js';
-import hexColor from './method/color.js';
+import {readColor} from './method/color.js';
 
 const grayscale = ['#ffffff','#e3e3e3','#c6c6c6','#aaaaaa','#8e8e8e','#717171','#555555','#393939','#1c1c1c','#000000'];
 const hues = ['#e34b4b','#df8b32','#c9a82c','#b6b62c','#36b35f','#28afa0','#349ec9','#527edb','#a15bd5','#d94f93'];
@@ -74,22 +74,10 @@ export default function colorFeature(name,label,property,icon){
             });
         },
         execute(editor,value){
-            value = String(value).toLowerCase();
-            if(/^#[0-9a-f]{6}$/.test(value)||background&&value==='transparent'){
-                editor.applyStyle({[property]:value});
-            }
+            editor.command(name,value);
         },
         value(editor){
-            for(let element=editor.selectedElement();element&&editor.content.contains(element);element=element.parentElement){
-                // 背景不继承，沿祖先查找实际样式，忽略表格选格等临时背景。
-                if(background&&!element.style.getPropertyValue(property)){continue;}
-                let value = hexColor(window.getComputedStyle(element).getPropertyValue(property));
-                if(/^#[\da-f]{6}(?:[\da-f]{2})?$/i.test(value)&&(value.length===7||value.slice(-2)!=='00')){
-                    return value.slice(0,7).toLowerCase();
-                }
-                if(!background){break;}
-            }
-            return background?'transparent':'#343b48';
+            return readColor(editor,property);
         }
     };
 }

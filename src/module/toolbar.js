@@ -4,8 +4,8 @@ import EditorDropdown from './dropdown.js';
 import {renderIcon,undo,redo,fullscreen} from './icon.js';
 
 const controls = [
-    {name:'undo',label:'撤销',icon:undo,execute:editor=>editor.history.move(-1)},
-    {name:'redo',label:'重做',icon:redo,execute:editor=>editor.history.move(1)},
+    {name:'undo',label:'撤销',icon:undo,execute:editor=>editor.command('undo')},
+    {name:'redo',label:'重做',icon:redo,execute:editor=>editor.command('redo')},
     ...features,
     {name:'fullscreen',label:'全屏',icon:fullscreen,type:'button',view:true,
         execute:editor=>editor.fullscreen.state?editor.fullscreen.close():editor.fullscreen.open(),

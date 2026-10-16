@@ -1,4 +1,5 @@
 import {safeURL} from './method/sanitize.js';
+import {imageAlignment} from './commands/media.js';
 
 // 图片属性在独立浮层中编辑，编辑器正文只保留可输出的图片和样式。
 export default class EditorImage {
@@ -64,16 +65,9 @@ export default class EditorImage {
             let src = safeURL(this.form.elements.url.value,'image');
             this.form.elements.url.setCustomValidity(src?'':editor.t('请输入有效的图片地址'));
             if(!image?.isConnected||!this.form.reportValidity()){return;}
-            editor.transaction(()=>{
-                image.setAttribute('src',src);
-                image.setAttribute('alt',this.form.elements.alt.value);
-                let width = this.form.elements.width.value;
-                if(width){image.setAttribute('width',width);}else{image.removeAttribute('width');}
-                image.removeAttribute('height');
-                image.style.display = this.align?'block':'';
-                image.style.marginLeft = this.align>1?'auto':this.align?'0px':'';
-                image.style.marginRight = this.align===2?'auto':this.align?'0px':'';
-                let range = document.createRange();range.selectNode(image);editor.blocks.select(range);
+            editor.command('updateImage',{
+                image,url:src,alt:this.form.elements.alt.value,
+                width:this.form.elements.width.value,alignment:this.align
             });
             this.dismiss();
         });
@@ -106,7 +100,7 @@ export default class EditorImage {
         this.form.elements.url.setCustomValidity('');
         this.form.elements.alt.value = image.alt;
         this.form.elements.width.value = image.getAttribute('width')||'';
-        this.setAlign(image.style.display!=='block'?0:image.style.marginLeft!=='auto'?1:image.style.marginRight==='auto'?2:3);
+        this.setAlign(imageAlignment(image));
         this.toolbar.querySelector('[data-image-replace]').disabled = !this.editor.config.methods('image').length;
     }
     refresh(){

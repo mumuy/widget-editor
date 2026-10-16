@@ -11,6 +11,6 @@ export default {
         editor.codes.normalize(editor.selection.range);
     },
     execute(editor){
-        editor.codes.insert();
+        editor.command('insertCode');
     }
 };

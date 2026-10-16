@@ -1,5 +1,5 @@
 import {attachment as icon} from '../icon.js';
-import {escapeHTML,safeURL} from '../method/sanitize.js';
+import {safeURL} from '../method/sanitize.js';
 import {fileName} from '../method/file.js';
 import openMedia from '../method/media.js';
 
@@ -34,11 +34,6 @@ export default {
             'kind':'attachment',
             'size':20,
             'field':{'name':'text','label':'显示文字','type':'text','placeholder':'留空时使用文件名'},
-            html(source,values){
-                let name = escapeHTML(fileName(values.name));
-                let text = escapeHTML(String(values.text||'').trim()||values.name);
-                return '<a href="'+escapeHTML(source)+'" download="'+name+'">'+text+'</a>';
-            }
         },mode);
     }
 };

@@ -26,20 +26,7 @@ export default {
                 });
             },
             onSubmit(values){
-                let html = '<table>'+(values.header?'<thead>':'<tbody>');
-                for(let row=0;row<rows;row++){
-                    let tag = row===0 && values.header ? 'th' : 'td';
-                    html += '<tr>';
-                    for(let column=0;column<columns;column++){
-                        html += '<'+tag+'><br></'+tag+'>';
-                    }
-                    html += '</tr>';
-                    if(row===0&&values.header){
-                        html += '</thead><tbody>';
-                    }
-                }
-                html += '</tbody></table><p><br></p>';
-                editor.insertHTML(html);
+                editor.command('insertTable',{rows,columns,header:values.header});
                 return true;
             }
         });

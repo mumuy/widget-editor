@@ -127,7 +127,7 @@ export default {
                 dialog.querySelector('.dialog-body').prepend(picker);
             },
             onSubmit(){
-                editor.insertHTML(selected);
+                editor.command('insertText',selected);
                 return true;
             }
         });

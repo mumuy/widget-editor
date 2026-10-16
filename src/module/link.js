@@ -1,5 +1,4 @@
 import {unlink,renderIcon} from './icon.js';
-import {safeURL,escapeHTML,setLinkTarget} from './method/sanitize.js';
 
 // 链接操作使用独立浮层，不向编辑内容添加节点。
 export default class EditorLink {
@@ -195,37 +194,9 @@ export default class EditorLink {
         });
     }
     apply(values,link=null,range=this.editor.getRange()){
-        let editor = this.editor;
-        let url = safeURL(String(values.url||'').trim());
-        if(!url||editor.source||editor.formControl.disabled||link&&!this.link(link)){return false;}
-        let text = String(values.text||'').trim()||url;
-        if(link){
-            editor.transaction(()=>{
-                link.setAttribute('href',url);
-                setLinkTarget(link,values.newWindow);
-                if(text!==link.textContent){
-                    link.textContent = text;
-                    let selection = document.createRange();
-                    selection.selectNodeContents(link);
-                    selection.collapse(false);
-                    editor.selection.range = selection;
-                    editor.restoreSelection();
-                }
-                this.dismiss();
-            });
-        }else if(range&&!range.collapsed&&text===range.toString()){
-            editor.transaction(()=>{
-                document.execCommand('createLink',false,url);
-                let selected = editor.selection.current();
-                editor.content.querySelectorAll('a[href]:not([download])').forEach(node=>{
-                    if(selected?.intersectsNode(node)){setLinkTarget(node,values.newWindow);}
-                });
-                this.dismiss();
-            });
-        }else{
-            editor.insertHTML('<a href="'+escapeHTML(url)+'" target="'+(values.newWindow?'_blank':'_self')+'">'+escapeHTML(text)+'</a>');
-        }
-        return true;
+        let success = this.editor.command('link',{...values,link,range});
+        if(success!==false){this.dismiss();}
+        return success!==false;
     }
     dismiss(){
         clearTimeout(this.timer);
@@ -287,37 +258,9 @@ export default class EditorLink {
     unlink(){
         let editor = this.editor;
         let link = this.link(this.target);
-        if(!link||editor.source||editor.formControl.disabled){
-            this.dismiss();
-            return;
-        }
+        if(!link||editor.source||editor.formControl.disabled){this.dismiss();return;}
         if(!this.focused()){editor.saveSelection();}
-        editor.transaction(()=>{
-            let range = editor.getRange().cloneRange();
-            let offset = (node,value)=>{
-                if(!link.contains(node)){
-                    return null;
-                }
-                let part = document.createRange();
-                part.selectNodeContents(link);
-                part.setEnd(node,value);
-                return part.toString().length;
-            };
-            let start = offset(range.startContainer,range.startOffset);
-            let end = offset(range.endContainer,range.endOffset);
-            let text = document.createTextNode(link.textContent);
-            this.dismiss();
-            link.replaceWith(text);
-            if(start!==null){
-                range.setStart(text,start);
-            }
-            if(end!==null){
-                range.setEnd(text,end);
-            }
-            editor.selection.select(range);
-            if(start!==null&&end!==null){
-                document.execCommand('removeFormat');
-            }
-        });
+        this.dismiss();
+        return editor.command('unlink',link);
     }
 }

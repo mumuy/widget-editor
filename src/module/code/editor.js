@@ -1,5 +1,6 @@
+import {selectedCode} from '../commands/code.js';
 import {languages} from './language.js';
-import {codeText,codeOffset,codePoint,renderCode,normalizeCode} from './content.js';
+import {codeText,codeOffset,normalizeCode} from './content.js';
 import {code as icon,chevron,renderIcon} from '../icon.js';
 
 export default class EditorCode {
@@ -143,12 +144,7 @@ export default class EditorCode {
     selected(){
         if(this.editor.formControl.disabled){return null;}
         let range = this.range();
-        let find = node=>{
-            let element = node?.nodeType===Node.TEXT_NODE?node.parentElement:node;
-            return element?.closest?.('pre')?.querySelector('code');
-        };
-        let code = range&&find(range.startContainer);
-        return code&&this.editor.content.contains(code)&&code===find(range.endContainer)?code:null;
+        return selectedCode(this.editor,range);
     }
     normalize(range=this.editor.getRange()){
         let editor = this.editor;
@@ -181,68 +177,19 @@ export default class EditorCode {
         return true;
     }
     edit(callback){
-        let code = this.selected();
-        if(!code||this.editor.source){return;}
-        let range = this.editor.getRange();
-        let result = callback(codeText(code),codeOffset(code,range.startContainer,range.startOffset),codeOffset(code,range.endContainer,range.endOffset));
-        this.editor.transaction(()=>{
-            code.textContent = result.text;
-            delete code._highlight;
-            renderCode(code,true);
-            range = document.createRange();
-            range.setStart(...codePoint(code,result.start));
-            range.setEnd(...codePoint(code,result.end));
-            this.select(range);
-            this.blocked = null;
-        });
+        this.blocked = null;
+        return this.editor.command('codeEdit',callback);
     }
     write(value){
-        value = String(value).replace(/\r\n?/g,'\n');
-        this.edit((text,start,end)=>({text:text.slice(0,start)+value+text.slice(end),start:start+value.length,end:start+value.length}));
+        this.blocked = null;
+        return this.editor.command('codeWrite',value);
     }
     indent(reverse){
-        this.edit((text,start,end)=>{
-            if(!reverse&&start===end){
-                return {text:text.slice(0,start)+'    '+text.slice(end),start:start+4,end:end+4};
-            }
-            let first = text.lastIndexOf('\n',Math.max(0,start-1))+1;
-            if(start===0){first = 0;}
-            let last = end>start&&text[end-1]==='\n'?end-1:end;
-            last = text.indexOf('\n',last);
-            if(last<0){last = text.length;}
-            let delta = 0;
-            let firstDelta = 0;
-            let lines = text.slice(first,last).split('\n').map((line,index)=>{
-                let size = reverse?(line.match(/^(?: {1,4}|\t)/)?.[0].length||0):4;
-                let change = reverse?-size:size;
-                if(index===0){firstDelta = change;}
-                delta += change;
-                return reverse?line.slice(size):'    '+line;
-            });
-            return {text:text.slice(0,first)+lines.join('\n')+text.slice(last),start:Math.max(first,start+firstDelta),end:Math.max(first,end+delta)};
-        });
+        this.blocked = null;
+        return this.editor.command('codeIndent',reverse);
     }
     insert(){
-        let editor = this.editor;
-        let previous = new Set(editor.content.querySelectorAll('pre code'));
-        let pre = document.createElement('pre');
-        let code = document.createElement('code');
-        code.setAttribute('data-language','javascript');
-        code.textContent = editor.getRange()?.toString()||'';
-        pre.appendChild(code);
-        renderCode(code);
-        editor.transaction(()=>{
-            document.execCommand('insertHTML',false,pre.outerHTML);
-        });
-        code = Array.from(editor.content.querySelectorAll('pre code')).find(node=>!previous.has(node));
-        if(code){
-            let range = document.createRange();
-            range.setStart(...codePoint(code,codeText(code).length));
-            range.collapse(true);
-            this.select(range);
-            editor.history.record();
-            editor.updateToolbar();
-        }
+        return this.editor.command('insertCode');
     }
     exit(){
         let code = this.selected();
@@ -251,11 +198,9 @@ export default class EditorCode {
     choose(language){
         let code = this.target;
         if(!code||!this.editor.content.contains(code)||this.editor.source){return;}
-        this.editor.transaction(()=>{
-            code.setAttribute('data-language',language);
-            this.toggle(false);
-            this.blocked = null;
-        });
+        this.toggle(false);
+        this.blocked = null;
+        this.editor.command('codeLanguage',{code,language});
     }
     toggle(opened){
         let previous = this.opened;

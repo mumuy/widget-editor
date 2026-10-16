@@ -1,3 +1,5 @@
+import executeCommand from './module/commands/index.js';
+import nativeCommand from './module/commands/native.js';
 import EditorSelection from './module/method/selection.js';
 import sanitizeHTML,{setLinkTarget} from './module/method/sanitize.js';
 import {createFormatter} from './module/method/formatHTML.js';
@@ -312,7 +314,7 @@ class WidgetEditor extends HTMLElement {
             if(event.isComposing||this._composing){return;}
             if(['historyUndo','historyRedo'].includes(event.inputType)){
                 event.preventDefault();
-                this.history.move(event.inputType==='historyUndo'?-1:1);
+                this.command(event.inputType==='historyUndo'?'undo':'redo');
                 return;
             }
             this.history.capture(event.inputType);
@@ -321,7 +323,7 @@ class WidgetEditor extends HTMLElement {
                 return;
             }
             this.normalizeContent(true);
-            document.execCommand('defaultParagraphSeparator',false,'p');
+            nativeCommand('defaultParagraphSeparator','p');
         });
         this.content.addEventListener('keydown',event=>{
             if(this.formControl.disabled||event.isComposing||event.keyCode===229||this._composing){return;}
@@ -380,7 +382,7 @@ class WidgetEditor extends HTMLElement {
             let key = event.key.toLowerCase();
             if(key==='z'||key==='y'){
                 event.preventDefault();
-                this.history.move(key==='y'||event.shiftKey?1:-1);
+                this.command(key==='y'||event.shiftKey?'redo':'undo');
             }else if(['b','i','u'].includes(key)){
                 event.preventDefault();
                 this.execute({'b':'bold','i':'italic','u':'underline'}[key]);
@@ -434,7 +436,7 @@ class WidgetEditor extends HTMLElement {
         this.codes?.normalize(this.selection.range);
         this.normalizeContent(true,this.selection.range);
         let range = this.selection.restore();
-        document.execCommand('defaultParagraphSeparator',false,'p');
+        nativeCommand('defaultParagraphSeparator','p');
         return range;
     }
     normalizeContent(ensure=false,range=this.selection.current()||this.selection.range){
@@ -464,13 +466,7 @@ class WidgetEditor extends HTMLElement {
         return Array.from(this.content.querySelectorAll('p,div,h1,h2,h3,h4,h5,h6,li,td,th')).filter(node=>range?.intersectsNode(node));
     }
     command(name,value=null,css=true){
-        if(this.source||this.formControl.disabled){
-            return;
-        }
-        this.transaction(()=>{
-            document.execCommand('styleWithCSS',false,css);
-            document.execCommand(name,false,value);
-        });
+        return executeCommand(this,name,value,css);
     }
     query(name){
         try{
@@ -480,13 +476,14 @@ class WidgetEditor extends HTMLElement {
         }
     }
     transaction(callback){
-        if(this.formControl.disabled||this._composing){return;}
+        if(this.source||this.formControl.disabled||this._composing){return false;}
         let nested = !!this._transaction;
         if(!nested){this.history.record();this.restoreSelection();}
         // 原生 input 与嵌套命令不重复提交，最外层事务统一更新。
         this._transaction = true;
+        let result;
         try{
-            callback();
+            result = callback();
         }finally{
             this._transaction = nested;
         }
@@ -494,14 +491,13 @@ class WidgetEditor extends HTMLElement {
             this.saveSelection();
             this.update();
         }
+        return result;
     }
     insertHTML(html){
-        if(this.formControl.disabled){return;}
+        if(this.source||this.formControl.disabled||this._composing){return false;}
         let safe = sanitizeHTML(html);
-        if(!safe){
-            return;
-        }
-        this.transaction(()=>document.execCommand('insertHTML',false,safe));
+        if(!safe){return false;}
+        return this.transaction(()=>nativeCommand('insertHTML',safe));
     }
     applyStyle(styles){
         this.transaction(()=>{

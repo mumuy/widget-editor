@@ -6,6 +6,6 @@ export default {
     'icon':icon,
     'type':'button',
     execute(editor){
-        editor.insertHTML('<hr><p><br></p>');
+        editor.command('divider');
     }
 };

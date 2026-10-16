@@ -1,18 +1,16 @@
-const sizes = [12,14,16,18,20,24,28,32,36,48];
+import {fontSizes} from '../commands/style.js';
 
 export default {
     'name':'fontSize',
     'label':'文字大小',
     'type':'dropdown',
     options(editor){
-        return editor.config.options('fontSize',sizes.map(value=>{
+        return editor.config.options('fontSize',fontSizes.map(value=>{
             return {'value':String(value),'label':value+' px'};
         }));
     },
     execute(editor,value){
-        if(sizes.includes(Number(value))){
-            editor.applyStyle({'font-size':value+'px'});
-        }
+        editor.command('fontSize',value);
     },
     value(editor){
         let $element = editor.selectedElement();

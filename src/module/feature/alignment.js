@@ -15,15 +15,7 @@ export default {
         ]);
     },
     execute(editor,value){
-        let commands = {
-            'left':'justifyLeft',
-            'center':'justifyCenter',
-            'right':'justifyRight',
-            'justify':'justifyFull'
-        };
-        if(commands[value]){
-            editor.command(commands[value]);
-        }
+        editor.command('alignment',value);
     },
     value(editor){
         let $element = editor.selectedElement();

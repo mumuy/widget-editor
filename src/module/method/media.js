@@ -1,4 +1,4 @@
-import {fileType,urlFileName} from './file.js';
+import {fileType} from './file.js';
 import {safeURL} from './sanitize.js';
 import createMaterials,{normalizeMaterial} from './material.js';
 
@@ -192,13 +192,9 @@ export default function openMedia(editor,options,initialMode){
         setMode(mode);
     };
     let insert = function(sources,files=[],values={}){
-        let multiple = sources.length>1;
-        let html = sources.map((source,index)=>options.html(source,{
-            ...values,name:files[index]?.name||urlFileName(source,editor.t(options.name)),multiple
-        })).join('');
         dialog.dismiss();
         editor.selection.range = range;
-        multiple&&options.insertMultiple?options.insertMultiple(html):editor.insertHTML(html);
+        editor.command('insertMedia',{type:options.kind,sources,files,values});
     };
     let request = async function(){
         let version = revision;
@@ -333,7 +329,7 @@ export default function openMedia(editor,options,initialMode){
             if(result.html){
                 dialog.close();
                 editor.selection.range = range;
-                editor.insertHTML(result.html);
+                editor.command('insertIframe',result.html);
             }else{
                 insert(result.sources,result.files||[],values);
             }

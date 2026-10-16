@@ -140,8 +140,26 @@
 | `getHTML() / setHTML(html)` | 读取、设置 HTML |
 | `openInsertDialog(type,mode)` | 打开指定媒体插入弹框；省略 mode 时打开第一种方式 |
 | `focus()` | 聚焦编辑区域 |
+| `command(name,value)` | 执行内容命令，不打开弹框 |
 
 程序设置 `value` 或调用 `setHTML()` 不触发 `change`。组件会整理输出 HTML，清理不支持的标签和属性。
+
+### 内容命令
+
+工具栏、快捷键和浮层共用内容命令，也可以直接调用，无需显示对应工具栏按钮。命令共用选区、撤销、HTML 整理和 `change` 事件；禁用、源码模式或输入法组合输入期间不执行。
+
+```javascript
+editor.command('bold');
+editor.command('heading','h2');
+editor.command('fontSize',24);
+editor.command('color','#2876df');
+editor.command('link',{url:'https://example.com',text:'查看详情',newWindow:true});
+editor.command('insertTable',{rows:3,columns:4,header:true});
+editor.command('insertMedia',{type:'image',sources:['https://example.com/photo.jpg']});
+editor.command('insertCode',{language:'javascript',text:'const value = 1;'});
+```
+
+`command()` 修改内容；`openInsertDialog()` 打开媒体选择界面。命令仍使用对应的字体、字号和媒体配置，未知命令或无效参数返回 `false`。
 
 ### 打开媒体弹框
 

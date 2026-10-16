@@ -367,6 +367,7 @@ console.log(editor.value);</code></pre>
                                 <div class="doc-tab-list" role="tablist" aria-label="组件方法">
                                     <button type="button" role="tab" id="methods-get-tab" aria-controls="methods-get-panel" aria-selected="true" tabindex="0">getHTML()</button>
                                     <button type="button" role="tab" id="methods-set-tab" aria-controls="methods-set-panel" aria-selected="false" tabindex="-1">setHTML()</button>
+                                    <button type="button" role="tab" id="methods-command-tab" aria-controls="methods-command-panel" aria-selected="false" tabindex="-1">command()</button>
                                     <button type="button" role="tab" id="methods-insert-tab" aria-controls="methods-insert-panel" aria-selected="false" tabindex="-1">openInsertDialog()</button>
                                     <button type="button" role="tab" id="methods-focus-tab" aria-controls="methods-focus-panel" aria-selected="false" tabindex="-1">focus()</button>
                                 </div>
@@ -378,6 +379,18 @@ console.log(html);</widget-code>
                                 <div class="doc-tab-panel" role="tabpanel" id="methods-set-panel" aria-labelledby="methods-set-tab" hidden inert>
                                     <p>设置 HTML，传入空字符串可清空内容，不触发 <code>change</code>。</p>
                                     <widget-code language="javascript">editor.setHTML('&lt;p&gt;新的内容&lt;/p&gt;');</widget-code>
+                                </div>
+                                <div class="doc-tab-panel" role="tabpanel" id="methods-command-panel" aria-labelledby="methods-command-tab" hidden inert>
+                                    <p>直接执行内容命令，无需打开弹框或显示工具栏按钮。命令共用选区、撤销、HTML 整理和 <code>change</code> 事件。</p>
+                                    <widget-code language="javascript">editor.command('bold');
+editor.command('heading','h2');
+editor.command('fontSize',24);
+editor.command('color','#2876df');
+editor.command('link',{url:'https://example.com',text:'查看详情',newWindow:true});
+editor.command('insertTable',{rows:3,columns:4,header:true});
+editor.command('insertMedia',{type:'image',sources:['https://example.com/photo.jpg']});
+editor.command('insertCode',{language:'javascript',text:'const value = 1;'});</widget-code>
+                                    <p class="doc-note">禁用、源码模式和输入法组合输入期间不执行内容命令；未知命令或无效参数返回 <code>false</code>。</p>
                                 </div>
                                 <div class="doc-tab-panel" role="tabpanel" id="methods-insert-panel" aria-labelledby="methods-insert-tab" hidden inert>
                                     <p>打开媒体插入弹框，沿用当前光标或选区。省略 <code>mode</code> 时打开该类型配置的第一种方式，无法打开时返回 <code>null</code>。</p>

@@ -20,3 +20,17 @@ export default function hexColor(value){
     }
     return result;
 }
+
+export function readColor(editor,property='color'){
+    let background = property==='background-color';
+    for(let element=editor.selectedElement();element&&editor.content.contains(element);element=element.parentElement){
+        // 背景不继承，沿祖先查找实际样式，忽略表格选格等临时背景。
+        if(background&&!element.style.getPropertyValue(property)){continue;}
+        let value = hexColor(window.getComputedStyle(element).getPropertyValue(property));
+        if(/^#[\da-f]{6}(?:[\da-f]{2})?$/i.test(value)&&(value.length===7||value.slice(-2)!=='00')){
+            return value.slice(0,7).toLowerCase();
+        }
+        if(!background){break;}
+    }
+    return background?'transparent':'#343b48';
+}

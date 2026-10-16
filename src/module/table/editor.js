@@ -1,4 +1,4 @@
-import {readTable,rectangle,insertRow,deleteRows,insertColumn,deleteColumns,mergeCells,splitCells} from './model.js';
+import {readTable,rectangle} from './model.js';
 
 const actions = [
     ['rowBefore','上方插行','M3 10h18v10H3zM12 2v6M9 5h6'],
@@ -273,50 +273,14 @@ export default class TableEditor {
     }
     execute(action){
         let selection = this.bounds();
-        if(!selection?.area||this.editor.source){
-            return;
-        }
-        let {model,area} = selection;
-        if(action==='merge'&&(!area.complete||area.items.length<2)){
-            return;
-        }
-        let point = this.point;
+        if(!selection?.area||this.editor.source){return;}
+        if(action==='merge'&&(!selection.area.complete||selection.area.items.length<2)){return;}
+        let {first,last,point} = this;
         this.editor.transaction(()=>{
             this.clear();
             this.point = point;
-            let cell;
-            let row = area.top;
-            let column = area.left;
-            if(action==='rowBefore'||action==='rowAfter'){
-                let index = action==='rowBefore'?area.top:area.bottom;
-                insertRow(model,index,model.rows[action==='rowBefore'?area.top:area.bottom-1].parentElement);
-                row = index;
-            }else if(action==='columnBefore'||action==='columnAfter'){
-                column = action==='columnBefore'?area.left:area.right;
-                insertColumn(model,column);
-            }else if(action==='deleteRows'){
-                deleteRows(model,area.top,area.bottom);
-            }else if(action==='deleteColumns'){
-                deleteColumns(model,area.left,area.right);
-            }else if(action==='merge'){
-                cell = mergeCells(model,area);
-            }else if(action==='split'){
-                cell = splitCells(model,area);
-            }
-            if(this.editor.content.contains(model.table)){
-                let result = readTable(model.table);
-                cell = cell||result.grid[Math.min(row,result.rows.length-1)]?.[Math.min(column,result.width-1)]?.cell;
-            }
-            if(cell&&this.editor.content.contains(cell)){
-                this.select(cell);
-                this.focus(cell);
-            }else{
-                let range = document.createRange();
-                range.selectNodeContents(this.editor.content);
-                range.collapse(false);
-                this.editor.selection.range = range;
-                this.editor.restoreSelection();
-            }
+            let cell = this.editor.command('tableEdit',{action,first,last});
+            if(cell&&this.editor.content.contains(cell)){this.select(cell);}
         });
     }
 }

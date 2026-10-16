@@ -16,9 +16,7 @@ export default {
         ]);
     },
     execute(editor,value){
-        if(/^(p|h[1-6])$/.test(value)){
-            editor.command('formatBlock','<'+value+'>');
-        }
+        editor.command('heading',value);
     },
     value(editor){
         let $element = editor.selectedElement();
