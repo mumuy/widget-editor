@@ -831,10 +831,12 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog
     border: 0;
     border-bottom: 2px solid transparent;
     line-height: 32px;
+    font-size: 15px;
 }
 .media-tabs button[aria-selected="true"]{
-    color: var(--button-active-color);
     border-bottom-color: var(--button-active-color);
+    font-weight: bold;
+    color: #333;
 }
 .media-tabs button:disabled{
     opacity: .45;
@@ -904,10 +906,10 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog
     height: 100%;
     padding: 0;
     overflow: hidden;
-    background: var(--field-background-color);
+    background: #f8f8f8;
     color: var(--button-text-color);
     border: 1px solid var(--panel-border-color);
-    border-radius: 4px;
+    border-radius: 5px;
 }
 .material-select[aria-pressed="true"]{
     border-color: var(--button-active-color);
