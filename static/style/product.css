@@ -19,12 +19,8 @@ body {
     margin: 0;
     font-size: 16px;
     line-height: 1.8;
-    background:
-        radial-gradient(ellipse at 12% 0%, #2095f21c, transparent 62%),
-        radial-gradient(ellipse at 88% 10%, #cfdcff66, transparent 60%),
-        linear-gradient(#f5faff, #fff 94%);
-    background-size: 100% 1000px;
-    background-repeat: no-repeat;
+    position: relative;
+    isolation: isolate;
 }
 a {
     color: inherit;
@@ -86,6 +82,12 @@ header .bd nav {
     font-size: 17px;
     color: #555555;
 }
+header nav a[aria-current="location"] {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 8px;
+}
+
 
 footer {
     padding: 25px 20px;
@@ -237,7 +239,7 @@ section .caption::before {
     line-height: 1.5;
     font-weight: 600;
 }
-.mod-introduction .mod-introduction .title>span {
+.mod-introduction .title>span {
     color: var(--accent);
 }
 .mod-introduction .actions {
@@ -545,5 +547,200 @@ section .caption::before {
         border-bottom-color: var(--border);
         backdrop-filter: blur(16px);
         box-shadow: 0 4px 20px #3f434908;
+    }
+}
+.mod-bg{
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 600px;
+    width: 100%;
+    z-index: -1;
+    pointer-events: none;
+    background: url('../image/public/bg.svg') center top / cover repeat-x;
+}
+.mod-bg .waves,.waves{
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    min-height: 80px;
+    max-height: 120px;
+    z-index: 0
+}
+.mod-bg .parallax>use {
+    animation: move-forever 25s cubic-bezier(0.55, 0.5, 0.45, 0.1) infinite
+}
+.mod-bg .parallax>use:nth-child(1) {
+    animation-delay: -2s;
+    animation-duration: 7s
+}
+.mod-bg .parallax>use:nth-child(2) {
+    animation-delay: -3s;
+    animation-duration: 10s
+}
+.mod-bg .parallax>use:nth-child(3) {
+    animation-delay: -4s;
+    animation-duration: 13s
+}
+.mod-bg .parallax>use:nth-child(4) {
+    animation-delay: -5s;
+    animation-duration: 20s
+}
+@keyframes move-forever {
+    0% {
+        transform: translate3d(-90px, 0, 0)
+    }
+    100% {
+        transform: translate3d(85px, 0, 0)
+    }
+}
+
+
+.gotop {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 19;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border: 1px solid #f0f0f0;
+    border-radius: 6px;
+    background: #ffffffcc;
+}
+.gotop:hover {
+    background: #ffffffe6;
+}
+
+.mod-integration .card,
+.mod-introduction .summary {
+    min-width: 0;
+}
+.mod-integration .steps li>span {
+    flex-shrink: 0;
+}
+@media(max-width: 1020px) {
+    .inner {
+        width: calc(100% - 40px);
+    }
+    section {
+        margin: 100px 0;
+    }
+    .mod-features .feature-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .mod-introduction .bd,
+    .mod-integration .bd {
+        gap: 32px;
+    }
+}
+@media(max-width: 760px) {
+    html {
+        scroll-padding-top: 132px;
+    }
+    header .bd {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px 0;
+        min-height: 0;
+    }
+    header .bd nav {
+        width: 100%;
+        justify-content: space-between;
+        gap: 16px;
+        font-size: 17px;
+    }
+    header .bd nav a {
+        padding: 6px 0;
+    }
+    header .button-small {
+        display: none;
+    }
+    section {
+        margin: 72px 0;
+    }
+    .mod-experience {
+        margin: 32px 0 40px;
+    }
+    .mod-experience .hd h1 {
+        font-size: 32px;
+    }
+    .mod-experience .hd p {
+        font-size: 17px;
+    }
+    .mod-experience .bd p {
+        text-align: left;
+    }
+    .mod-introduction .bd,
+    .mod-integration .bd,
+    .mod-scenarios .item-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .mod-features .hd {
+        display: block;
+    }
+    .mod-features .illustration {
+        margin-top: 20px;
+    }
+    .mod-integration .steps {
+        gap: 24px;
+        padding: 0;
+    }
+    .mod-integration .steps p {
+        max-width: none;
+    }
+    .mod-params summary span {
+        display: block;
+        margin-left: 18px;
+        font-size: 16px;
+    }
+    .mod-params .detail-body {
+        padding: 0 0 20px;
+    }
+    .mod-bg {
+        height: 550px;
+    }
+    .gotop {
+        right: 10px;
+        bottom: max(10px,env(safe-area-inset-bottom));
+        width: 44px;
+        height: 44px;
+    }
+    .gotop img {
+        width: 20px;
+        height: 20px;
+    }
+}
+@media(max-width: 480px) {
+    .inner {
+        width: calc(100% - 24px);
+    }
+    .mod-features .feature-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .mod-introduction .card {
+        padding: 20px;
+    }
+    .mod-features .card {
+        padding: 22px;
+    }
+    .mod-introduction .card-foot {
+        flex-wrap: wrap;
+    }
+    .mod-params table th,
+    .mod-params table td {
+        padding: 12px;
+    }
+}
+@media(prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+    .mod-bg .parallax>use {
+        animation: none;
+    }
+    header,.button {
+        transition: none;
     }
 }

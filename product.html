@@ -11,6 +11,19 @@
         <script src="static/script/product.js" defer></script>
     </head>
     <body>
+        <div class="mod-bg" aria-hidden="true">
+            <svg class="waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+                <defs>
+                    <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"></path>
+                </defs>
+                <g class="parallax">
+                    <use href="#gentle-wave" x="48" y="0" fill="rgba(255,255,255,0.4)"></use>
+                    <use href="#gentle-wave" x="48" y="3" fill="rgba(255,255,255,0.6)"></use>
+                    <use href="#gentle-wave" x="48" y="5" fill="rgba(255,255,255,0.2)"></use>
+                    <use href="#gentle-wave" x="48" y="7" fill="rgba(255,255,255,1)"></use>
+                </g>
+            </svg>
+        </div>
         <header>
             <div class="inner">
                 <div class="bd">
@@ -55,7 +68,7 @@
                             <p class="caption"><span>为业务系统打造的富文本编辑组件</span></p>
                             <h2 class="title">让内容编辑，<br>成为产品的<span>原生能力。</span></h2>
                             <div class="actions">
-                                <a class="button button-large" href="#integration">立即体验</a>
+                                <a class="button button-large" href="#experience">立即体验</a>
                             </div>
                             <ul class="points"><li>单文件接入</li><li>原生 Web Component</li><li>零运行时依赖</li></ul>
                         </div>
@@ -101,7 +114,7 @@
                                         <li>表格编辑</li>
                                         <li>撤销重做</li>
                                     </ul>
-                                </div> 
+                                </div>
                             </article>
                             <article class="card">
                                 <div class="card-head">
@@ -197,7 +210,7 @@
 &lt;/script&gt;</widget-code>
                         </div>
                     </div>
-                    
+
                 </section>
                 <section class="mod-params">
                     <div class="bd">
@@ -262,6 +275,58 @@
                             </div>
                         </details>
                         <details>
+                            <summary>常用方法 <span>内容读写与编辑操作</span></summary>
+                            <div class="detail-body">
+                                <div class="table-inner">
+                                    <table>
+                                        <thead><tr><th>方法</th><th>用途</th><th>示例</th></tr></thead>
+                                        <tbody>
+                                            <tr><td><code>getHTML()</code></td><td>读取当前 HTML 内容</td><td><code>const html = editor.getHTML();</code></td></tr>
+                                            <tr><td><code>setHTML(value)</code></td><td>设置 HTML 内容</td><td><code>editor.setHTML('&lt;p&gt;文章内容&lt;/p&gt;');</code></td></tr>
+                                            <tr><td><code>focus()</code></td><td>聚焦编辑区域</td><td><code>editor.focus();</code></td></tr>
+                                            <tr><td><code>command(name,value)</code></td><td>在当前选区执行编辑命令</td><td><code>editor.command('bold');</code></td></tr>
+                                            <tr><td><code>openInsertDialog(type,mode)</code></td><td>从外部入口唤起资源插入弹框</td><td><code>editor.openInsertDialog('image','resource');</code></td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+<widget-code language="javascript" theme="dark">// 读取与设置内容
+editor.setHTML('&lt;p&gt;新的文章内容&lt;/p&gt;');
+const html = editor.getHTML();
+const text = editor.text;
+
+// 复用编辑命令
+editor.command('bold');
+editor.command('heading','h2');
+editor.command('insertTable',{rows:3,columns:4});
+
+// 从外部入口打开插入弹框
+editor.openInsertDialog('image','resource');</widget-code>
+                            </div>
+                        </details>
+                        <details>
+                            <summary>常用事件 <span>连接内容与资源服务</span></summary>
+                            <div class="detail-body">
+                                <div class="table-inner">
+                                    <table>
+                                        <thead><tr><th>事件</th><th>触发时机</th><th>event.detail</th></tr></thead>
+                                        <tbody>
+                                            <tr><td><code>ready</code></td><td>组件首次初始化完成</td><td>无</td></tr>
+                                            <tr><td><code>change</code></td><td>内容变化或执行编辑命令后</td><td><code>value</code> HTML、<code>text</code> 纯文本</td></tr>
+                                            <tr><td><code>upload</code></td><td>选择文件并通过校验后</td><td><code>files</code>、<code>type</code>、<code>limit</code>、<code>onComplete</code>、<code>onError</code>、<code>onProgress</code></td></tr>
+                                            <tr><td><code>add</code></td><td>在素材库选择上传文件后</td><td>与 <code>upload</code> 相同</td></tr>
+                                            <tr><td><code>request</code></td><td>进入素材库或加载下一页时</td><td><code>type</code>、<code>page</code>、<code>limit</code>、<code>onComplete</code>、<code>onError</code></td></tr>
+                                            <tr><td><code>remove</code></td><td>点击素材移除按钮时</td><td><code>type</code>、<code>url</code>、<code>limit</code>、<code>onComplete</code>、<code>onError</code></td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+<widget-code language="javascript" theme="dark">editor.addEventListener('change',function(event){
+    const {value,text} = event.detail;
+    console.log(value,text);
+});</widget-code>
+                                <p>上传与新增完成后调用 onComplete(list)，列表顺序与 files 一致；request 使用 onComplete(list,hasNext) 返回当前页，page 从 1 开始；remove 在业务删除成功后调用 onComplete()。失败调用 onError(error)，上传进度调用 onProgress(percent)。</p>
+                            </div>
+                        </details>
+                        <details>
                             <summary>上传与素材库 <span>沿用已有资源服务</span></summary>
                             <div class="detail-body">
                                 <p>选择文件后触发 upload；素材库上传触发 add，回调格式一致。传入的文件始终为数组，返回 URL 的顺序需与文件顺序一致。</p>
@@ -297,23 +362,7 @@ editor.addEventListener('request',async function(event){
                                 <p>接口路径为接入示例，请替换为自己的服务。素材支持 URL 或 {original,thumbnail}；hasNext 为 true 时，滚动到底部自动请求下一页。素材移除通过 remove 事件交由业务侧处理。</p>
                             </div>
                         </details>
-                        <details>
-                            <summary>内容与命令 <span>界面之外，也能灵活调用</span></summary>
-                            <div class="detail-body">
-<widget-code language="javascript" theme="dark">// 读取与设置内容
-editor.value = '&lt;p&gt;新的文章内容&lt;/p&gt;';
-const html = editor.value;
-const text = editor.text;
 
-// 复用编辑命令
-editor.command('bold');
-editor.command('heading','h2');
-editor.command('insertTable',{rows:3,columns:4});
-
-// 从外部入口打开插入弹框
-editor.openInsertDialog('image','resource');</widget-code>
-                            </div>
-                        </details>
                     </div>
                 </section>
                 <section class="mod-scenarios">
@@ -351,5 +400,8 @@ editor.openInsertDialog('image','resource');</widget-code>
                 <p>&copy; 2026 Widget Editor</p>
             </div>
         </footer>
+        <a class="gotop" href="#" aria-label="回到顶部">
+            <img src="static/image/public/icon-gotop.png" width="24" height="24" alt="">
+        </a>
     </body>
 </html>
