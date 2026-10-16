@@ -51,17 +51,19 @@
                     <div class="bd">
                         <svg class="mascot" viewBox="0 0 1523 1033" aria-hidden="true" focusable="false">
                             <defs>
-                                <image id="mascot-artwork" href="static/image/mascot-puppy.webp" width="1523" height="1033"/>
-                                <clipPath id="mascot-tail-clip"><path d="M1240 430H1540V805H1382C1380 738 1359 678 1320 625C1295 591 1266 572 1240 558Z"/></clipPath>
-                                <mask id="mascot-body-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1523" height="1033"><path fill="#fff" d="M0 0H1523V1033H0Z"/><path fill="#000" d="M1240 430H1540V805H1382C1380 738 1359 678 1320 625C1295 591 1266 572 1240 558Z"/></mask>
+                                <filter id="mascot-tail-motion" filterUnits="userSpaceOnUse" x="-100" y="-100" width="1723" height="1233" color-interpolation-filters="sRGB">
+                                    <feImage href="static/image/mascot-tail-field.svg" x="-100" y="-100" width="1723" height="1233" result="tail-field"/>
+                                    <feDisplacementMap in="SourceGraphic" in2="tail-field" scale="0" xChannelSelector="R" yChannelSelector="G">
+                                        <animate id="mascot-wag" attributeName="scale" values="0;-42;48;-42;48;-16;0;0" keyTimes="0;.09;.18;.27;.36;.45;.55;1" dur="2.8s" repeatCount="indefinite" begin="indefinite"/>
+                                    </feDisplacementMap>
+                                </filter>
                                 <linearGradient id="mascot-tongue-color" x2="0" y2="1"><stop stop-color="#fbb0bc"/><stop offset="1" stop-color="#e97991"/></linearGradient>
                                 <clipPath id="mascot-left-eye"><path d="M392 474C387 449 402 425 428 417C451 409 479 406 490 430C502 457 495 486 481 502C453 513 423 505 405 497C395 494 392 487 392 474Z"/></clipPath>
                                 <clipPath id="mascot-right-eye"><path d="M650 520C655 492 671 474 692 471C720 468 740 486 743 514C749 540 737 558 725 565C694 572 663 560 650 547Z"/></clipPath>
                                 <radialGradient id="mascot-iris"><stop stop-color="#8b542b"/><stop offset="1" stop-color="#35180b"/></radialGradient>
                                 <linearGradient id="mascot-lid" x2="0" y2="1"><stop stop-color="#eda94e"/><stop offset="1" stop-color="#ffd185"/></linearGradient>
                             </defs>
-                            <g class="mascot-tail" clip-path="url(#mascot-tail-clip)"><use href="#mascot-artwork"/></g>
-                            <use href="#mascot-artwork" mask="url(#mascot-body-mask)"/>
+                            <image href="static/image/mascot-puppy.webp" width="1523" height="1033" filter="url(#mascot-tail-motion)"/>
                             <g clip-path="url(#mascot-left-eye)">
                                 <path fill="#fffaf1" d="M380 400H510V520H380Z"/>
                                 <g class="mascot-gaze">

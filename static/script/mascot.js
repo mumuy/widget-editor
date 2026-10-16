@@ -1,6 +1,7 @@
 (function(){
     const mascot = document.querySelector('.mascot');
     if(!mascot){return;}
+    const wag = mascot.querySelector('#mascot-wag');
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     let visible = false;
     let running = false;
@@ -50,7 +51,7 @@
         if(active===running){return;}
         running = active;
         if(active){
-            mascot.classList.add('awake');
+            wag.beginElement();
             bounds = null;
             document.addEventListener('pointermove',track,{passive:true});
             document.addEventListener('pointerleave',resetGaze);
@@ -65,7 +66,8 @@
             clearTimeout(timer);
             cancelAnimationFrame(frame);
             frame = null;
-            mascot.classList.remove('awake','blinking','panting');
+            wag.endElement();
+            mascot.classList.remove('blinking','panting');
             resetGaze();
         }
     }
