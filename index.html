@@ -10,7 +10,7 @@
         <meta http-equiv="Cache-Control" content="no-transform" />
         <meta name="format-detection" content="telephone=no"/>
         <meta name="keywords" content="富文本编辑器,文字排版,格式刷,图片上传,表格插入"/>
-        <meta name="description" content="本项目提供简易富文本编辑器组件，支持文字格式、标题、列表、链接、图片、表格和HTML源代码编辑"/>
+        <meta name="description" content="轻量、零运行时依赖的 Web Component 富文本编辑器，一个文件、一个标签即可接入，支持样式隔离、按需配置、媒体上传与标准 HTML 输出。"/>
         <title>富文本编辑器组件</title>
         <link rel="canonical" href="https://passer-by.com/widget-editor/"/>
         <link rel="stylesheet" href="static/style/common.css">
@@ -60,7 +60,33 @@
                     <section class="mod-poster">
                         <div class="bd">
                             <h1>富文本编辑器<span class="tag">开源组件</span></h1>
-                            <p>轻量、易用的富文本编辑组件，内容以 HTML 输出。</p>
+                            <p>一个文件，一个标签，即可拥有完整的富文本编辑能力。</p>
+                            <ul class="advantages">
+                                <li>
+                                    <strong>原生组件，轻松接入</strong>
+                                    <span>基于 Web Component，可用于原生页面及 Vue、React 等项目，无需专用适配层。</span>
+                                </li>
+                                <li>
+                                    <strong>样式隔离，稳定呈现</strong>
+                                    <span>通过 Shadow DOM 隔离内部样式，减少与宿主页面的样式冲突。</span>
+                                </li>
+                                <li>
+                                    <strong>单文件交付，零运行时依赖</strong>
+                                    <span>原生 JavaScript 实现，无需额外引入第三方运行时和组件样式文件。</span>
+                                </li>
+                                <li>
+                                    <strong>按需配置，灵活组合</strong>
+                                    <span>通过属性设置工具栏、插入方式及界面语言，按业务需求开放功能。</span>
+                                </li>
+                                <li>
+                                    <strong>资源管理，自主对接</strong>
+                                    <span>通过事件接入上传服务和分页素材库，资源存储与访问权限由业务侧管理。</span>
+                                </li>
+                                <li>
+                                    <strong>标准输出，便于集成</strong>
+                                    <span>内容以 HTML 读写，支持原生表单关联，方便保存、展示与提交。</span>
+                                </li>
+                            </ul>
                             <div class="buttons">
                                 <a class="btn btn-blue" href="https://passer-by.com/widget-markdown/" target="_blank" rel="noopener noreferrer">
                                     <img src="./static/image/icon-markdown.png" width="24" height="24" alt="Markdown">
