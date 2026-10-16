@@ -141,6 +141,18 @@ export default function createMaterials(editor,options){
             list.setAttribute('aria-busy',String(value));
             list.querySelectorAll('button').forEach(button=>button.disabled=value);
         },
+        append(materials){
+            if(!items.length){list.replaceChildren();}
+            let fragment = document.createDocumentFragment();
+            materials.forEach(item=>{
+                if(cards.has(item.original)){return;}
+                let card = createCard(item,items.length);
+                items.push(item);
+                cards.set(item.original,card);
+                fragment.appendChild(card);
+            });
+            list.appendChild(fragment);
+        },
         prepend(materials){
             let originals = new Set(materials.map(item=>item.original));
             let seen = new Set();

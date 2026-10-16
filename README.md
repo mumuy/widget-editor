@@ -202,7 +202,7 @@ editor.openInsertDialog('attachment','resource');
 | `ready` | 组件首次初始化完成 | 无 |
 | `change` | 用户编辑内容或执行编辑操作 | `value`、`text` |
 | `upload` | 选择文件并通过校验 | `files`、`type`、`limit`、`onComplete`、`onError`、`onProgress` |
-| `request` | 打开素材库标签 | `type`、`limit`、`onComplete`、`onError` |
+| `request` | 打开素材库或加载下一页 | `type`、`page`、`limit`、`onComplete`、`onError` |
 | `add` | 在素材库中选择上传文件 | 与 upload 相同 |
 | `remove` | 点击素材的移除按钮 | `type`、`url`、`limit`、`onComplete`、`onError` |
 
@@ -237,16 +237,16 @@ editor.addEventListener('add',upload);
 
 ### 素材库
 
-配置 `image="upload,url,resource"` 等属性即可显示素材库。打开标签触发 `request`，返回列表后选择素材并插入。
+配置 `image="upload,url,resource"` 等属性即可显示素材库。打开标签从 `page=1` 触发 `request`。调用 `onComplete(list,hasNext)` 返回当前页；`hasNext` 为 `true` 时显示“加载更多”，滚动到底部或点击后请求下一页并追加素材。传入 `false` 或省略表示没有下一页，切换回素材库会从第一页重新加载。
 
 ```javascript
 editor.addEventListener('request',async function(event){
-    let {type,onComplete,onError} = event.detail;
+    let {type,page,onComplete,onError} = event.detail;
     try{
-        let response = await fetch('/api/materials?type='+encodeURIComponent(type));
+        let response = await fetch('/api/materials?type='+encodeURIComponent(type)+'&page='+page);
         if(!response.ok){throw new Error('素材加载失败');}
         let result = await response.json();
-        onComplete(result.urls);
+        onComplete(result.urls,result.hasNext);
     }catch(error){
         onError(error);
     }
@@ -282,10 +282,11 @@ editor.addEventListener('remove',async function(event){
 | 字段 | 作用 |
 | --- | --- |
 | `type` | image、video、audio、attachment |
+| `page` | 当前请求页码，从 1 开始；仅 request 提供，失败重试仍请求同一页 |
 | `limit` | 本次上传或选择数量上限；不限数量时为 Infinity |
 | `files` | File[]，单文件也是数组；仅 upload、add 提供 |
 | `url` | 待移除素材的原地址；仅 remove 提供 |
-| `onComplete(items)` | 上传、加载或新增完成，传入素材数组；移除完成时不传参数 |
+| `onComplete(items,hasNext)` | 传入素材数组；`request` 可用 `hasNext=true` 表示还有下一页；移除完成时不传参数 |
 | `onError(error)` | 失败时传入 Error 或错误消息 |
 | `onProgress(percent)` | 更新上传进度，范围 0～100；仅 upload、add 提供 |
 

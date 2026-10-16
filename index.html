@@ -556,7 +556,7 @@ editor.addEventListener('upload',upload);
 editor.addEventListener('add',upload);</widget-code>
                                 </div>
                                 <div class="doc-tab-panel" role="tabpanel" id="events-request-panel" aria-labelledby="events-request-tab" hidden inert>
-                                    <p>切换到素材库时触发；若素材库是配置的第一项，打开弹框即请求。返回数组用于展示，空数组表示暂无素材。</p>
+                                    <p>切换到素材库从 page=1 请求。hasNext 为 true 时显示“加载更多”，滚动到底部或点击后加载下一页并追加；false 或省略表示已加载完。</p>
                                     <div class="table-inner" data-columns="2" role="region" aria-label="素材加载数据" tabindex="0">
                                         <table>
                                             <thead>
@@ -571,12 +571,16 @@ editor.addEventListener('add',upload);</widget-code>
                                                     <td>image、video、audio、attachment</td>
                                                 </tr>
                                                 <tr>
+                                                    <th scope="row"><code>page</code></th>
+                                                    <td>当前请求页码，从 1 开始；失败重试仍请求同一页</td>
+                                                </tr>
+                                                <tr>
                                                     <th scope="row"><code>limit</code></th>
                                                     <td>上传或选择的数量上限；不限数量时为 Infinity</td>
                                                 </tr>
                                                 <tr>
-                                                    <th scope="row"><code>onComplete(items)</code></th>
-                                                    <td>成功时返回素材数组，支持 URL 字符串或 {original,thumbnail}</td>
+                                                    <th scope="row"><code>onComplete(list,hasNext)</code></th>
+                                                    <td>返回当前页素材，支持 URL 字符串或 {original,thumbnail}；第二个参数为 true 表示还有下一页</td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="row"><code>onError(error)</code></th>
@@ -586,12 +590,12 @@ editor.addEventListener('add',upload);</widget-code>
                                         </table>
                                     </div>
                                     <widget-code language="javascript">editor.addEventListener('request',async function(event){
-    let {type,onComplete,onError} = event.detail;
+    let {type,page,onComplete,onError} = event.detail;
     try{
-        let response = await fetch('/api/materials?type='+encodeURIComponent(type));
+        let response = await fetch('/api/materials?type='+encodeURIComponent(type)+'&amp;page='+page);
         if(!response.ok){throw new Error('素材加载失败');}
         let result = await response.json();
-        onComplete(result.urls);
+        onComplete(result.urls,result.hasNext);
     }catch(error){
         onError(error);
     }
