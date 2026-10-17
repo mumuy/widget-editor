@@ -14,7 +14,7 @@
 html {
     scroll-behavior: smooth;
     scroll-padding-block: 96px;
-    scroll-snap-type: y proximity;
+    scroll-snap-type: y mandatory;
 }
 body {
     margin: 0;

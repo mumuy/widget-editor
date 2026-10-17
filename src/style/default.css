@@ -500,6 +500,9 @@ input:focus,select:focus,textarea:focus,.color-fields input:focus,.editor-dialog
 .table-toolbar{
     width: 480px;
 }
+.table-toolbar>.tool-dropdown{
+    margin-bottom: 8px;
+}
 .code-toolbar{
     padding: 5px;
 }

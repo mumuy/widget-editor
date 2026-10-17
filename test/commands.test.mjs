@@ -53,6 +53,19 @@ try {
     await run(`reset();e.command('insertTable',{rows:1,columns:1});e.table.select(e.content.querySelector('th'));e.table.execute('deleteRows');`);
     assert.equal(await run(`return !e.content.querySelector('table');`), true);
     console.log('PASS direct image properties, batched images and table insertion/merge/rows/undo');
+    await run(`reset('<p>Start</p><table><thead><tr><th>Header</th><th>Other</th></tr></thead><tbody><tr><td><p style="text-align:right">Alpha</p></td><td>Beta</td></tr></tbody></table>');select('td');window.cells=[...e.content.querySelectorAll('td')];e.table.select(cells[0],cells[1]);changes=[];e.command('alignment','center');`);
+    assert.equal(await run(`return cells.every(cell=>cell.style.textAlign==='center')&&!cells[0].querySelector('p').style.textAlign&&!e.content.querySelector('th').style.textAlign&&changes.length===1&&new FormData(document.querySelector('form')).get('content')===e.value;`), true, 'alignment affects selected cells and overrides paragraph alignment atomically');
+    await run(`e.command('undo');`);
+    assert.equal(await run(`return [...e.content.querySelectorAll('td')].every(cell=>!cell.style.textAlign)&&e.content.querySelector('td p').style.textAlign==='right';`), true, 'cell alignment undo');
+    await run(`e.command('redo');`);
+    assert.equal(await run(`return [...e.content.querySelectorAll('td')].every(cell=>cell.style.textAlign==='center');`), true, 'cell alignment redo');
+    await run(`e.table.dismiss();select('th');e.command('alignment','right');`);
+    assert.equal(await run(`return e.content.querySelector('th').style.textAlign==='right'&&!e.content.querySelectorAll('th')[1].style.textAlign;`), true, 'header alignment works without floating toolbar selection');
+    await run(`e.setAttribute('alignment','left,center');window.beforeAlignment=e.value;window.denied=e.command('alignment','right');`);
+    assert.equal(await run(`return denied===false&&e.value===beforeAlignment;`), true, 'cell alignment obeys configured choices');
+    await run(`e.removeAttribute('alignment');`);
+    console.log('PASS cell alignment, inherited paragraph styles, headers, atomic undo/redo and configuration');
+
     await run(`reset();e.command('insertCode',{language:'javascript',text:'const value = 1;'});`);
     assert.equal(await run(`return e.content.querySelector('code').getAttribute('data-language')==='javascript'&&e.content.querySelector('code').textContent.includes('const value = 1;')&&changes.length===1&&!e._dialog;`), true);
     await run(String.raw`e.command('codeLanguage',{language:'typescript'});e.command('codeWrite','\nlet second = 2;');`);

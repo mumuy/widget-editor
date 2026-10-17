@@ -4,7 +4,7 @@ import {fontFamily,fontSize,color,format,formatPainter} from './style.js';
 import {blockquote,indentation} from './paragraph.js';
 import {link,unlink} from './link.js';
 import {insertMedia,insertFrame,updateImage} from './media.js';
-import {insertTable,editTable} from './table.js';
+import {insertTable,editTable,alignTable} from './table.js';
 import {selectedCode,editCode,writeCode,indentCode,insertCode,codeLanguage} from './code.js';
 
 const native = new Set(['bold','italic','underline','strikethrough','superscript','subscript',
@@ -26,6 +26,9 @@ const commands = {
     alignment(editor,value){
         let names = {left:'justifyLeft',center:'justifyCenter',right:'justifyRight',justify:'justifyFull'};
         if(!Object.hasOwn(names,value)||!editor.config.list('alignment').includes(value)){return false;}
+        if(editor.table?.bounds()?.area||editor.selectedElement()?.closest('td,th')){
+            return alignTable(editor,value);
+        }
         return editor.transaction(()=>nativeCommand(names[value],null,true));
     },
     orderedlist:editor=>editor.command('insertOrderedList'),

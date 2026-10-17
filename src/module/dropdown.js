@@ -98,8 +98,8 @@ export default class EditorDropdown {
             button.focus({preventScroll:true});
         }
     }
-    update(feature,value){
-        let group = this.editor.toolbar.querySelector('[data-dropdown="'+feature.name+'"]');
+    update(feature,value,root=this.editor.toolbar){
+        let group = root.querySelector('[data-dropdown="'+feature.name+'"]');
         let button = group.querySelector('[data-action]');
         let current = feature.actionMenu?null:value||feature.options[0].value;
         let option = feature.options.find(option=>option.value===current);

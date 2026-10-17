@@ -52,3 +52,18 @@ export function editTable(editor,{action,first,last=first}={}){
         return cell||null;
     });
 }
+
+export function alignTable(editor,value){
+    const area = editor.table?.bounds()?.area;
+    const cell = editor.selectedElement()?.closest('td,th');
+    const cells = area?area.items.map(item=>item.cell):cell&&editor.content.contains(cell)?[cell]:[];
+    return editor.transaction(()=>{
+        cells.forEach(cell=>{
+            cell.style.textAlign = value;
+            // 段落继承单元格对齐，避免已有局部对齐覆盖新设置。
+            cell.querySelectorAll('[style]').forEach(node=>{
+                if(node.closest('td,th')===cell){node.style.removeProperty('text-align');}
+            });
+        });
+    });
+}
