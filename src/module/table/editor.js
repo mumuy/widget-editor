@@ -1,5 +1,5 @@
 import {readTable,rectangle} from './model.js';
-import EditorDropdown from '../dropdown.js';
+import {renderIcon} from '../icon.js';
 import alignment from '../feature/alignment.js';
 
 const actions = [
@@ -77,11 +77,8 @@ export default class TableEditor {
         this.toolbar.addEventListener('click',event=>{
             let button = event.target.closest('button');
             if(!button||button.disabled){return;}
-            if(button.matches('[data-option]')){
-                editor.dropdown.close();
-                editor.command('alignment',button.dataset.option);
-            }else if(button.matches('.tool-dropdown-button')){
-                editor.dropdown.toggle(button);
+            if(button.dataset.tableAlign){
+                editor.command('alignment',button.dataset.tableAlign);
             }else if(button.dataset.tableAction){
                 this.execute(button.dataset.tableAction);
             }
@@ -129,8 +126,6 @@ export default class TableEditor {
             }
         });
         this.toolbar.addEventListener('keydown',event=>{
-            editor.dropdown.keydown(event);
-            if(event.defaultPrevented){return;}
             if(event.key==='Escape'){
                 event.preventDefault();
                 this.dismiss();
@@ -180,9 +175,6 @@ export default class TableEditor {
         this.hide();
     }
     hide(){
-        if(this.editor.dropdown?.opened&&this.toolbar.contains(this.editor.dropdown.opened)){
-            this.editor.dropdown.close();
-        }
         if(this.toolbar.matches(':popover-open')){
             this.toolbar.hidePopover();
         }
@@ -222,23 +214,18 @@ export default class TableEditor {
     updateAlignment(area){
         const options = alignment.options(this.editor);
         const key = options.map(option=>option.value).join(',');
-        let group = this.toolbar.querySelector('.tool-dropdown');
         if(key!==this.alignmentOptions){
-            if(group&&this.editor.dropdown.opened===group){this.editor.dropdown.close();}
-            group?.remove();
+            this.toolbar.querySelectorAll('[data-table-align]').forEach(button=>button.remove());
             this.alignmentOptions = key;
-            this.alignment = {...alignment,name:'table-alignment',iconOnly:false,options};
-            if(options.length){
-                this.toolbar.insertAdjacentHTML('afterbegin',EditorDropdown.render(this.alignment));
-                group = this.toolbar.querySelector('.tool-dropdown');
-                this.editor.locale.apply(group);
-            }
+            this.toolbar.querySelector('.table-actions').insertAdjacentHTML('afterbegin',options.map(option=>
+                `<button type="button" data-table-align="${option.value}" aria-label="${option.label}" aria-pressed="false">${renderIcon(option.icon)}${option.label}</button>`
+            ).join(''));
+            this.editor.locale.apply(this.toolbar);
         }
-        if(options.length){
-            const values = new Set(area.items.map(item=>getComputedStyle(item.cell).textAlign));
-            const value = values.size===1?values.values().next().value:'mixed';
-            this.editor.dropdown.update(this.alignment,value,this.toolbar);
-        }
+        const values = new Set(area.items.map(item=>getComputedStyle(item.cell).textAlign));
+        this.toolbar.querySelectorAll('[data-table-align]').forEach(button=>{
+            button.setAttribute('aria-pressed',String(values.size===1&&values.has(button.dataset.tableAlign)));
+        });
     }
     show(area){
         if(!this.editor.isConnected){
