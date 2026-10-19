@@ -284,50 +284,131 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td>height</td>
-                                                <td>编辑区域高度，默认 480px</td>
+                                                <td><code>value</code></td>
+                                                <td>JavaScript 属性，读写 HTML 内容；设为空字符串可清空。初始值为标签内的内容</td>
+                                                <td><code>editor.value = '&lt;p&gt;文章内容&lt;/p&gt;';</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>text</code></td>
+                                                <td>JavaScript 只读属性，读取当前内容的纯文本</td>
+                                                <td><code>const text = editor.text;</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>placeholder</code></td>
+                                                <td>空白时的提示文字，默认“在这里开始写作…”</td>
+                                                <td><code>placeholder="请输入文章内容……"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>height</code></td>
+                                                <td>编辑区域高度，单位 px，范围 160～2000，默认 480</td>
                                                 <td><code>height="520"</code></td>
                                             </tr>
                                             <tr>
-                                                <td>custom</td>
-                                                <td>工具栏功能及排列顺序</td>
-                                                <td>
-                                                    <code>custom="heading,bold,italic,insert"</code>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>insert</td>
-                                                <td>允许插入的内容类型及顺序</td>
-                                                <td><code>insert="image,table,code"</code></td>
-                                            </tr>
-                                            <tr>
-                                                <td>image / video / audio / attachment</td>
-                                                <td>各类媒体的插入方式</td>
-                                                <td><code>image="upload,url,resource"</code></td>
-                                            </tr>
-                                            <tr>
-                                                <td>*-limit</td>
-                                                <td>上传及素材选择数量上限，空值表示不限</td>
-                                                <td><code>image-limit="9"</code></td>
-                                            </tr>
-                                            <tr>
-                                                <td>language</td>
-                                                <td>简体中文、香港繁体中文或英语界面</td>
+                                                <td><code>language</code></td>
+                                                <td>界面语言：zh-CN 简体中文、zh-HK 香港繁体中文、en-US 英语；默认 zh-CN</td>
                                                 <td><code>language="zh-CN"</code></td>
                                             </tr>
                                             <tr>
-                                                <td>view</td>
-                                                <td>状态栏的视图操作及顺序</td>
+                                                <td><code>name</code></td>
+                                                <td>表单提交字段名，提交值为 HTML；默认不设置</td>
+                                                <td><code>name="content"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>form</code></td>
+                                                <td>关联表单的 id，适用于放在表单外的组件；不设置时关联最近的父级表单</td>
+                                                <td><code>form="article-form"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>disabled</code></td>
+                                                <td>禁用编辑和操作，不参与表单提交与校验；默认关闭</td>
+                                                <td><code>disabled</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>required</code></td>
+                                                <td>启用原生表单必填校验，图片、视频等非文本内容也算有效内容；默认关闭</td>
+                                                <td><code>required</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>custom</code></td>
+                                                <td>工具栏功能及排列顺序，默认完整工具栏；撤销、重做固定显示</td>
+                                                <td><code>custom="heading,bold,italic,insert"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>heading</code></td>
+                                                <td>标题选项及顺序：p 为正文，h1～h6 为标题；默认全部开放</td>
+                                                <td><code>heading="p,h1,h2,h3"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>fontfamily</code></td>
+                                                <td>字体选项及顺序，默认全部开放；使用下方的字体标识配置，字体显示取决于用户设备</td>
+                                                <td><code>fontfamily="default,yahei,simsun,kaiti"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>fontsize</code></td>
+                                                <td>字号选项及顺序，数字不带 px；可选 12、14、16、18、20、24、28、32、36、48，默认全部开放</td>
+                                                <td><code>fontsize="14,16,18,24,36"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>alignment</code></td>
+                                                <td>文字对齐选项及顺序，同时控制表格浮动工具条；left 左对齐、center 居中、right 右对齐、justify 两端对齐，默认全部开放</td>
+                                                <td><code>alignment="left,center,right,justify"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>insert</code></td>
+                                                <td>插入菜单的内容类型及顺序：divider 分割线、table 表格、image 图片、video 视频、attachment 附件、audio 音频、emoji 表情、code 代码块；默认全部开放</td>
+                                                <td><code>insert="image,table,code"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>view</code></td>
+                                                <td>状态栏视图操作及顺序；source 源代码、fullscreen 全屏、mobile 手机编辑，默认按此顺序显示</td>
                                                 <td><code>view="source,fullscreen,mobile"</code></td>
                                             </tr>
                                             <tr>
-                                                <td>name</td>
-                                                <td>原生表单提交使用的字段名称</td>
-                                                <td><code>name="content"</code></td>
+                                                <td><code>image</code></td>
+                                                <td>图片插入方式及顺序，默认 upload,url,resource</td>
+                                                <td><code>image="upload,url,resource"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>video</code></td>
+                                                <td>视频插入方式及顺序，默认 upload,url,iframe,resource；iframe 用于嵌入第三方视频</td>
+                                                <td><code>video="upload,url,iframe,resource"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>audio</code></td>
+                                                <td>音频插入方式及顺序，默认 upload,url,resource</td>
+                                                <td><code>audio="upload,url,resource"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>attachment</code></td>
+                                                <td>附件插入方式及顺序，默认 upload,url,resource</td>
+                                                <td><code>attachment="upload,url,resource"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>image-limit</code></td>
+                                                <td>单次选择图片的数量上限，默认 1；正整数，空值表示不限</td>
+                                                <td><code>image-limit="9"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>video-limit</code></td>
+                                                <td>单次选择视频的数量上限，默认 1；正整数，空值表示不限</td>
+                                                <td><code>video-limit="3"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>audio-limit</code></td>
+                                                <td>单次选择音频的数量上限，默认 1；正整数，空值表示不限</td>
+                                                <td><code>audio-limit="3"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>attachment-limit</code></td>
+                                                <td>单次选择附件的数量上限，默认 1；正整数，空值表示不限</td>
+                                                <td><code>attachment-limit=""</code></td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
+                                <p>列表配置用英文逗号分隔，顺序即显示顺序；省略属性使用默认配置，设为空字符串则隐藏对应选项。<code>disabled</code>、<code>required</code> 为布尔属性，添加即启用，移除即关闭。</p>
+                                <p>插入方式：<code>upload</code> 上传文件，<code>url</code> 网络地址，<code>resource</code> 素材库；上传与素材库由外部通过事件回调提供资源。</p>
+                                <p>字体标识：<code>default</code> 默认字体，<code>yahei</code> 微软雅黑，<code>simsun</code> 宋体，<code>simhei</code> 黑体，<code>kaiti</code> 楷体，<code>fangsong</code> 仿宋，<code>pingfang</code> 苹方，<code>dengxian</code> 等线，<code>stsong</code> 华文宋体，<code>stkaiti</code> 华文楷体，<code>stxihei</code> 华文细黑，<code>sourceSans</code> 思源黑体，<code>sourceSerif</code> 思源宋体。</p>
                             </div>
                         </details>
                         <details>
