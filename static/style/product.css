@@ -187,6 +187,20 @@ section{
     margin: 150px 0;
     scroll-snap-align: center;
 }
+section .hd{
+    margin-bottom: 45px;
+}
+section .hd h2{
+    margin-bottom: 10px;
+    font-size: clamp(24px, 3vw, 32px);
+    line-height: 1.5;
+    font-weight: 600;
+}
+section .hd p.subtitle {
+    line-height: 1.5;
+    font-size: 16px;
+    color: var(--muted);
+}
 section  .caption {
     position: relative;
     display: inline-flex;
@@ -323,17 +337,6 @@ section .caption::before {
     align-items: flex-end;
     justify-content: space-between;
     gap: 45px;
-    margin-bottom: 45px;
-}
-.mod-features .hd h2 {
-    font-size: clamp(24px,3vw, 32px);
-    line-height: 1.5;
-    font-weight: 600;
-}
-.mod-features .hd  p.subtitle {
-    line-height: 1.5;
-    font-size: 16px;
-    color: var(--muted);
 }
 .mod-features .feature-grid {
     display: grid;
@@ -392,14 +395,6 @@ section .caption::before {
 }
 
 
-.mod-integration .hd{
-    margin-bottom: 45px;
-}
-.mod-integration .hd p.subtitle {
-    line-height: 1.5;
-    font-size: 16px;
-    color: var(--muted);
-}
 .mod-integration .bd {
     display: grid;
     grid-template-columns: 1fr 1.6fr;
@@ -739,6 +734,9 @@ section .caption::before {
     }
     .mod-params .detail-body {
         padding: 0 0 20px;
+    }
+    .mod-scenarios .item-grid {
+        gap: 10px;
     }
     .mod-bg {
         height: 550px;
