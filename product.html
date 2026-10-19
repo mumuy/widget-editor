@@ -28,10 +28,13 @@
         <header>
             <div class="inner">
                 <div class="bd">
-                    <a class="brand" href="#" aria-label="Widget Editor 首页">
-                        <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect width="32" height="32" rx="9" fill="currentColor"/><path d="M9 10h14M9 16h10M9 22h7" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
-                        Widget<span>Editor</span>
-                    </a>
+                    <div class="brand">
+                        <a href="#" aria-label="Widget Editor 首页">
+                            <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect width="32" height="32" rx="9" fill="currentColor"/><path d="M9 10h14M9 16h10M9 22h7" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
+                            <span>Widget</span>
+                            <span class="text-blue">Editor</span>
+                        </a>
+                    </div>
                     <nav aria-label="主导航">
                         <a href="#experience">在线体验</a>
                         <a href="#features">产品特征</a>
@@ -132,7 +135,7 @@
                             </div>
                             <div class="card-body">
 <widget-code language="html" theme="dark">&lt;!-- 引入组件 --&gt;
-&lt;script src="widget-editor.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://passer-by.com/widget-editor/dist/widget-editor.min.js"&gt;&lt;/script&gt;
 
 &lt;!-- 放进你的页面 --&gt;
 &lt;widget-editor&gt;&lt;/widget-editor&gt;</widget-code>
@@ -245,7 +248,7 @@
                             <li><span>03</span><div><h3>连接你的业务数据</h3><p>用 value 读写 HTML，通过 change 监听内容变化，对接保存、回填与发布流程。</p></div></li>
                         </ol>
                         <div class="card">
-<widget-code language="html" id="quick-code">&lt;script src="./dist/widget-editor.min.js"&gt;&lt;/script&gt;
+<widget-code language="html" id="quick-code">&lt;script src="https://passer-by.com/widget-editor/dist/widget-editor.min.js"&gt;&lt;/script&gt;
 &lt;widget-editor
     id="editor"
     name="content"
@@ -449,7 +452,9 @@ editor.addEventListener('request',async function(event){
         </main>
         <footer>
             <div class="inner">
-                <p><a class="brand" href="#">Widget<span>Editor</span></a></p>
+                <div class="brand">
+                    <a href="#"><span>Widget</span><span class="text-blue">Editor</span></a>
+                </div>
                 <p>&copy; 2026 Widget Editor</p>
             </div>
         </footer>

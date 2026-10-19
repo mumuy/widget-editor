@@ -80,13 +80,25 @@ header .bd {
 header .bd nav {
     display: flex;
     gap: 36px;
+    line-height: 40px;
     font-size: 17px;
     color: #555555;
 }
-header nav a[aria-current="location"] {
-    color: var(--accent);
-    text-decoration: underline;
-    text-underline-offset: 8px;
+header .bd nav a[aria-current="location"] {
+    position: relative;
+    font-weight: 600;
+    color: #333333;
+}
+header .bd nav a[aria-current="location"]::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 20px;
+    height: 4px;
+    background: var(--accent);
+    border-radius: 2px;
+    transform: translateX(-50%);
 }
 
 
@@ -101,13 +113,11 @@ footer p{
     color: #999;
 }
 footer .brand {
+    text-align: center;
     font-size: 20px;
     color: #3f4349;
 }
-footer .brand a:last-child {
-    color: var(--muted);
-}
-header .brand,footer .brand {
+header .brand a,footer .brand a {
     display: inline-flex;
     align-items: center;
     gap: 9px;
@@ -120,9 +130,8 @@ header .brand svg,footer .brand svg {
     height: 32px;
     color: var(--accent);
 }
-header .brand span,footer .brand span {
+header .brand .text-blue, footer .brand .text-blue {
     color: var(--accent);
-    font-weight: 500;
 }
 
 
@@ -656,20 +665,29 @@ section .caption::before {
     html {
         scroll-padding-block: 132px;
     }
+    header .inner{
+        width: 100%;
+    }
     header .bd {
         flex-wrap: wrap;
         gap: 8px;
-        padding: 12px 0;
+        padding-top: 10px;
         min-height: 0;
+    }
+    header .bd .brand {
+        margin: 0 12px;
     }
     header .bd nav {
         width: 100%;
         justify-content: space-between;
-        gap: 16px;
+        gap: 0;
+        background: rgba(0,0,0,0.02);
         font-size: 17px;
     }
-    header .bd nav a {
-        padding: 6px 0;
+    header .bd nav a{
+        flex: 1;
+        min-width: 0;
+        text-align: center;
     }
     header .button-small {
         display: none;
