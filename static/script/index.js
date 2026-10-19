@@ -1,95 +1,94 @@
 (function(){
-    let $editor = document.querySelector('#editor');
-    let resources = new Map();
+    const editor = document.querySelector('#product-editor');
+    const resources = new Map();
 
-    document.querySelector('.gotop').addEventListener('click',function(event){
+    // 锚点由浏览器平滑滚动，模块高亮只在可见状态变化时更新。
+    const nav = document.querySelector('header nav');
+    const links = Array.from(nav.querySelectorAll('a'));
+    const visible = new Set();
+    let active;
+    function updateNavigation(id){
+        if(active===id){return;}
+        active = id;
+        links.forEach(link=>{
+            if(link.hash==='#'+id){link.setAttribute('aria-current','location');}
+            else{link.removeAttribute('aria-current');}
+        });
+    }
+    const navigationObserver = new IntersectionObserver(entries=>{
+        entries.forEach(entry=>{
+            if(entry.isIntersecting){visible.add(entry.target.id);}
+            else{visible.delete(entry.target.id);}
+        });
+        const link = links.find(link=>visible.has(link.hash.slice(1)));
+        if(link){updateNavigation(link.hash.slice(1));}
+    },{rootMargin:'-20% 0px -50% 0px'});
+    links.forEach(link=>navigationObserver.observe(document.querySelector(link.hash)));
+    document.addEventListener('click',event=>{
+        const link = event.target.closest('a[href^="#"]');
+        if(!link||event.defaultPrevented||event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey){return;}
+        const target = link.hash&&document.querySelector(link.hash);
+        if(link.hash&&!target){return;}
         event.preventDefault();
-        window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+        // 先结束上一次滚动，连续点击导航时以最后一次选择为准。
+        window.scrollTo({top:window.scrollY,behavior:'instant'});
+        const behavior = matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth';
+        if(target){target.scrollIntoView({behavior,block:'start'});}
+        else{window.scrollTo({top:0,behavior});}
+        if(location.hash!==link.hash){history.pushState(null,'',link.getAttribute('href'));}
+        if(links.includes(link)){updateNavigation(link.hash.slice(1));}
     });
+    updateNavigation(links.some(link=>link.hash===location.hash)?location.hash.slice(1):'experience');
 
-    // 参数、方法、事件共用标签页切换与键盘导航。
-    document.querySelectorAll('[data-doc-tabs]').forEach(function(group){
-        let list = group.querySelector('[role="tablist"]');
-        let tabs = Array.from(list.querySelectorAll('[role="tab"]'));
-        let activate = function(tab,focus=false){
-            tabs.forEach(function(button){
-                let active = button===tab;
-                button.setAttribute('aria-selected',String(active));
-                button.tabIndex = active?0:-1;
-                let panel = document.getElementById(button.getAttribute('aria-controls'));
-                panel.hidden = !active;
-                panel.inert = !active;
-            });
-            if(focus){tab.focus({preventScroll:true});}
-            let rect = tab.getBoundingClientRect();
-            let bounds = list.getBoundingClientRect();
-            if(rect.left<bounds.left){list.scrollLeft += rect.left-bounds.left;}
-            else if(rect.right>bounds.right){list.scrollLeft += rect.right-bounds.right;}
-        };
-        list.addEventListener('click',function(event){
-            let tab = event.target.closest('[role="tab"]');
-            if(tab){activate(tab);}
-        });
-        list.addEventListener('keydown',function(event){
-            let index = tabs.indexOf(event.target);
-            if(index<0||!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){return;}
-            event.preventDefault();
-            let next = event.key==='Home'?0:event.key==='End'?tabs.length-1:
-                (index+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;
-            activate(tabs[next],true);
-        });
-    });
+    // 优先使用 CSS 滚动动画；未支持的浏览器只切换状态，由 CSS 完成渐变。
+    if(!CSS.supports('animation-timeline','scroll()')){
+        const header = document.querySelector('header');
+        const updateHeader = ()=>header.classList.toggle('scrolled',window.scrollY>0);
+        window.addEventListener('scroll',updateHeader,{passive:true});
+        updateHeader();
+    }
 
-    // 演示页只在本地读取文件，正式使用时替换成自己的上传服务。
-    let readFiles = async function(files,type,onProgress=()=>{}){
-        let total = files.reduce((sum,file)=>sum+file.size,0);
-        let loaded = 0;
-        let sources = [];
-        for(let file of files){
-            sources.push(await new Promise((resolve,reject)=>{
-                let reader = new FileReader();
-                reader.onprogress = event=>{
-                    if(event.lengthComputable){onProgress(total?(loaded+event.loaded)/total*100:100);}
-                };
-                reader.onload = ()=>{
-                    let source = String(reader.result);
-                    if(type==='attachment'){
-                        source = source.replace(/^data:[^,]*;base64,/, 'data:application/octet-stream;base64,');
-                    }else if(type==='audio'&&file.type==='audio/x-wav'){
-                        source = source.replace(/^data:[^,]*;base64,/, 'data:audio/wav;base64,');
-                    }
-                    loaded += file.size;
-                    onProgress(total?loaded/total*100:100);
-                    resolve(source);
-                };
-                reader.onerror = ()=>reject('文件读取失败，请重试');
-                reader.onabort = ()=>reject('文件读取已取消');
-                reader.readAsDataURL(file);
-            }));
-        }
-        let items = sources.map((url,index)=>({name:files[index].name,url}));
-        let originals = new Set(sources);
-        resources.set(type,[...items,...(resources.get(type)||[]).filter(item=>!originals.has(item.url))]);
-        return sources;
-    };
-    let upload = async function(event){
-        let {files,type,onComplete,onError,onProgress} = event.detail;
+    // 演示文件仅在当前页面读取；正式接入时由业务服务返回资源 URL。
+    async function upload(event){
+        const {files,type,onComplete,onError,onProgress} = event.detail;
         try{
-            onComplete(await readFiles(files,type,onProgress));
+            const urls = [];
+            for(const file of files){
+                const url = await new Promise((resolve,reject)=>{
+                    const reader = new FileReader();
+                    reader.onload = ()=>{
+                        let value = String(reader.result);
+                        if(type==='attachment'){
+                            value = value.replace(/^data:[^,]*;base64,/,'data:application/octet-stream;base64,');
+                        }else if(type==='audio'&&file.type==='audio/x-wav'){
+                            value = value.replace(/^data:[^,]*;base64,/,'data:audio/wav;base64,');
+                        }
+                        resolve(value);
+                    };
+                    reader.onerror = ()=>reject(new Error('文件读取失败，请重试'));
+                    reader.onabort = ()=>reject(new Error('文件读取已取消'));
+                    reader.readAsDataURL(file);
+                });
+                urls.push(url);
+                onProgress(urls.length/files.length*100);
+            }
+            resources.set(type,[...new Set([...urls,...resources.get(type)||[]])]);
+            onComplete(urls);
         }catch(error){
             onError(error);
         }
-    };
-    $editor.addEventListener('upload',upload);
-    $editor.addEventListener('add',upload);
-    // 素材库数据由调用方管理，返回列表后在组件内选择和插入。
-    $editor.addEventListener('request',function(event){
-        let {type,onComplete} = event.detail;
-        onComplete((resources.get(type)||[]).map(item=>item.url));
+    }
+    editor.addEventListener('upload',upload);
+    editor.addEventListener('add',upload);
+    editor.addEventListener('request',function(event){
+        const {type,page,onComplete} = event.detail;
+        const items = resources.get(type)||[];
+        const start = (page-1)*12;
+        onComplete(items.slice(start,start+12),start+12<items.length);
     });
-    $editor.addEventListener('remove',function(event){
-        let {type,url,onComplete} = event.detail;
-        resources.set(type,(resources.get(type)||[]).filter(item=>item.url!==url));
+    editor.addEventListener('remove',function(event){
+        const {type,url,onComplete} = event.detail;
+        resources.set(type,(resources.get(type)||[]).filter(item=>item!==url));
         onComplete();
     });
 })();
