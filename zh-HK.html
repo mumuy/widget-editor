@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <meta name="description" content="Widget Editor，為業務系統而設的輕量富文字編輯元件。單一檔案接入、樣式隔離、靈活設定，讓內容編輯成為產品的原生能力。">
+        <title>Widget Editor · 讓內容編輯成為產品的原生能力</title>
+        <link rel="alternate" hreflang="zh-CN" href="index.html">
+        <link rel="alternate" hreflang="zh-HK" href="zh-HK.html">
+        <link rel="alternate" hreflang="en-US" href="en-US.html">
+        <link rel="stylesheet" href="static/style/index.css">
+        <script src="https://passer-by.com/widget-code/dist/widget-code.min.js" defer></script>
+        <script src="dist/widget-editor.min.js" defer></script>
+        <script src="static/script/index.js" defer></script>
+        <script src="static/script/mascot.js" defer></script>
+    </head>
+    <body>
+        <div class="mod-bg" aria-hidden="true">
+            <svg class="waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+                <defs>
+                    <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"></path>
+                </defs>
+                <g class="parallax">
+                    <use href="#gentle-wave" x="48" y="0" fill="rgba(255,255,255,0.4)"></use>
+                    <use href="#gentle-wave" x="48" y="3" fill="rgba(255,255,255,0.6)"></use>
+                    <use href="#gentle-wave" x="48" y="5" fill="rgba(255,255,255,0.2)"></use>
+                    <use href="#gentle-wave" x="48" y="7" fill="rgba(255,255,255,1)"></use>
+                </g>
+            </svg>
+        </div>
+        <header>
+            <div class="inner">
+                <div class="bd">
+                    <div class="brand">
+                        <a href="#" aria-label="Widget Editor 首頁">
+                            <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect width="32" height="32" rx="9" fill="currentColor"/><path d="M9 10h14M9 16h10M9 22h7" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
+                            <span>Widget</span>
+                            <span class="text-blue">Editor</span>
+                        </a>
+                    </div>
+                    <nav aria-label="主導覽">
+                        <a href="#experience">即時體驗</a>
+                        <a href="#features">產品特色</a>
+                        <a href="#integration">使用指南</a>
+                    </nav>
+                    <div class="language-switch" role="group" aria-label="語言切換">
+                        <a href="index.html" hreflang="zh-CN" aria-label="简体中文">简</a>
+                        <a href="zh-HK.html" hreflang="zh-HK" aria-current="page" aria-label="繁體中文">繁</a>
+                        <a href="en-US.html" hreflang="en-US" aria-label="English">EN</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main class="container">
+            <div class="inner">
+                <section class="mod-experience" id="experience">
+                    <div class="hd">
+                        <h1>富文字編輯器</h1>
+                        <p>一個標籤，帶來完整的內容編輯體驗。</p>
+                    </div>
+                    <div class="bd">
+                        <svg class="mascot" viewBox="0 0 1523 1033" aria-hidden="true" focusable="false">
+                            <defs>
+                                <filter id="mascot-tail-motion" filterUnits="userSpaceOnUse" x="-100" y="-100" width="1723" height="1233" color-interpolation-filters="sRGB">
+                                    <feImage href="static/image/mascot-tail-field.svg" x="-100" y="-100" width="1723" height="1233" result="tail-field"/>
+                                    <feDisplacementMap in="SourceGraphic" in2="tail-field" scale="0" xChannelSelector="R" yChannelSelector="G">
+                                        <animate id="mascot-wag" attributeName="scale" values="0;-42;48;-42;48;-16;0;0" keyTimes="0;.09;.18;.27;.36;.45;.55;1" dur="2.8s" repeatCount="indefinite" begin="indefinite"/>
+                                    </feDisplacementMap>
+                                </filter>
+                                <filter id="mascot-head-motion" filterUnits="userSpaceOnUse" x="-100" y="-100" width="1723" height="1233" color-interpolation-filters="sRGB">
+                                    <feImage href="static/image/mascot-head-field.svg" x="-100" y="-100" width="1723" height="1233" result="head-field"/>
+                                    <feDisplacementMap in="SourceGraphic" in2="head-field" scale="0" xChannelSelector="R" yChannelSelector="G">
+                                        <animate id="mascot-nod" attributeName="scale" values="0;22;20;0" keyTimes="0;.4;.58;1" calcMode="spline" keySplines=".35 0 .25 1;.4 0 .6 1;.4 0 .3 1" dur="3.4s" begin="indefinite"/>
+                                    </feDisplacementMap>
+                                </filter>
+                                <linearGradient id="mascot-tongue-color" x2="0" y2="1"><stop stop-color="#fbb0bc"/><stop offset="1" stop-color="#e97991"/></linearGradient>
+                                <clipPath id="mascot-left-eye"><path d="M392 474C387 449 402 425 428 417C451 409 479 406 490 430C502 457 495 486 481 502C453 513 423 505 405 497C395 494 392 487 392 474Z"/></clipPath>
+                                <clipPath id="mascot-right-eye"><path d="M650 520C655 492 671 474 692 471C720 468 740 486 743 514C749 540 737 558 725 565C694 572 663 560 650 547Z"/></clipPath>
+                                <radialGradient id="mascot-iris"><stop stop-color="#8b542b"/><stop offset="1" stop-color="#35180b"/></radialGradient>
+                                <linearGradient id="mascot-lid" x2="0" y2="1"><stop stop-color="#eda94e"/><stop offset="1" stop-color="#ffd185"/></linearGradient>
+                            </defs>
+                            <g filter="url(#mascot-head-motion)">
+                                <image href="static/image/mascot-puppy.webp" width="1523" height="1033" filter="url(#mascot-tail-motion)"/>
+                                <g clip-path="url(#mascot-left-eye)">
+                                    <path fill="#fffaf1" d="M380 400H510V520H380Z"/>
+                                    <g class="mascot-gaze">
+                                        <ellipse cx="452" cy="457" rx="42" ry="50" fill="url(#mascot-iris)"/>
+                                        <ellipse cx="455" cy="451" rx="27" ry="35" fill="#1e0b04"/>
+                                        <circle cx="470" cy="439" r="10" fill="#fff"/><circle cx="434" cy="482" r="4" fill="#b28462"/>
+                                    </g>
+                                </g>
+                                <g clip-path="url(#mascot-right-eye)">
+                                    <path fill="#fffaf1" d="M640 460H755V580H640Z"/>
+                                    <g class="mascot-gaze">
+                                        <ellipse cx="693" cy="520" rx="42" ry="50" fill="url(#mascot-iris)"/>
+                                        <ellipse cx="691" cy="512" rx="27" ry="35" fill="#1e0b04"/>
+                                        <circle cx="705" cy="498" r="10" fill="#fff"/><circle cx="675" cy="544" r="4" fill="#b28462"/>
+                                    </g>
+                                </g>
+                                <g class="mascot-eyelids">
+                                    <g clip-path="url(#mascot-left-eye)"><path fill="url(#mascot-lid)" d="M380 400H510V520H380Z"/><path d="M390 464Q445 490 499 459" fill="none" stroke="#74401e" stroke-width="7" stroke-linecap="round"/></g>
+                                    <g clip-path="url(#mascot-right-eye)"><path fill="url(#mascot-lid)" d="M640 460H755V580H640Z"/><path d="M647 521Q696 553 749 524" fill="none" stroke="#74401e" stroke-width="7" stroke-linecap="round"/></g>
+                                </g>
+                                <g class="mascot-mouth">
+                                    <path d="M482 634Q518 651 546 647Q572 654 603 651C596 684 577 710 551 710C521 710 497 683 482 634Z" fill="#613022" stroke="#743c24" stroke-width="5" stroke-linejoin="round"/>
+                                    <g class="mascot-tongue">
+                                        <path d="M513 680Q549 670 582 683L579 719C576 754 529 755 522 723Z" fill="url(#mascot-tongue-color)" stroke="#ae5366" stroke-width="4" stroke-linejoin="round"/>
+                                        <path d="M548 688Q555 704 552 722" fill="none" stroke="#d16b83" stroke-width="3" stroke-linecap="round"/>
+                                        <path d="M530 698Q532 718 538 724" fill="none" stroke="#ffd1d8" stroke-width="4" stroke-linecap="round"/>
+                                    </g>
+                                </g>
+                            </g>
+                        </svg>
+                        <widget-editor language="zh-HK" id="product-editor" name="content" height="520" image-limit="9" video-limit="3" audio-limit="3" attachment-limit="9" placeholder="寫下你的第一段內容……">
+                            <h1>讓想法化為清晰的內容</h1>
+                            <p>一份項目簡介、一篇產品文章，或一則團隊公告。合適的內容工具，讓每次表達都更得心應手。</p>
+                            <h2>新版本內容發佈計劃</h2>
+                            <p>選取這段文字，試試<strong>粗體</strong>、<span style="color:#2563eb">文字顏色</span>或<span style="background-color:#fff0bd">背景着色</span>，亦可使用格式刷，讓全文格式保持一致。</p>
+                            <blockquote><p>把時間留給內容，把排版交給編輯器。</p></blockquote>
+                            <h3>今次發佈有甚麼重點？</h3>
+                            <ul><li>用清晰的標題和清單，組織內容結構。</li><li>透過表格整理資訊，讓協作安排一目了然。</li><li>插入圖片、影片或附件，補充完整的內容背景。</li></ul>
+                            <table><thead><tr><th>階段</th><th>工作內容</th><th>狀態</th></tr></thead><tbody><tr><td>內容準備</td><td>整理發佈說明及素材</td><td>已完成</td></tr><tr><td>團隊審閱</td><td>核對資訊及內容排版</td><td>進行中</td></tr><tr><td>正式發佈</td><td>儲存內容並提交至業務系統</td><td>待開始</td></tr></tbody></table>
+                            <p>按一下表格儲存格，即可試用新增或刪除行列、合併及分割儲存格。繼續在這裏寫下你的想法。</p>
+                        </widget-editor>
+                        <p class="demo-note">示範檔案只會保留在目前頁面，不會上載至伺服器。</p>
+                    </div>
+                </section>
+                <section class="mod-introduction">
+                    <div class="bd">
+                        <div class="summary">
+                            <p class="caption"><span>為業務系統而設的富文字編輯元件</span></p>
+                            <h2 class="title">讓內容編輯，<br>成為產品的<span>原生能力。</span></h2>
+                            <div class="actions">
+                                <a class="button button-large" href="#experience">立即體驗</a>
+                            </div>
+                            <ul class="points"><li>單一檔案接入</li><li>原生 Web Component</li><li>無執行階段依賴</li></ul>
+                        </div>
+                        <div class="card">
+                            <div class="card-head">
+                                <div class="caption"><span>減少接入成本，為產品留多點空間</span></div>
+                                <p><strong>一個檔案</strong><br><strong>一個標籤，即刻使用！</strong></p>
+                            </div>
+                            <div class="card-body">
+<widget-code language="html" theme="dark">&lt;!-- 載入元件 --&gt;
+&lt;script src="https://passer-by.com/widget-editor/dist/widget-editor.min.js"&gt;&lt;/script&gt;
+
+&lt;!-- 加入你的頁面 --&gt;
+&lt;widget-editor language="zh-HK"&gt;&lt;/widget-editor&gt;</widget-code>
+                            </div>
+                            <div class="card-foot"><span>內置元件樣式</span><span>標準 HTML 輸出</span></div>
+                        </div>
+                    </div>
+                </section>
+                <section class="mod-features" id="features">
+                    <div class="hd">
+                        <div class="summary">
+                            <p class="caption"><span>為產品而設</span></p>
+                            <h2>編輯功能齊全，<br>接入方式簡單。</h2>
+                        </div>
+                        <div class="illustration">
+                            <p class="subtitle">滿足日常內容製作需要，保留業務整合空間。<br>由管理後台到內容平台，以同一套元件提供一致體驗。</p>
+                        </div>
+                    </div>
+                    <div class="bd">
+                        <div class="feature-grid">
+                            <article class="card">
+                                <div class="card-head">
+                                    <p><strong>01</strong> / 編輯體驗</p>
+                                </div>
+                                <div class="card-body">
+                                    <h3>由文字排版到結構化內容</h3>
+                                    <p>標題、清單、引文、表格、多語言程式碼高亮及媒體插入，讓內容更清晰，表達更豐富。</p>
+                                </div>
+                                <div class="card-foot">
+                                    <ul class="tags">
+                                        <li>格式刷</li>
+                                        <li>表格編輯</li>
+                                        <li>復原與重做</li>
+                                    </ul>
+                                </div>
+                            </article>
+                            <article class="card">
+                                <div class="card-head">
+                                    <p><strong>02</strong> / 樣式邊界</p>
+                                </div>
+                                <div class="card-body">
+                                    <h3>在不同頁面保持一致</h3>
+                                    <p>透過 Shadow DOM 隔離內部樣式，減少所在頁面的 CSS 干擾，讓編輯器自然融入現有系統。</p>
+                                </div>
+                                <div class="card-foot">
+                                    <ul class="tags"><li>樣式隔離</li><li>內置樣式</li><li>響應式版面</li></ul>
+                                </div>
+                            </article>
+                            <article class="card">
+                                <div class="card-head">
+                                    <p><strong>03</strong> / 業務配合</p>
+                                </div>
+                                <div class="card-body">
+                                    <h3>開放哪些功能，由你決定</h3>
+                                    <p>按需要設定工具列、選單項目、插入方式及數量限制，為不同角色及業務場景提供合適的編輯介面。</p>
+                                </div>
+                                <div class="card-foot">
+                                    <ul class="tags"><li>屬性設定</li><li>動態更新</li><li>多語言介面</li></ul>
+                                </div>
+                            </article>
+                            <article class="card">
+                                <div class="card-head">
+                                    <p><strong>04</strong> / 素材流程</p>
+                                </div>
+                                <div class="card-body">
+                                    <h3>連接你的上載服務及素材庫</h3>
+                                    <p>透過事件連接現有檔案服務，支援批量上載、縮圖預覽及素材分頁，儲存和存取權限由業務系統管理。</p>
+                                </div>
+                                <div class="card-foot">
+                                    <ul class="tags"><li>進度回呼</li><li>批量插入</li><li>分頁載入</li></ul>
+                                </div>
+                            </article>
+                            <article class="card">
+                                <div class="card-head">
+                                    <p><strong>05</strong> / 資料交付</p>
+                                </div>
+                                <div class="card-body">
+                                    <h3>內容可讀取，亦可直接提交</h3>
+                                    <p>以標準 HTML 讀寫內容，支援原生表單關聯。儲存、載入及展示可沿用現有流程，毋須專用內容格式。</p>
+                                </div>
+                                <div class="card-foot">
+                                    <ul class="tags"><li>HTML 輸出</li><li>表單關聯</li><li>內容事件</li></ul>
+                                </div>
+                            </article>
+                            <article class="card">
+                                <div class="card-head">
+                                    <p><strong>06</strong> / 技術基礎</p>
+                                </div>
+                                <div class="card-body">
+                                    <h3>輕量元件，減少整合負擔</h3>
+                                    <p>採用原生 JavaScript 及 Web Component，一個檔案包含元件邏輯和樣式，毋須第三方執行階段。</p>
+                                </div>
+                                <div class="card-foot">
+                                    <ul class="tags"><li>單一檔案交付</li><li>不受框架限制</li><li>指令介面</li></ul>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                </section>
+                <section class="mod-integration" id="integration">
+                    <div class="hd">
+                        <p class="caption"><span>由接入到業務整合</span></p>
+                        <h2>只需三步，為產品加入編輯功能。</h2>
+                        <p class="subtitle">載入元件後，透過屬性、方法及事件連接業務。</p>
+                    </div>
+                    <div class="bd">
+                        <ol class="steps">
+                            <li><span>01</span><div><h3>載入檔案，加入標籤</h3><p>將元件檔案加入項目、載入指令碼，並在需要編輯內容的位置加入標籤。</p></div></li>
+                            <li><span>02</span><div><h3>設定所需功能</h3><p>透過 custom、insert 等屬性設定工具列及插入選單，清單次序即顯示次序。</p></div></li>
+                            <li><span>03</span><div><h3>連接你的業務資料</h3><p>用 value 讀寫 HTML，透過 change 監聽內容變更，連接儲存、載入及發佈流程。</p></div></li>
+                        </ol>
+                        <div class="card">
+<widget-code language="html" id="quick-code">&lt;script src="https://passer-by.com/widget-editor/dist/widget-editor.min.js"&gt;&lt;/script&gt;
+&lt;widget-editor
+    id="editor"
+    language="zh-HK"
+    name="content"
+    custom="heading,fontSize,bold,italic,color,link,insert"
+    insert="image,table,emoji"
+    image="upload,url,resource"
+&gt;&lt;/widget-editor&gt;
+
+&lt;script&gt;
+    const editor = document.querySelector('#editor');
+    editor.value = '&lt;p&gt;開始編輯內容&lt;/p&gt;';
+    editor.addEventListener('change',function(event){
+        console.log(event.detail.value);
+    });
+&lt;/script&gt;</widget-code>
+                        </div>
+                    </div>
+
+                </section>
+                <section class="mod-params">
+                    <div class="bd">
+                        <details open>
+                            <summary>常用設定 <span>以屬性設定編輯體驗</span></summary>
+                            <div class="detail-body">
+                                <div class="table-inner">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>屬性</th>
+                                                <th>用途</th>
+                                                <th>範例</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>value</td>
+                                                <td>讀寫 HTML 內容的 JS 屬性</td>
+                                                <td><code>editor.value = '&lt;p&gt;文章內容&lt;/p&gt;';</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>text</td>
+                                                <td>讀取純文字的唯讀 JS 屬性</td>
+                                                <td><code>const text = editor.text;</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>placeholder</td>
+                                                <td>編輯區域空白時的提示文字</td>
+                                                <td><code>placeholder="請輸入文章內容……"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>height</td>
+                                                <td>編輯區域高度，預設 480px</td>
+                                                <td><code>height="520"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>custom</td>
+                                                <td>工具列功能及排列次序</td>
+                                                <td>
+                                                    <code>custom="heading,bold,italic,insert"</code>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>heading</td>
+                                                <td>標題選單的選項及次序</td>
+                                                <td><code>heading="p,h1,h2,h3"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>fontfamily</td>
+                                                <td>字型選單的選項及次序</td>
+                                                <td><code>fontfamily="default,yahei,simsun,kaiti"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>fontsize</td>
+                                                <td>字型大小選單的選項及次序，數字不加 px</td>
+                                                <td><code>fontsize="14,16,18,24,36"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>alignment</td>
+                                                <td>文字及儲存格的對齊選項及次序</td>
+                                                <td><code>alignment="left,center,right,justify"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>insert</td>
+                                                <td>允許插入的內容類型及次序</td>
+                                                <td><code>insert="image,table,code"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>image / video / audio / attachment</td>
+                                                <td>各類媒體的插入方式</td>
+                                                <td><code>image="upload,url,resource"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>*-limit</td>
+                                                <td>上載及素材選取數量上限，空值表示不限</td>
+                                                <td><code>image-limit="9"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>language</td>
+                                                <td>簡體中文、香港繁體中文或英語介面</td>
+                                                <td><code>language="zh-HK"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>view</td>
+                                                <td>狀態列的檢視操作及次序</td>
+                                                <td><code>view="source,fullscreen,mobile"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>name</td>
+                                                <td>原生表單提交使用的欄位名稱</td>
+                                                <td><code>name="content"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>form</td>
+                                                <td>關聯表單的 id，可用於表單外的元件</td>
+                                                <td><code>form="article-form"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>disabled</td>
+                                                <td>停用編輯及操作</td>
+                                                <td><code>disabled</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>required</td>
+                                                <td>啟用表單必填驗證</td>
+                                                <td><code>required</code></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </details>
+                        <details>
+                            <summary>常用方法 <span>內容讀寫及編輯操作</span></summary>
+                            <div class="detail-body">
+                                <div class="table-inner">
+                                    <table>
+                                        <thead><tr><th>方法</th><th>用途</th><th>範例</th></tr></thead>
+                                        <tbody>
+                                            <tr><td><code>getHTML()</code></td><td>讀取目前的 HTML 內容</td><td><code>const html = editor.getHTML();</code></td></tr>
+                                            <tr><td><code>setHTML(value)</code></td><td>設定 HTML 內容</td><td><code>editor.setHTML('&lt;p&gt;文章內容&lt;/p&gt;');</code></td></tr>
+                                            <tr><td><code>focus()</code></td><td>將焦點移至編輯區域</td><td><code>editor.focus();</code></td></tr>
+                                            <tr><td><code>command(name,value)</code></td><td>在目前選取範圍執行編輯指令</td><td><code>editor.command('bold');</code></td></tr>
+                                            <tr><td><code>openInsertDialog(type,mode)</code></td><td>從外部入口開啟資源插入對話框</td><td><code>editor.openInsertDialog('image','resource');</code></td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+<widget-code language="javascript" theme="dark">// 讀取及設定內容
+editor.setHTML('&lt;p&gt;新的文章內容&lt;/p&gt;');
+const html = editor.getHTML();
+const text = editor.text;
+
+// 重用編輯指令
+editor.command('bold');
+editor.command('heading','h2');
+editor.command('insertTable',{rows:3,columns:4});
+
+// 從外部入口開啟插入對話框
+editor.openInsertDialog('image','resource');</widget-code>
+                            </div>
+                        </details>
+                        <details>
+                            <summary>常用事件 <span>連接內容及資源服務</span></summary>
+                            <div class="detail-body">
+                                <div class="table-inner">
+                                    <table>
+                                        <thead><tr><th>事件</th><th>觸發時機</th><th>event.detail</th></tr></thead>
+                                        <tbody>
+                                            <tr><td><code>ready</code></td><td>元件首次初始化完成</td><td>無</td></tr>
+                                            <tr><td><code>change</code></td><td>內容變更或執行編輯指令後</td><td><code>value</code> HTML、<code>text</code> 純文字</td></tr>
+                                            <tr><td><code>upload</code></td><td>選取檔案並通過驗證後</td><td><code>files</code>、<code>type</code>、<code>limit</code>、<code>onComplete</code>、<code>onError</code>、<code>onProgress</code></td></tr>
+                                            <tr><td><code>add</code></td><td>在素材庫選取上載檔案後</td><td>與 <code>upload</code> 相同</td></tr>
+                                            <tr><td><code>request</code></td><td>進入素材庫或載入下一頁時</td><td><code>type</code>、<code>page</code>、<code>limit</code>、<code>onComplete</code>、<code>onError</code></td></tr>
+                                            <tr><td><code>remove</code></td><td>按下素材移除按鈕時</td><td><code>type</code>、<code>url</code>、<code>limit</code>、<code>onComplete</code>、<code>onError</code></td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+<widget-code language="javascript" theme="dark">editor.addEventListener('change',function(event){
+    const {value,text} = event.detail;
+    console.log(value,text);
+});</widget-code>
+                                <p>上載或新增完成後呼叫 onComplete(list)，清單次序須與 files 一致；request 以 onComplete(list,hasNext) 回傳目前分頁，page 由 1 開始；remove 在業務系統成功刪除後呼叫 onComplete()。失敗時呼叫 onError(error)，上載進度則呼叫 onProgress(percent)。</p>
+                            </div>
+                        </details>
+                        <details>
+                            <summary>上載及素材庫 <span>沿用現有資源服務</span></summary>
+                            <div class="detail-body">
+                                <p>選取檔案後觸發 upload；素材庫上載觸發 add，回呼格式相同。傳入檔案一律為陣列，回傳 URL 的次序須與檔案次序一致。</p>
+<widget-code language="javascript" theme="dark">async function upload(event){
+    const {files,type,onComplete,onError,onProgress} = event.detail;
+    try{
+        const data = new FormData();
+        files.forEach(file =&gt; data.append('files',file));
+        data.append('type',type);
+        const response = await fetch('/api/upload',{method:'POST',body:data});
+        if(!response.ok){throw new Error('上載失敗');}
+        const result = await response.json();
+        onProgress(100);
+        onComplete(result.urls);
+    }catch(error){
+        onError(error);
+    }
+}
+editor.addEventListener('upload',upload);
+editor.addEventListener('add',upload);
+
+editor.addEventListener('request',async function(event){
+    const {type,page,onComplete,onError} = event.detail;
+    try{
+        const response = await fetch('/api/materials?type='+type+'&amp;page='+page);
+        if(!response.ok){throw new Error('素材載入失敗');}
+        const result = await response.json();
+        onComplete(result.items,result.hasNext);
+    }catch(error){
+        onError(error);
+    }
+});</widget-code>
+                                <p>介面路徑僅供接入示範，請換成自己的服務。素材支援 URL 或 {original,thumbnail}；hasNext 為 true 時，捲動至底部會自動請求下一頁。素材移除由業務系統透過 remove 事件處理。</p>
+                            </div>
+                        </details>
+
+                    </div>
+                </section>
+                <section class="mod-scenarios">
+                    <div class="hd">
+                        <p class="caption"><span>融入不同業務場景</span></p>
+                        <h2>哪裏需要內容，就在哪裏編輯。</h2>
+                    </div>
+                    <div class="bd">
+                        <div class="item-grid">
+                            <article class="item">
+                                <h3>內容管理</h3>
+                                <p>文章、公告、活動簡介，統一日常內容的編輯入口。</p>
+                            </article>
+                            <article class="item">
+                                <h3>知識及協作</h3>
+                                <p>文件、項目紀錄、操作指南，讓結構化資訊更易閱讀。</p>
+                            </article>
+                            <article class="item">
+                                <h3>業務後台</h3>
+                                <p>商品詳情、服務單描述、電郵內文，融入現有工作流程。</p>
+                            </article>
+                        </div>
+                    </div>
+                </section>
+                <section class="mod-closing">
+                    <p class="eyebrow">把編輯工作交給元件</p>
+                    <h2>把更多心力，留給你的產品。</h2>
+                    <p><a class="button" href="#experience">開始體驗</a></p>
+                </section>
+            </div>
+        </main>
+        <footer>
+            <div class="inner">
+                <div class="brand">
+                    <a href="#"><span>Widget</span><span class="text-blue">Editor</span></a>
+                </div>
+                <p>&copy; 2026 Widget Editor</p>
+            </div>
+        </footer>
+        <a class="gotop" href="#" aria-label="返回頂部">
+            <img src="static/image/public/icon-gotop.png" width="24" height="24" alt="">
+        </a>
+    </body>
+</html>

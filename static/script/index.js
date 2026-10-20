@@ -1,6 +1,11 @@
 (function(){
     const editor = document.querySelector('#product-editor');
     const resources = new Map();
+    const messages = {
+        'zh-CN':['文件读取失败，请重试','文件读取已取消'],
+        'zh-HK':['未能讀取檔案，請重試','已取消讀取檔案'],
+        'en-US':['Could not read the file. Please try again.','File reading was canceled.']
+    }[document.documentElement.lang]||['文件读取失败，请重试','文件读取已取消'];
 
     // 锚点由浏览器平滑滚动，模块高亮只在可见状态变化时更新。
     const nav = document.querySelector('header nav');
@@ -65,8 +70,8 @@
                         }
                         resolve(value);
                     };
-                    reader.onerror = ()=>reject(new Error('文件读取失败，请重试'));
-                    reader.onabort = ()=>reject(new Error('文件读取已取消'));
+                    reader.onerror = ()=>reject(new Error(messages[0]));
+                    reader.onabort = ()=>reject(new Error(messages[1]));
                     reader.readAsDataURL(file);
                 });
                 urls.push(url);

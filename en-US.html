@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <meta name="description" content="Widget Editor is a lightweight rich text editor for your product. One file, isolated styles, and flexible configuration make content editing easy to integrate.">
+        <title>Widget Editor · Rich text editing, built into your product</title>
+        <link rel="alternate" hreflang="zh-CN" href="index.html">
+        <link rel="alternate" hreflang="zh-HK" href="zh-HK.html">
+        <link rel="alternate" hreflang="en-US" href="en-US.html">
+        <link rel="stylesheet" href="static/style/index.css">
+        <script src="https://passer-by.com/widget-code/dist/widget-code.min.js" defer></script>
+        <script src="dist/widget-editor.min.js" defer></script>
+        <script src="static/script/index.js" defer></script>
+        <script src="static/script/mascot.js" defer></script>
+    </head>
+    <body>
+        <div class="mod-bg" aria-hidden="true">
+            <svg class="waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+                <defs>
+                    <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"></path>
+                </defs>
+                <g class="parallax">
+                    <use href="#gentle-wave" x="48" y="0" fill="rgba(255,255,255,0.4)"></use>
+                    <use href="#gentle-wave" x="48" y="3" fill="rgba(255,255,255,0.6)"></use>
+                    <use href="#gentle-wave" x="48" y="5" fill="rgba(255,255,255,0.2)"></use>
+                    <use href="#gentle-wave" x="48" y="7" fill="rgba(255,255,255,1)"></use>
+                </g>
+            </svg>
+        </div>
+        <header>
+            <div class="inner">
+                <div class="bd">
+                    <div class="brand">
+                        <a href="#" aria-label="Widget Editor home">
+                            <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect width="32" height="32" rx="9" fill="currentColor"/><path d="M9 10h14M9 16h10M9 22h7" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
+                            <span>Widget</span>
+                            <span class="text-blue">Editor</span>
+                        </a>
+                    </div>
+                    <nav aria-label="Main navigation">
+                        <a href="#experience">Live demo</a>
+                        <a href="#features">Features</a>
+                        <a href="#integration">Getting started</a>
+                    </nav>
+                    <div class="language-switch" role="group" aria-label="Language">
+                        <a href="index.html" hreflang="zh-CN" aria-label="简体中文">简</a>
+                        <a href="zh-HK.html" hreflang="zh-HK" aria-label="繁體中文">繁</a>
+                        <a href="en-US.html" hreflang="en-US" aria-current="page" aria-label="English">EN</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main class="container">
+            <div class="inner">
+                <section class="mod-experience" id="experience">
+                    <div class="hd">
+                        <h1>Rich text editor</h1>
+                        <p>One tag. A complete editing experience.</p>
+                    </div>
+                    <div class="bd">
+                        <svg class="mascot" viewBox="0 0 1523 1033" aria-hidden="true" focusable="false">
+                            <defs>
+                                <filter id="mascot-tail-motion" filterUnits="userSpaceOnUse" x="-100" y="-100" width="1723" height="1233" color-interpolation-filters="sRGB">
+                                    <feImage href="static/image/mascot-tail-field.svg" x="-100" y="-100" width="1723" height="1233" result="tail-field"/>
+                                    <feDisplacementMap in="SourceGraphic" in2="tail-field" scale="0" xChannelSelector="R" yChannelSelector="G">
+                                        <animate id="mascot-wag" attributeName="scale" values="0;-42;48;-42;48;-16;0;0" keyTimes="0;.09;.18;.27;.36;.45;.55;1" dur="2.8s" repeatCount="indefinite" begin="indefinite"/>
+                                    </feDisplacementMap>
+                                </filter>
+                                <filter id="mascot-head-motion" filterUnits="userSpaceOnUse" x="-100" y="-100" width="1723" height="1233" color-interpolation-filters="sRGB">
+                                    <feImage href="static/image/mascot-head-field.svg" x="-100" y="-100" width="1723" height="1233" result="head-field"/>
+                                    <feDisplacementMap in="SourceGraphic" in2="head-field" scale="0" xChannelSelector="R" yChannelSelector="G">
+                                        <animate id="mascot-nod" attributeName="scale" values="0;22;20;0" keyTimes="0;.4;.58;1" calcMode="spline" keySplines=".35 0 .25 1;.4 0 .6 1;.4 0 .3 1" dur="3.4s" begin="indefinite"/>
+                                    </feDisplacementMap>
+                                </filter>
+                                <linearGradient id="mascot-tongue-color" x2="0" y2="1"><stop stop-color="#fbb0bc"/><stop offset="1" stop-color="#e97991"/></linearGradient>
+                                <clipPath id="mascot-left-eye"><path d="M392 474C387 449 402 425 428 417C451 409 479 406 490 430C502 457 495 486 481 502C453 513 423 505 405 497C395 494 392 487 392 474Z"/></clipPath>
+                                <clipPath id="mascot-right-eye"><path d="M650 520C655 492 671 474 692 471C720 468 740 486 743 514C749 540 737 558 725 565C694 572 663 560 650 547Z"/></clipPath>
+                                <radialGradient id="mascot-iris"><stop stop-color="#8b542b"/><stop offset="1" stop-color="#35180b"/></radialGradient>
+                                <linearGradient id="mascot-lid" x2="0" y2="1"><stop stop-color="#eda94e"/><stop offset="1" stop-color="#ffd185"/></linearGradient>
+                            </defs>
+                            <g filter="url(#mascot-head-motion)">
+                                <image href="static/image/mascot-puppy.webp" width="1523" height="1033" filter="url(#mascot-tail-motion)"/>
+                                <g clip-path="url(#mascot-left-eye)">
+                                    <path fill="#fffaf1" d="M380 400H510V520H380Z"/>
+                                    <g class="mascot-gaze">
+                                        <ellipse cx="452" cy="457" rx="42" ry="50" fill="url(#mascot-iris)"/>
+                                        <ellipse cx="455" cy="451" rx="27" ry="35" fill="#1e0b04"/>
+                                        <circle cx="470" cy="439" r="10" fill="#fff"/><circle cx="434" cy="482" r="4" fill="#b28462"/>
+                                    </g>
+                                </g>
+                                <g clip-path="url(#mascot-right-eye)">
+                                    <path fill="#fffaf1" d="M640 460H755V580H640Z"/>
+                                    <g class="mascot-gaze">
+                                        <ellipse cx="693" cy="520" rx="42" ry="50" fill="url(#mascot-iris)"/>
+                                        <ellipse cx="691" cy="512" rx="27" ry="35" fill="#1e0b04"/>
+                                        <circle cx="705" cy="498" r="10" fill="#fff"/><circle cx="675" cy="544" r="4" fill="#b28462"/>
+                                    </g>
+                                </g>
+                                <g class="mascot-eyelids">
+                                    <g clip-path="url(#mascot-left-eye)"><path fill="url(#mascot-lid)" d="M380 400H510V520H380Z"/><path d="M390 464Q445 490 499 459" fill="none" stroke="#74401e" stroke-width="7" stroke-linecap="round"/></g>
+                                    <g clip-path="url(#mascot-right-eye)"><path fill="url(#mascot-lid)" d="M640 460H755V580H640Z"/><path d="M647 521Q696 553 749 524" fill="none" stroke="#74401e" stroke-width="7" stroke-linecap="round"/></g>
+                                </g>
+                                <g class="mascot-mouth">
+                                    <path d="M482 634Q518 651 546 647Q572 654 603 651C596 684 577 710 551 710C521 710 497 683 482 634Z" fill="#613022" stroke="#743c24" stroke-width="5" stroke-linejoin="round"/>
+                                    <g class="mascot-tongue">
+                                        <path d="M513 680Q549 670 582 683L579 719C576 754 529 755 522 723Z" fill="url(#mascot-tongue-color)" stroke="#ae5366" stroke-width="4" stroke-linejoin="round"/>
+                                        <path d="M548 688Q555 704 552 722" fill="none" stroke="#d16b83" stroke-width="3" stroke-linecap="round"/>
+                                        <path d="M530 698Q532 718 538 724" fill="none" stroke="#ffd1d8" stroke-width="4" stroke-linecap="round"/>
+                                    </g>
+                                </g>
+                            </g>
+                        </svg>
+                        <widget-editor language="en-US" id="product-editor" name="content" height="520" image-limit="9" video-limit="3" audio-limit="3" attachment-limit="9" placeholder="Start writing here…">
+                            <h1>Turn ideas into clear content</h1>
+                            <p>A project brief, a product article, or a team announcement. The right tools make it easier to get your message across.</p>
+                            <h2>Content release plan</h2>
+                            <p>Select this text and try <strong>bold</strong>, <span style="color:#2563eb">text color</span> or <span style="background-color:#fff0bd">highlighting</span>, or use the format painter to keep your formatting consistent.</p>
+                            <blockquote><p>Focus on your content. Let the editor handle the formatting.</p></blockquote>
+                            <h3>What matters in this release?</h3>
+                            <ul><li>Structure your content with clear headings and lists.</li><li>Use tables to make plans and responsibilities easy to follow.</li><li>Add images, videos, and attachments to provide context.</li></ul>
+                            <table><thead><tr><th>Phase</th><th>Task</th><th>Status</th></tr></thead><tbody><tr><td>Preparation</td><td>Prepare release notes and assets</td><td>Done</td></tr><tr><td>Review</td><td>Check details and formatting</td><td>In progress</td></tr><tr><td>Release</td><td>Save and submit the content</td><td>Not started</td></tr></tbody></table>
+                            <p>Click a table cell to add or remove rows and columns, or merge and split cells. Keep writing your ideas here.</p>
+                        </widget-editor>
+                        <p class="demo-note">Demo files stay on this page and are never uploaded to a server.</p>
+                    </div>
+                </section>
+                <section class="mod-introduction">
+                    <div class="bd">
+                        <div class="summary">
+                            <p class="caption"><span>Rich text editing for your product</span></p>
+                            <h2 class="title">Make content editing<br>part of your <span>product.</span></h2>
+                            <div class="actions">
+                                <a class="button button-large" href="#experience">Try it now</a>
+                            </div>
+                            <ul class="points"><li>One-file integration</li><li>Native Web Component</li><li>No runtime dependencies</li></ul>
+                        </div>
+                        <div class="card">
+                            <div class="card-head">
+                                <div class="caption"><span>Less setup. More room for your product.</span></div>
+                                <p><strong>One file.</strong><br><strong>One tag. Ready to use.</strong></p>
+                            </div>
+                            <div class="card-body">
+<widget-code language="html" theme="dark">&lt;!-- Load the component --&gt;
+&lt;script src="https://passer-by.com/widget-editor/dist/widget-editor.min.js"&gt;&lt;/script&gt;
+
+&lt;!-- Add it to your page --&gt;
+&lt;widget-editor language="en-US"&gt;&lt;/widget-editor&gt;</widget-code>
+                            </div>
+                            <div class="card-foot"><span>Built-in styles</span><span>Standard HTML output</span></div>
+                        </div>
+                    </div>
+                </section>
+                <section class="mod-features" id="features">
+                    <div class="hd">
+                        <div class="summary">
+                            <p class="caption"><span>Designed for your product</span></p>
+                            <h2>Full editing features.<br>Simple integration.</h2>
+                        </div>
+                        <div class="illustration">
+                            <p class="subtitle">Handle everyday content creation with room for your workflow.<br>Deliver a consistent experience across admin tools and content platforms.</p>
+                        </div>
+                    </div>
+                    <div class="bd">
+                        <div class="feature-grid">
+                            <article class="card">
+                                <div class="card-head">
+                                    <p><strong>01</strong> / Editing</p>
+                                </div>
+                                <div class="card-body">
+                                    <h3>From formatted text to structured content</h3>
+                                    <p>Headings, lists, quotes, tables, syntax highlighting, and media give your content structure and depth.</p>
+                                </div>
+                                <div class="card-foot">
+                                    <ul class="tags">
+                                        <li>Format painter</li>
+                                        <li>Table editing</li>
+                                        <li>Undo and redo</li>
+                                    </ul>
+                                </div>
+                            </article>
+                            <article class="card">
+                                <div class="card-head">
+                                    <p><strong>02</strong> / Style isolation</p>
+                                </div>
+                                <div class="card-body">
+                                    <h3>Consistent across pages</h3>
+                                    <p>Shadow DOM isolates internal styles from your page’s CSS, helping the editor fit into existing systems.</p>
+                                </div>
+                                <div class="card-foot">
+                                    <ul class="tags"><li>Isolated styles</li><li>Built-in styles</li><li>Responsive layout</li></ul>
+                                </div>
+                            </article>
+                            <article class="card">
+                                <div class="card-head">
+                                    <p><strong>03</strong> / Configuration</p>
+                                </div>
+                                <div class="card-body">
+                                    <h3>You choose the features</h3>
+                                    <p>Configure toolbar items, menus, insertion methods, and selection limits for each role and workflow.</p>
+                                </div>
+                                <div class="card-foot">
+                                    <ul class="tags"><li>Attributes</li><li>Dynamic updates</li><li>Multiple languages</li></ul>
+                                </div>
+                            </article>
+                            <article class="card">
+                                <div class="card-head">
+                                    <p><strong>04</strong> / Asset workflow</p>
+                                </div>
+                                <div class="card-body">
+                                    <h3>Connect your uploads and asset library</h3>
+                                    <p>Connect existing file services through events. Batch uploads, thumbnails, and paginated assets work with your storage and access controls.</p>
+                                </div>
+                                <div class="card-foot">
+                                    <ul class="tags"><li>Progress callbacks</li><li>Batch insertion</li><li>Paginated loading</li></ul>
+                                </div>
+                            </article>
+                            <article class="card">
+                                <div class="card-head">
+                                    <p><strong>05</strong> / Content delivery</p>
+                                </div>
+                                <div class="card-body">
+                                    <h3>Read content or submit it directly</h3>
+                                    <p>Read and write standard HTML with native form association. Save, load, and display content in your existing workflow.</p>
+                                </div>
+                                <div class="card-foot">
+                                    <ul class="tags"><li>HTML output</li><li>Native forms</li><li>Content events</li></ul>
+                                </div>
+                            </article>
+                            <article class="card">
+                                <div class="card-head">
+                                    <p><strong>06</strong> / Technology</p>
+                                </div>
+                                <div class="card-body">
+                                    <h3>Lightweight and easy to integrate</h3>
+                                    <p>Built with native JavaScript and Web Components. A single file contains the component and its styles, with no third-party runtime.</p>
+                                </div>
+                                <div class="card-foot">
+                                    <ul class="tags"><li>Single-file delivery</li><li>Framework independent</li><li>Command API</li></ul>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                </section>
+                <section class="mod-integration" id="integration">
+                    <div class="hd">
+                        <p class="caption"><span>From setup to integration</span></p>
+                        <h2>Add editing to your product in three steps.</h2>
+                        <p class="subtitle">Use attributes, methods, and events to connect the editor to your workflow.</p>
+                    </div>
+                    <div class="bd">
+                        <ol class="steps">
+                            <li><span>01</span><div><h3>Load the file and add a tag</h3><p>Add the component file to your project, load the script, and place the tag where you need an editor.</p></div></li>
+                            <li><span>02</span><div><h3>Choose your features</h3><p>Set toolbar and insertion options with attributes such as custom and insert. Their order determines the display order.</p></div></li>
+                            <li><span>03</span><div><h3>Connect your data</h3><p>Read and write HTML with value, and listen for change events to connect saving, loading, and publishing.</p></div></li>
+                        </ol>
+                        <div class="card">
+<widget-code language="html" id="quick-code">&lt;script src="https://passer-by.com/widget-editor/dist/widget-editor.min.js"&gt;&lt;/script&gt;
+&lt;widget-editor
+    id="editor"
+    language="en-US"
+    name="content"
+    custom="heading,fontSize,bold,italic,color,link,insert"
+    insert="image,table,emoji"
+    image="upload,url,resource"
+&gt;&lt;/widget-editor&gt;
+
+&lt;script&gt;
+    const editor = document.querySelector('#editor');
+    editor.value = '&lt;p&gt;Start editing&lt;/p&gt;';
+    editor.addEventListener('change',function(event){
+        console.log(event.detail.value);
+    });
+&lt;/script&gt;</widget-code>
+                        </div>
+                    </div>
+
+                </section>
+                <section class="mod-params">
+                    <div class="bd">
+                        <details open>
+                            <summary>Configuration <span>Define your editing experience</span></summary>
+                            <div class="detail-body">
+                                <div class="table-inner">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Attribute</th>
+                                                <th>Purpose</th>
+                                                <th>Example</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>value</td>
+                                                <td>JS property for reading and writing HTML</td>
+                                                <td><code>editor.value = '&lt;p&gt;Article content&lt;/p&gt;';</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>text</td>
+                                                <td>Read-only JS property for plain text</td>
+                                                <td><code>const text = editor.text;</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>placeholder</td>
+                                                <td>Placeholder shown when the editor is empty</td>
+                                                <td><code>placeholder="Enter your content…"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>height</td>
+                                                <td>Editor height; defaults to 480px</td>
+                                                <td><code>height="520"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>custom</td>
+                                                <td>Toolbar features and their order</td>
+                                                <td>
+                                                    <code>custom="heading,bold,italic,insert"</code>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>heading</td>
+                                                <td>Heading options and their order</td>
+                                                <td><code>heading="p,h1,h2,h3"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>fontfamily</td>
+                                                <td>Font options and their order</td>
+                                                <td><code>fontfamily="default,yahei,simsun,kaiti"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>fontsize</td>
+                                                <td>Font sizes and their order, without px</td>
+                                                <td><code>fontsize="14,16,18,24,36"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>alignment</td>
+                                                <td>Text and cell alignment options and their order</td>
+                                                <td><code>alignment="left,center,right,justify"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>insert</td>
+                                                <td>Allowed insertion types and their order</td>
+                                                <td><code>insert="image,table,code"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>image / video / audio / attachment</td>
+                                                <td>Insertion methods for each media type</td>
+                                                <td><code>image="upload,url,resource"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>*-limit</td>
+                                                <td>Upload and asset selection limit; empty means unlimited</td>
+                                                <td><code>image-limit="9"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>language</td>
+                                                <td>Simplified Chinese, Hong Kong Traditional Chinese, or English UI</td>
+                                                <td><code>language="en-US"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>view</td>
+                                                <td>Status bar view controls and their order</td>
+                                                <td><code>view="source,fullscreen,mobile"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>name</td>
+                                                <td>Field name for native form submission</td>
+                                                <td><code>name="content"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>form</td>
+                                                <td>Form id for an editor outside the form</td>
+                                                <td><code>form="article-form"</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>disabled</td>
+                                                <td>Disable editing and controls</td>
+                                                <td><code>disabled</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td>required</td>
+                                                <td>Require content for form submission</td>
+                                                <td><code>required</code></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </details>
+                        <details>
+                            <summary>Methods <span>Read, write, and edit content</span></summary>
+                            <div class="detail-body">
+                                <div class="table-inner">
+                                    <table>
+                                        <thead><tr><th>Method</th><th>Purpose</th><th>Example</th></tr></thead>
+                                        <tbody>
+                                            <tr><td><code>getHTML()</code></td><td>Read the current HTML</td><td><code>const html = editor.getHTML();</code></td></tr>
+                                            <tr><td><code>setHTML(value)</code></td><td>Set HTML content</td><td><code>editor.setHTML('&lt;p&gt;Article content&lt;/p&gt;');</code></td></tr>
+                                            <tr><td><code>focus()</code></td><td>Focus the editor</td><td><code>editor.focus();</code></td></tr>
+                                            <tr><td><code>command(name,value)</code></td><td>Run a command on the current selection</td><td><code>editor.command('bold');</code></td></tr>
+                                            <tr><td><code>openInsertDialog(type,mode)</code></td><td>Open a media insertion dialog externally</td><td><code>editor.openInsertDialog('image','resource');</code></td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+<widget-code language="javascript" theme="dark">// Read and write content
+editor.setHTML('&lt;p&gt;New article content&lt;/p&gt;');
+const html = editor.getHTML();
+const text = editor.text;
+
+// Reuse editing commands
+editor.command('bold');
+editor.command('heading','h2');
+editor.command('insertTable',{rows:3,columns:4});
+
+// Open an insertion dialog externally
+editor.openInsertDialog('image','resource');</widget-code>
+                            </div>
+                        </details>
+                        <details>
+                            <summary>Events <span>Connect content and asset services</span></summary>
+                            <div class="detail-body">
+                                <div class="table-inner">
+                                    <table>
+                                        <thead><tr><th>Event</th><th>When it fires</th><th>event.detail</th></tr></thead>
+                                        <tbody>
+                                            <tr><td><code>ready</code></td><td>After the first initialization</td><td>None</td></tr>
+                                            <tr><td><code>change</code></td><td>After content changes or an editing command</td><td><code>value</code> HTML, <code>text</code> plain text</td></tr>
+                                            <tr><td><code>upload</code></td><td>After files are selected and validated</td><td><code>files</code>, <code>type</code>, <code>limit</code>, <code>onComplete</code>, <code>onError</code>, <code>onProgress</code></td></tr>
+                                            <tr><td><code>add</code></td><td>After files are selected for the asset library</td><td>Same as <code>upload</code> </td></tr>
+                                            <tr><td><code>request</code></td><td>When opening the asset library or loading another page</td><td><code>type</code>, <code>page</code>, <code>limit</code>, <code>onComplete</code>, <code>onError</code></td></tr>
+                                            <tr><td><code>remove</code></td><td>When an asset’s remove button is clicked</td><td><code>type</code>, <code>url</code>, <code>limit</code>, <code>onComplete</code>, <code>onError</code></td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+<widget-code language="javascript" theme="dark">editor.addEventListener('change',function(event){
+    const {value,text} = event.detail;
+    console.log(value,text);
+});</widget-code>
+                                <p>Call onComplete(list) after uploading or adding assets, in the same order as files. For request, return the current page with onComplete(list,hasNext); page starts at 1. For remove, call onComplete() after deletion succeeds. Use onError(error) for failures and onProgress(percent) for upload progress.</p>
+                            </div>
+                        </details>
+                        <details>
+                            <summary>Uploads and asset library <span>Use your existing asset services</span></summary>
+                            <div class="detail-body">
+                                <p>Selecting files fires upload; uploading to the asset library fires add. Both use the same callbacks. Files are always an array, and returned URLs must follow the file order.</p>
+<widget-code language="javascript" theme="dark">async function upload(event){
+    const {files,type,onComplete,onError,onProgress} = event.detail;
+    try{
+        const data = new FormData();
+        files.forEach(file =&gt; data.append('files',file));
+        data.append('type',type);
+        const response = await fetch('/api/upload',{method:'POST',body:data});
+        if(!response.ok){throw new Error('Upload failed');}
+        const result = await response.json();
+        onProgress(100);
+        onComplete(result.urls);
+    }catch(error){
+        onError(error);
+    }
+}
+editor.addEventListener('upload',upload);
+editor.addEventListener('add',upload);
+
+editor.addEventListener('request',async function(event){
+    const {type,page,onComplete,onError} = event.detail;
+    try{
+        const response = await fetch('/api/materials?type='+type+'&amp;page='+page);
+        if(!response.ok){throw new Error('Could not load assets');}
+        const result = await response.json();
+        onComplete(result.items,result.hasNext);
+    }catch(error){
+        onError(error);
+    }
+});</widget-code>
+                                <p>Replace the example API paths with your own services. Assets accept a URL or {original,thumbnail}. When hasNext is true, scrolling to the bottom requests the next page. Handle asset deletion through the remove event.</p>
+                            </div>
+                        </details>
+
+                    </div>
+                </section>
+                <section class="mod-scenarios">
+                    <div class="hd">
+                        <p class="caption"><span>Fits your workflow</span></p>
+                        <h2>Editing, wherever your content lives.</h2>
+                    </div>
+                    <div class="bd">
+                        <div class="item-grid">
+                            <article class="item">
+                                <h3>Content management</h3>
+                                <p>One editor for articles, announcements, and event details.</p>
+                            </article>
+                            <article class="item">
+                                <h3>Knowledge and collaboration</h3>
+                                <p>Make documents, project notes, and guides easier to read.</p>
+                            </article>
+                            <article class="item">
+                                <h3>Business applications</h3>
+                                <p>Bring editing to product details, support tickets, and email workflows.</p>
+                            </article>
+                        </div>
+                    </div>
+                </section>
+                <section class="mod-closing">
+                    <p class="eyebrow">Let the component handle editing</p>
+                    <h2>Spend more time on your product.</h2>
+                    <p><a class="button" href="#experience">Try the editor</a></p>
+                </section>
+            </div>
+        </main>
+        <footer>
+            <div class="inner">
+                <div class="brand">
+                    <a href="#"><span>Widget</span><span class="text-blue">Editor</span></a>
+                </div>
+                <p>&copy; 2026 Widget Editor</p>
+            </div>
+        </footer>
+        <a class="gotop" href="#" aria-label="Back to top">
+            <img src="static/image/public/icon-gotop.png" width="24" height="24" alt="">
+        </a>
+    </body>
+</html>

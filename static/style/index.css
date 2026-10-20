@@ -101,6 +101,22 @@ header .bd nav a[aria-current="location"]::after {
     transform: translateX(-50%);
 }
 
+.language-switch {
+    display: flex;
+    flex-shrink: 0;
+    gap: 4px;
+    font-size: 16px;
+}
+.language-switch a {
+    padding: 0 8px;
+    border-radius: 4px;
+    line-height: 32px;
+}
+.language-switch a:hover,.language-switch a[aria-current="page"] {
+    color: var(--accent);
+    background: #2095f210;
+}
+
 
 footer {
     padding: 25px 20px;
@@ -175,12 +191,6 @@ widget-editor {
     border-radius: 24px;
     line-height: 48px;
     font-size: 18px;
-}
-.button-small {
-    min-width: 100px;
-    padding: 0 20px;
-    line-height: 36px;
-    font-size: 16px;
 }
 
 section{
@@ -673,6 +683,7 @@ section .caption::before {
         margin: 0 12px;
     }
     header .bd nav {
+        order: 1;
         width: 100%;
         justify-content: space-between;
         gap: 0;
@@ -684,8 +695,12 @@ section .caption::before {
         min-width: 0;
         text-align: center;
     }
-    header .button-small {
-        display: none;
+    header .language-switch {
+        margin-left: auto;
+        margin-right: 12px;
+    }
+    header .language-switch a {
+        padding: 0 6px;
     }
     section {
         margin: 72px 0;
@@ -830,5 +845,15 @@ section .caption::before {
     .mascot.panting .mascot-mouth,
     .mascot.panting .mascot-tongue {
         animation: none;
+    }
+}
+
+@media(max-width: 360px) {
+    header .brand a {
+        gap: 6px;
+        font-size: 19px;
+    }
+    header .language-switch {
+        gap: 0;
     }
 }
