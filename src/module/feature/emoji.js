@@ -1,15 +1,5 @@
 import {emoji as icon,renderIcon} from '../icon.js';
 
-const labels = new Map([
-    ['😀','开心'],['😃','大笑'],['😄','笑脸'],['😁','咧嘴笑'],['😊','微笑'],['😂','笑哭'],['🤣','哈哈大笑'],['🥰','喜欢'],
-    ['😍','心动'],['😘','飞吻'],['😋','美味'],['😎','酷'],['🤩','惊喜'],['🥳','庆祝'],['🤗','拥抱'],['🤔','思考'],
-    ['🙃','倒脸'],['😉','眨眼'],['😅','尴尬'],['😌','放松'],['😴','睡觉'],['😭','大哭'],['🥺','委屈'],['😤','生气'],
-    ['😮','惊讶'],['😱','震惊'],['🤯','震撼'],['🤭','偷笑'],['🤫','安静'],['😷','口罩'],['🤒','发烧'],['🤧','感冒'],
-    ['👍','赞'],['👎','踩'],['👏','鼓掌'],['🙏','感谢'],['💪','加油'],['👌','好的'],['✌️','胜利'],['🤝','握手'],
-    ['❤️','爱心'],['💔','心碎'],['💕','两颗心'],['💯','满分'],['🔥','火热'],['🎉','礼花'],['🎁','礼物'],['🌹','玫瑰'],
-    ['☀️','太阳'],['🌈','彩虹'],['⭐','星星'],['🌙','月亮'],['🍀','幸运'],['☕','咖啡'],['🎂','蛋糕'],['🚀','火箭']
-]);
-
 const categoryIcons = [
     '<circle cx="12" cy="12" r="9"/><path d="M8 14a4 4 0 0 0 8 0M8 9h.01M16 9h.01"/>',
     '<circle cx="12" cy="7" r="4"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/>',
@@ -74,10 +64,6 @@ export default {
                         button.type = 'button';
                         button.className = 'emoji-button';
                         button.textContent = value;
-                        let label = labels.get(value)||'{category}：{emoji}';
-                        let params = {category:group.name,emoji:value};
-                        editor.locale.set(button,label,params,'title');
-                        editor.locale.set(button,label,params,'aria-label');
                         return button;
                     }));
                     panel.scrollTop = 0;
@@ -91,7 +77,6 @@ export default {
                     button.setAttribute('aria-controls','emoji-panel');
                     button.innerHTML = renderIcon(group.icon);
                     editor.locale.set(button,group.name,{},'aria-label');
-                    editor.locale.set(button,group.name,{},'title');
                     button.addEventListener('click',()=>show(index));
                     button.addEventListener('keydown',event=>{
                         let offsets = {ArrowLeft:-1,ArrowRight:1,ArrowUp:-1,ArrowDown:1};
