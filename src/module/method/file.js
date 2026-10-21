@@ -27,6 +27,12 @@ const aliases = {
     'audio/x-flac':'audio/flac'
 };
 
+export function fileAccept(types){
+    return Object.entries(types||{}).flatMap(([type,extensions])=>[
+        type,...extensions.map(extension=>'.'+extension)
+    ]).join(',');
+}
+
 export function fileType(file,types){
     if(!types){
         return 'application/octet-stream';

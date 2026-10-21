@@ -26,9 +26,7 @@ const commands = {
     alignment(editor,value){
         let names = {left:'justifyLeft',center:'justifyCenter',right:'justifyRight',justify:'justifyFull'};
         if(!Object.hasOwn(names,value)||!editor.config.list('alignment').includes(value)){return false;}
-        if(editor.table?.bounds()?.area||editor.selectedElement()?.closest('td,th')){
-            return alignTable(editor,value);
-        }
+        if(alignTable(editor,value)){return true;}
         return editor.transaction(()=>nativeCommand(names[value],null,true));
     },
     orderedlist:editor=>editor.command('insertOrderedList'),

@@ -13,7 +13,6 @@ export default {
             'kind':'audio',
             'size':20,
             'types':audioTypes,
-            'accept':'audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/aac,audio/flac,audio/webm,.mp3,.wav,.m4a,.aac,.flac,.opus',
             'error':'请选择 MP3、WAV、Ogg、M4A、AAC、FLAC 或 WebM 音频',
             'field':{'name':'title','label':'音频描述','type':'text','placeholder':'留空时使用文件名'},
         },mode);

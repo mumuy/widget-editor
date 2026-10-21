@@ -1,3 +1,4 @@
+import positionMenu from './method/positionMenu.js';
 import {escapeHTML} from './method/sanitize.js';
 import {chevron as arrow,renderIcon} from './icon.js';
 
@@ -67,14 +68,7 @@ export default class EditorDropdown {
         menu.hidden = false;
         menu.showPopover();
         button.setAttribute('aria-expanded','true');
-        let rect = button.getBoundingClientRect();
-        let below = window.innerHeight-rect.bottom-8;
-        let above = rect.top-8;
-        let upwards = below<Math.min(menu.scrollHeight,240)&&above>below;
-        menu.style.maxHeight = Math.max(40,Math.min(280,upwards?above:below))+'px';
-        let width = menu.getBoundingClientRect().width;
-        menu.style.left = Math.max(8,Math.min(rect.left,window.innerWidth-width-8))+'px';
-        menu.style.top = (upwards?rect.top-menu.getBoundingClientRect().height-4:rect.bottom+4)+'px';
+        positionMenu(menu,button);
         let selected = menu.querySelector('[aria-selected="true"]:not(:disabled),[aria-pressed="true"]:not(:disabled)')||menu.querySelector('button:not(:disabled)');
         if(selected){
             selected.focus({preventScroll:true});

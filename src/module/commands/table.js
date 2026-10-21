@@ -57,6 +57,7 @@ export function alignTable(editor,value){
     const area = editor.table?.bounds()?.area;
     const cell = editor.selectedElement()?.closest('td,th');
     const cells = area?area.items.map(item=>item.cell):cell&&editor.content.contains(cell)?[cell]:[];
+    if(!cells.length){return false;}
     return editor.transaction(()=>{
         cells.forEach(cell=>{
             cell.style.textAlign = value;
@@ -65,5 +66,6 @@ export function alignTable(editor,value){
                 if(node.closest('td,th')===cell){node.style.removeProperty('text-align');}
             });
         });
+        return true;
     });
 }

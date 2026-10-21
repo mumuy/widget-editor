@@ -1,4 +1,4 @@
-import {fileType} from './file.js';
+import {fileType,fileAccept} from './file.js';
 import {safeURL} from './sanitize.js';
 import createMaterials,{normalizeMaterial} from './material.js';
 import {loading,renderIcon} from '../icon.js';
@@ -242,7 +242,7 @@ export default function openMedia(editor,options,initialMode){
         upload:{'name':'file','label':limit===1?'选择{type}（最大 {size} MB）':
             Number.isFinite(limit)?'选择{type}（最多 {count} 个，单个最大 {size} MB）':'选择{type}（不限数量，单个最大 {size} MB）',
             'params':{type:options.name,size:options.size,count:limit},'type':'file',
-            'accept':options.accept||'','required':true,'multiple':limit>1},
+            'accept':fileAccept(options.types),'required':true,'multiple':limit>1},
         url:{'name':'url','label':options.name+'地址','type':'text','placeholder':'https://example.com/file','required':true},
         iframe:{'name':'iframe','label':'iframe 嵌入代码','type':'textarea','placeholder':'粘贴视频网站提供的 iframe 代码','required':true}
     };
