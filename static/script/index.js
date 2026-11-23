@@ -88,9 +88,4 @@
         resources.set(type,(resources.get(type)||[]).filter(item=>item!==url));
         onComplete();
     });
-
-    // 新版页脚的回顶按钮沿用组件站 javascript:; 链接结构，在此接上滚动。
-    document.querySelector('.mod-fixedbar .gotop')?.addEventListener('click',()=>{
-        window.scrollTo({top:0,behavior:'smooth'});
-    });
 })();
