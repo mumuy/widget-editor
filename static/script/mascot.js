@@ -3,7 +3,6 @@
     if(!mascot){return;}
     const wag = mascot.querySelector('#mascot-wag');
     const nod = mascot.querySelector('#mascot-nod');
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     let visible = false;
     let running = false;
     let bounds;
@@ -53,7 +52,7 @@
         },3500+Math.random()*5000);
     }
     function sync(){
-        const active = visible&&!document.hidden&&!reduced.matches;
+        const active = visible&&!document.hidden;
         if(active===running){return;}
         running = active;
         if(active){
@@ -87,5 +86,4 @@
         sync();
     }).observe(mascot);
     document.addEventListener('visibilitychange',sync);
-    reduced.addEventListener('change',sync);
 })();

@@ -8,6 +8,7 @@
         <link rel="alternate" hreflang="zh-CN" href="index.html">
         <link rel="alternate" hreflang="zh-HK" href="zh-HK.html">
         <link rel="alternate" hreflang="en-US" href="en-US.html">
+        <link rel="stylesheet" href="https://passer-by.com/static/style/common.css">
         <link rel="stylesheet" href="static/style/index.css">
         <script src="https://passer-by.com/widget-code/dist/widget-code.min.js" defer></script>
         <script src="dist/widget-editor.min.js" defer></script>
@@ -15,49 +16,69 @@
         <script src="static/script/mascot.js" defer></script>
     </head>
     <body>
-        <div class="mod-bg" aria-hidden="true">
-            <svg class="waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
-                <defs>
-                    <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"></path>
-                </defs>
-                <g class="parallax">
-                    <use href="#gentle-wave" x="48" y="0" fill="rgba(255,255,255,0.4)"></use>
-                    <use href="#gentle-wave" x="48" y="3" fill="rgba(255,255,255,0.6)"></use>
-                    <use href="#gentle-wave" x="48" y="5" fill="rgba(255,255,255,0.2)"></use>
-                    <use href="#gentle-wave" x="48" y="7" fill="rgba(255,255,255,1)"></use>
-                </g>
-            </svg>
-        </div>
         <header>
-            <div class="inner">
-                <div class="bd">
-                    <div class="brand">
-                        <a href="#" aria-label="Widget Editor 首页">
-                            <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect width="32" height="32" rx="9" fill="currentColor"/><path d="M9 10h14M9 16h10M9 22h7" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
-                            <span>Widget</span>
-                            <span class="text-blue">Editor</span>
-                        </a>
-                    </div>
-                    <nav aria-label="主导航">
-                        <a href="#experience">在线体验</a>
-                        <a href="#features">产品特征</a>
-                        <a href="#integration">使用指南</a>
-                    </nav>
-                    <div class="language-switch" role="group" aria-label="语言切换">
-                        <a href="index.html" hreflang="zh-CN" aria-label="简体中文" aria-current="page">简</a>
-                        <a href="zh-HK.html" hreflang="zh-HK" aria-label="繁體中文">繁</a>
-                        <a href="en-US.html" hreflang="en-US" aria-label="English">EN</a>
+            <div class="mod-head">
+                <div class="inner">
+                    <div class="bd">
+                        <div class="logo">
+                            <a href="/"><img src="https://passer-by.com/static/image/public/logo.png" width="180" height="64" alt="路人甲"/></a>
+                        </div>
+                        <nav aria-label="主导航">
+                            <li class="active"><a href="https://passer-by.com/project.html">项目</a></li>
+                            <li><a href="https://passer-by.com/writing.html">文字</a></li>
+                            <li><a href="https://passer-by.com/photograph.html">摄影</a></li>
+                            <li><a href="https://passer-by.com/comment.html">留言</a></li>
+                            <li><a href="https://passer-by.com/about.html">关于</a></li>
+                        </nav>
+                        <div class="operation">
+                            <span class="btn">
+                                <a class="active" href="index.html">简</a>
+                                <span>/</span>
+                                <a href="zh-HK.html">繁</a>
+                                <span>/</span>
+                                <a href="en-US.html">EN</a>
+                            </span>
+                            <a class="btn" href="https://github.com/mumuy/widget-editor/" rel="nofollow" target="_blank" title="Github">
+                                <svg aria-hidden="true" class="octicon" title="GitHub " version="1.1" viewBox="0 0 16 16" width="24" height="24"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59 0.4 0.07 0.55-0.17 0.55-0.38 0-0.19-0.01-0.82-0.01-1.49-2.01 0.37-2.53-0.49-2.69-0.94-0.09-0.23-0.48-0.94-0.82-1.13-0.28-0.15-0.68-0.52-0.01-0.53 0.63-0.01 1.08 0.58 1.23 0.82 0.72 1.21 1.87 0.87 2.33 0.66 0.07-0.52 0.28-0.87 0.51-1.07-1.78-0.2-3.64-0.89-3.64-3.95 0-0.87 0.31-1.59 0.82-2.15-0.08-0.2-0.36-1.02 0.08-2.12 0 0 0.67-0.21 2.2 0.82 0.64-0.18 1.32-0.27 2-0.27 0.68 0 1.36 0.09 2 0.27 1.53-1.04 2.2-0.82 2.2-0.82 0.44 1.1 0.16 1.92 0.08 2.12 0.51 0.56 0.82 1.27 0.82 2.15 0 3.07-1.87 3.75-3.65 3.95 0.29 0.25 0.54 0.73 0.54 1.48 0 1.07-0.01 1.93-0.01 2.2 0 0.21 0.15 0.46 0.55 0.38C13.71 14.53 16 11.53 16 8 16 3.58 12.42 0 8 0z"></path></svg>
+                                <span>Github</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
+            </div>
+            <div class="mod-bg" aria-hidden="true">
+                <svg class="waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+                    <defs>
+                        <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"></path>
+                    </defs>
+                    <g class="parallax">
+                        <use href="#gentle-wave" x="48" y="0" fill="rgba(255,255,255,0.4)"></use>
+                        <use href="#gentle-wave" x="48" y="3" fill="rgba(255,255,255,0.6)"></use>
+                        <use href="#gentle-wave" x="48" y="5" fill="rgba(255,255,255,0.2)"></use>
+                        <use href="#gentle-wave" x="48" y="7" fill="rgba(255,255,255,1)"></use>
+                    </g>
+                </svg>
             </div>
         </header>
         <main class="container">
             <div class="inner">
-                <section class="mod-experience" id="experience">
-                    <div class="hd">
-                        <h1>富文本编辑器</h1>
+                <section class="mod-poster">
+                    <div class="bd">
+                        <h1>富文本编辑器<span class="tag">AI开源组件</span></h1>
                         <p>一个标签，承载完整的内容编辑体验。</p>
+                        <div class="buttons">
+                            <a class="btn btn-blue" href="https://passer-by.com/widget-markdown/" target="_blank">
+                                <img src="./static/image/icon-markdown.png" width="24" height="24"/>
+                                <span>Markdown实时渲染</span>
+                            </a>
+                            <a class="btn btn-green" href="https://passer-by.com/widget-code/" target="_blank">
+                                <img src="./static/image/icon-code.png" width="24" height="24">
+                                <span>代码着色美化</span>
+                            </a>
+                        </div>
                     </div>
+                </section>
+                <section class="mod-experience" id="experience">
                     <div class="bd">
                         <svg class="mascot" viewBox="0 0 1523 1033" aria-hidden="true" focusable="false">
                             <defs>
@@ -131,7 +152,7 @@
                             <p class="caption"><span>为业务系统打造的富文本编辑组件</span></p>
                             <h2 class="title">让内容编辑，<br>成为产品的<span>原生能力。</span></h2>
                             <div class="actions">
-                                <a class="button button-large" href="#experience">立即体验</a>
+                                <a class="button button-large" href="#open-source">立即体验</a>
                             </div>
                             <ul class="points"><li>单文件接入</li><li>原生 Web Component</li><li>零运行时依赖</li></ul>
                         </div>
@@ -500,23 +521,48 @@ editor.addEventListener('request',async function(event){
                         </div>
                     </div>
                 </section>
-                <section class="mod-closing">
-                    <p class="eyebrow">把编辑能力交给组件</p>
-                    <h2>把更多精力，留给你的产品。</h2>
-                    <p><a class="button" href="#experience">开始体验</a></p>
-                </section>
+            </div>
+            <section class="module mod-copy" id="open-source">
+                <div class="inner">
+                    <div class="hd"><span>组件开源</span></div>
+                    <div class="bd">
+                        <p><span>组件基于「<a href="https://github.com/mumuy/widget-editor/blob/main/LICENSE" rel="nofollow" target="_blank">MIT许可协议</a>」开源，除需在源码中保留版权信息和许可声明外，你有权利使用、复制、修改、合并、出版发行、散布、再授权及贩售软件及软件的副本。</span>项目持续更新中，如发现错漏或有想法建议可在此 <a class="text-red" href="https://github.com/mumuy/widget-editor/issues" rel="nofollow" target="_blank">反馈问题</a>。</p>
+                        <div class="buttons">
+                            <a class="github-button" href="https://github.com/mumuy" data-color-scheme="no-preference: light; light: light; dark: dark;" data-size="large" aria-label="Follow @mumuy on GitHub">Follow @mumuy</a>
+                            <a class="github-button" href="https://github.com/mumuy/widget-editor/fork" data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-repo-forked" data-size="large" data-show-count="true" aria-label="Fork mumuy/widget-editor on GitHub">Fork</a>
+                            <a class="github-button" href="https://github.com/mumuy/widget-editor" data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star mumuy/widget-editor on GitHub">Star</a>
+                            <a class="github-button" href="https://github.com/mumuy/widget-editor/archive/HEAD.zip" data-icon="octicon-download" data-size="large" aria-label="Download mumuy/widget-editor on GitHub">Download</a>
+                        </div>
+                        <code>&lt;script type="text/javascript" src="https://passer-by.com/widget-editor/dist/widget-editor.min.js"&gt;&lt;/script&gt;</code>
+                    </div>
+                </div>
+            </section>
+            <div class="inner">
+                <script type="text/javascript" src="https://passer-by.com/static/script/projects.js"></script>
             </div>
         </main>
         <footer>
-            <div class="inner">
-                <div class="brand">
-                    <a href="#"><span>Widget</span><span class="text-blue">Editor</span></a>
+            <div class="mod-fixedbar">
+                <div class="bd">
+                    <ul>
+                        <li>
+                            <a class="gotop" href="javascript:;" rel="nofollow">
+                                <img src="static/image/public/icon-gotop.png" width="24" height="24" alt="回到顶部"/>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
-                <p>&copy; 2026 Widget Editor</p>
+            </div>
+            <div class="mod-foot">
+                <div class="bd">
+                    <p>
+                        <span>Copyright &copy; 2026</span>
+                        <a href="/">路人甲</a>
+                        <span>版权所有</span>
+                    </p>
+                </div>
             </div>
         </footer>
-        <a class="gotop" href="#" aria-label="回到顶部">
-            <img src="static/image/public/icon-gotop.png" width="24" height="24" alt="">
-        </a>
+        <script async defer src="https://cdn.bootcdn.net/ajax/libs/github-buttons/2.21.1/buttons.min.js"></script>
     </body>
 </html>
