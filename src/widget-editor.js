@@ -1,5 +1,5 @@
 import executeCommand from './module/commands/index.js';
-import nativeCommand from './module/commands/native.js';
+import nativeCommand,{insertHTMLContent} from './module/commands/native.js';
 import EditorSelection from './module/method/selection.js';
 import sanitizeHTML,{setLinkTarget} from './module/method/sanitize.js';
 import {createFormatter} from './module/method/formatHTML.js';
@@ -497,7 +497,7 @@ class WidgetEditor extends HTMLElement {
         if(this.source||this.formControl.disabled||this._composing){return false;}
         let safe = sanitizeHTML(html);
         if(!safe){return false;}
-        return this.transaction(()=>nativeCommand('insertHTML',safe));
+        return this.transaction(()=>insertHTMLContent(this,safe));
     }
     applyStyle(styles){
         this.transaction(()=>{

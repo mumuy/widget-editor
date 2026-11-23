@@ -1,6 +1,6 @@
 import sanitizeHTML,{safeURL,escapeHTML} from '../method/sanitize.js';
 import {fileName,urlFileName} from '../method/file.js';
-import nativeCommand from './native.js';
+import nativeCommand,{insertHTMLContent} from './native.js';
 
 const names = {image:'图片',video:'视频',audio:'音频',attachment:'附件'};
 
@@ -40,7 +40,7 @@ export function insertMedia(editor,{type,sources=[],files=[],values={}}={}){
     })).join('');
     if(type!=='image'||!multiple){editor.insertHTML(html);return;}
     editor.transaction(()=>{
-        nativeCommand('insertHTML',sanitizeHTML(html));
+        insertHTMLContent(editor,sanitizeHTML(html));
         // 图片各占一段，插入点后原有的文字进入下一段。
         nativeCommand('insertParagraph');
         let paragraph = editor.selectedElement().closest('p');

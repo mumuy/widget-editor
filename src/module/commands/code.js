@@ -1,6 +1,6 @@
 import {codeText,codeOffset,codePoint,renderCode} from '../code/content.js';
 import {languageName} from '../code/language.js';
-import nativeCommand from './native.js';
+import {insertHTMLContent} from './native.js';
 
 export function selectedCode(editor,range=editor.getRange()){
     let find = node=>(node?.nodeType===Node.TEXT_NODE?node.parentElement:node)?.closest?.('pre')?.querySelector('code');
@@ -62,7 +62,7 @@ export function insertCode(editor,values={}){
     renderCode(code);
     let previous = new Set(editor.content.querySelectorAll('pre code'));
     return editor.transaction(()=>{
-        nativeCommand('insertHTML',pre.outerHTML);
+        insertHTMLContent(editor,pre.outerHTML);
         code = Array.from(editor.content.querySelectorAll('pre code')).find(node=>!previous.has(node));
         if(!code){return false;}
         let range = document.createRange();
